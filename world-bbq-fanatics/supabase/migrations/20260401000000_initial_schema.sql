@@ -8,6 +8,11 @@ create table public.profiles (
   username    text unique not null,
   avatar_url  text,
   bio         text,
+  location    text,
+  bbq_brand   text,
+  bbq_type    text check (bbq_type in ('Gas', 'Charcoal', 'Electric', 'Wood', 'Kamado', 'Multiple')),
+  birthday    date,
+  skill_level text check (skill_level in ('Orientating', 'Beginner', 'Backyard Pro', 'Pitmaster', 'Professional')),
   created_at  timestamptz not null default now()
 );
 

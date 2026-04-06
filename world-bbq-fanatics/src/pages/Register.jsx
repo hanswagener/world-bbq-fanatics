@@ -28,7 +28,7 @@ export default function Register() {
       setError(error.message)
       setLoading(false)
     } else {
-      navigate('/dashboard')
+      navigate('/profile-setup')
     }
   }
 
