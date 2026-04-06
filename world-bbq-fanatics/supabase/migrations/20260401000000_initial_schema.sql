@@ -55,15 +55,17 @@ create table public.recipes (
   ingredients   text,
   instructions  text,
   image_url     text,
-  is_public     boolean not null default true,
+  visibility    text not null default 'public'
+                  check (visibility in ('public', 'friends_only', 'private')),
   created_at    timestamptz not null default now()
 );
 
 alter table public.recipes enable row level security;
 
+-- Public recipes visible to everyone; friends_only and private only to owner
 create policy "recipes: read public or own"
   on public.recipes for select
-  using (is_public = true or auth.uid() = user_id);
+  using (visibility = 'public' or auth.uid() = user_id);
 
 create policy "recipes: own insert"
   on public.recipes for insert

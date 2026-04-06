@@ -1,11 +1,6 @@
-import styles from './Placeholder.module.css'
+import { Navigate } from 'react-router-dom'
 
+// /recipes is handled by MyRecipes; this keeps any stale links working
 export default function Recipes() {
-  return (
-    <div className={styles.page}>
-      <span className={styles.icon}>📖</span>
-      <h1 className={styles.title}>Recipes</h1>
-      <p className={styles.text}>Browse and share your BBQ recipes. Coming soon.</p>
-    </div>
-  )
+  return <Navigate to="/recipes" replace />
 }

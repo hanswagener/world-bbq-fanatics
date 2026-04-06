@@ -1,0 +1,246 @@
+.page {
+  padding: 40px 24px 80px;
+}
+
+.container {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ── Loading / not-found ── */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 62px);
+  gap: 12px;
+  text-align: center;
+  color: #666;
+  font-size: 15px;
+}
+
+.loading span {
+  font-size: 48px;
+}
+
+.loading h2 {
+  color: #f0f0f0;
+  font-size: 22px;
+  margin: 0;
+}
+
+/* ── Top bar ── */
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.backBtn {
+  font-size: 14px;
+  font-weight: 600;
+  color: #777;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.12s;
+  text-decoration: none;
+}
+
+.backBtn:hover {
+  color: #ff6b1a;
+}
+
+.editLink {
+  font-size: 13px;
+  font-weight: 600;
+  color: #ccc;
+  background: #252525;
+  border: 1px solid #383838;
+  border-radius: 7px;
+  padding: 7px 16px;
+  text-decoration: none;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.editLink:hover {
+  border-color: #ff6b1a;
+  color: #ff6b1a;
+}
+
+/* ── Hero image ── */
+.heroImage {
+  width: 100%;
+  max-height: 380px;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+}
+
+/* ── Title row ── */
+.titleRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.title {
+  font-size: 30px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  letter-spacing: -0.5px;
+  line-height: 1.25;
+  flex: 1;
+}
+
+.flameBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #222;
+  border: 1px solid #333;
+  border-radius: 22px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #888;
+  transition: background 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.flameBtn:hover:not(:disabled) {
+  background: #2a2a2a;
+  border-color: #ff6b1a;
+  color: #ff6b1a;
+}
+
+.flameBtnActive {
+  background: rgba(255, 107, 26, 0.12);
+  border-color: rgba(255, 107, 26, 0.5);
+  color: #ff6b1a;
+}
+
+.flameBtnActive:hover:not(:disabled) {
+  background: rgba(255, 107, 26, 0.18);
+}
+
+.flameBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.flameCount {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* ── Author card ── */
+.authorCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.authorAvatar {
+  flex-shrink: 0;
+}
+
+.authorAvatarImg {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.authorAvatarInitials {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #ff6b1a;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.authorInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.authorName {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f0f0f0;
+}
+
+.authorSkill {
+  font-size: 12px;
+  color: #888;
+}
+
+.recipeDate {
+  font-size: 13px;
+  color: #555;
+  flex-shrink: 0;
+}
+
+/* ── Description ── */
+.description {
+  font-size: 16px;
+  color: #aaa;
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ── Content sections ── */
+.section {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 24px 28px;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ff6b1a;
+  margin: 0 0 14px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+.sectionContent {
+  font-size: 15px;
+  color: #ccc;
+  line-height: 1.75;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 600px) {
+  .page { padding: 24px 16px 60px; }
+  .title { font-size: 24px; }
+  .titleRow { flex-direction: column; }
+  .flameBtn { align-self: flex-start; }
+  .section { padding: 18px 20px; }
+}

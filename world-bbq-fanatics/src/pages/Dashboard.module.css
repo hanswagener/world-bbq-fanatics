@@ -156,6 +156,13 @@
   margin: 0;
   line-height: 1.35;
   letter-spacing: -0.2px;
+  text-decoration: none;
+  transition: color 0.12s;
+  display: block;
+}
+
+.cardTitle:hover {
+  color: #ff6b1a;
 }
 
 .cardDesc {

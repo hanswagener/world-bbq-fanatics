@@ -100,7 +100,7 @@ export default function Navbar() {
             {dropdownOpen && (
               <div className={styles.dropdown}>
                 <NavLink to="/profile"    className={styles.dropItem} onClick={() => setDropdownOpen(false)}>My Profile</NavLink>
-                <NavLink to="/my-recipes" className={styles.dropItem} onClick={() => setDropdownOpen(false)}>My Recipes</NavLink>
+                <NavLink to="/recipes" className={styles.dropItem} onClick={() => setDropdownOpen(false)}>My Recipes</NavLink>
                 <NavLink to="/settings"   className={styles.dropItem} onClick={() => setDropdownOpen(false)}>Settings</NavLink>
                 <div className={styles.dropDivider} />
                 <button className={styles.dropItemDanger} onClick={handleSignOut}>Sign Out</button>
@@ -141,7 +141,7 @@ export default function Navbar() {
           <span className={styles.mobileUsername}>{profile?.username ?? '…'}</span>
         </div>
         <NavLink to="/profile"    className={styles.mobileLink} onClick={closeMobile}>My Profile</NavLink>
-        <NavLink to="/my-recipes" className={styles.mobileLink} onClick={closeMobile}>My Recipes</NavLink>
+        <NavLink to="/recipes" className={styles.mobileLink} onClick={closeMobile}>My Recipes</NavLink>
         <NavLink to="/settings"   className={styles.mobileLink} onClick={closeMobile}>Settings</NavLink>
         <button className={styles.mobileSignOut} onClick={handleSignOut}>Sign Out</button>
       </div>

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../supabase'
 import styles from './Dashboard.module.css'
@@ -40,12 +41,10 @@ function RecipeCard({ recipe, currentUserId, onFlameToggle }) {
             <AuthorAvatar profile={author} />
             <span className={styles.authorName}>{author?.username ?? 'Unknown'}</span>
           </div>
-          <span className={recipe.is_public ? styles.badgePublic : styles.badgePrivate}>
-            {recipe.is_public ? 'Public' : 'Private'}
-          </span>
+          <span className={styles.badgePublic}>Public</span>
         </div>
 
-        <h2 className={styles.cardTitle}>{recipe.title}</h2>
+        <Link to={`/recipes/${recipe.id}`} className={styles.cardTitle}>{recipe.title}</Link>
 
         {recipe.description && (
           <p className={styles.cardDesc}>{recipe.description}</p>
@@ -76,11 +75,11 @@ export default function Dashboard() {
     const { data } = await supabase
       .from('recipes')
       .select(`
-        id, title, description, image_url, is_public, created_at, user_id,
+        id, title, description, image_url, visibility, created_at, user_id,
         profiles(username, avatar_url),
         flames(id, user_id)
       `)
-      .eq('is_public', true)
+      .eq('visibility', 'public')
       .order('created_at', { ascending: false })
 
     setRecipes(data ?? [])
