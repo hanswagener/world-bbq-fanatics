@@ -8,6 +8,7 @@ import MyRecipes from './pages/MyRecipes'
 import NewRecipe from './pages/NewRecipe'
 import RecipeDetail from './pages/RecipeDetail'
 import Community from './pages/Community'
+import ChannelChat from './pages/ChannelChat'
 import Chat from './pages/Chat'
 
 export default function App() {
@@ -25,7 +26,8 @@ export default function App() {
           <Route path="/recipes"         element={<MyRecipes />} />
           <Route path="/recipes/new"     element={<NewRecipe />} />
           <Route path="/recipes/:id"     element={<RecipeDetail />} />
-          <Route path="/community"       element={<Community />} />
+          <Route path="/community"        element={<Community />} />
+          <Route path="/community/:id"   element={<ChannelChat />} />
           <Route path="/chat"            element={<Chat />} />
         </Route>
 
