@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../supabase'
 import styles from './UserProfile.module.css'
@@ -60,7 +60,8 @@ function RecipeCard({ recipe, showVisibility }) {
 
 export default function UserProfile() {
   const { username } = useParams()
-  const { user, profile: myProfile } = useAuth()
+  const { user } = useAuth()
+  const navigate = useNavigate()
 
   const isMe = username === 'me'
 
@@ -70,21 +71,28 @@ export default function UserProfile() {
   const [notFound, setNotFound] = useState(false)
 
   useEffect(() => {
+    // Wait until the auth user is available
+    if (!user) return
+
     async function load() {
       let profileData
 
       if (isMe) {
-        // Use the auth context profile (already fetched)
-        profileData = myProfile
-        if (!profileData && user) {
-          const { data } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', user.id)
-            .maybeSingle()
-          profileData = data
+        // Always fetch by auth user id — never rely on context cache
+        const { data } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .maybeSingle()
+        profileData = data
+
+        // No profile yet — send them to setup instead of showing "not found"
+        if (!profileData) {
+          navigate('/profile-setup', { replace: true })
+          return
         }
       } else {
+        // Public profile — fetch by username column
         const { data } = await supabase
           .from('profiles')
           .select('*')
@@ -112,9 +120,8 @@ export default function UserProfile() {
       setLoading(false)
     }
 
-    if (isMe && !myProfile && !user) return   // wait for auth context
     load()
-  }, [username, isMe, user, myProfile])
+  }, [username, isMe, user, navigate])
 
   if (loading) {
     return (
