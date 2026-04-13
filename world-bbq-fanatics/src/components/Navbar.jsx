@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase'
 import { useAuth } from '../context/AuthContext'
 import styles from './Navbar.module.css'
@@ -75,6 +75,13 @@ export default function Navbar() {
             </NavLink>
           ))}
         </div>
+
+        {/* Search icon */}
+        <Link to="/search" className={styles.searchLink} aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </Link>
 
         {/* Right: user dropdown + hamburger */}
         <div className={styles.right}>

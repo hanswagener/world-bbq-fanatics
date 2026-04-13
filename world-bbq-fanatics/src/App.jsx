@@ -15,6 +15,7 @@ import Community from './pages/Community'
 import ChannelChat from './pages/ChannelChat'
 import Chat from './pages/Chat'
 import PrivateChat from './pages/PrivateChat'
+import Search from './pages/Search'
 
 export default function App() {
   return (
@@ -39,6 +40,7 @@ export default function App() {
           <Route path="/community/:id"   element={<ChannelChat />} />
           <Route path="/chat"            element={<Chat />} />
           <Route path="/chat/:id"        element={<PrivateChat />} />
+          <Route path="/search"          element={<Search />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/login" replace />} />
