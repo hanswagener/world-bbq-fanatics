@@ -37,10 +37,10 @@ function RecipeCard({ recipe, currentUserId, onFlameToggle }) {
 
       <div className={styles.cardBody}>
         <div className={styles.cardTop}>
-          <div className={styles.author}>
+          <Link to={`/profile/${author?.username ?? ''}`} className={styles.author}>
             <AuthorAvatar profile={author} />
             <span className={styles.authorName}>{author?.username ?? 'Unknown'}</span>
-          </div>
+          </Link>
           <span className={styles.badgePublic}>Public</span>
         </div>
 

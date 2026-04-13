@@ -91,6 +91,11 @@
   align-items: center;
   gap: 8px;
   min-width: 0;
+  text-decoration: none;
+}
+
+.author:hover .authorName {
+  color: #ff6b1a;
 }
 
 .authorImg {

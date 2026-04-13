@@ -172,3 +172,29 @@
   opacity: 0.55;
   cursor: not-allowed;
 }
+
+.formActions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.cancelBtn {
+  padding: 12px 22px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #888;
+  background: transparent;
+  border: 1px solid #333;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.cancelBtn:hover {
+  border-color: #555;
+  color: #ccc;
+}
