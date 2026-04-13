@@ -30,8 +30,7 @@ export default function App() {
         {/* Protected routes — share Navbar + auth context */}
         <Route element={<AppLayout />}>
           <Route path="/dashboard"       element={<Dashboard />} />
-          <Route path="/profile/me"      element={<UserProfile />} />
-          <Route path="/profile/edit"    element={<EditProfile />} />
+          <Route path="/profile/edit"      element={<EditProfile />} />
           <Route path="/profile/:username" element={<UserProfile />} />
           <Route path="/recipes"         element={<MyRecipes />} />
           <Route path="/recipes/new"     element={<NewRecipe />} />
