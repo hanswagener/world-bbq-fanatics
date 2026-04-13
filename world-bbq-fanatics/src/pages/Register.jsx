@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase'
+import PasswordInput from '../components/PasswordInput'
 import styles from './Auth.module.css'
 
 export default function Register() {
@@ -56,10 +57,8 @@ export default function Register() {
 
           <div className={styles.field}>
             <label htmlFor="password" className={styles.label}>Password</label>
-            <input
+            <PasswordInput
               id="password"
-              type="password"
-              className={styles.input}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
@@ -70,10 +69,8 @@ export default function Register() {
 
           <div className={styles.field}>
             <label htmlFor="confirm" className={styles.label}>Confirm Password</label>
-            <input
+            <PasswordInput
               id="confirm"
-              type="password"
-              className={styles.input}
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               placeholder="••••••••"

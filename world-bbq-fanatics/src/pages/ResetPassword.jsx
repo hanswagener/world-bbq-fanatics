@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase'
+import PasswordInput from '../components/PasswordInput'
 import styles from './Auth.module.css'
 
 export default function ResetPassword() {
@@ -64,10 +65,8 @@ export default function ResetPassword() {
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.field}>
               <label htmlFor="password" className={styles.label}>New Password</label>
-              <input
+              <PasswordInput
                 id="password"
-                type="password"
-                className={styles.input}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 placeholder="••••••••"
@@ -79,10 +78,8 @@ export default function ResetPassword() {
 
             <div className={styles.field}>
               <label htmlFor="confirm" className={styles.label}>Confirm New Password</label>
-              <input
+              <PasswordInput
                 id="confirm"
-                type="password"
-                className={styles.input}
                 value={confirm}
                 onChange={e => setConfirm(e.target.value)}
                 placeholder="••••••••"

@@ -79,6 +79,36 @@
   box-shadow: 0 0 0 3px rgba(255, 107, 26, 0.15);
 }
 
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputWrapper .input {
+  width: 100%;
+  padding-right: 42px;
+}
+
+.eyeBtn {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: color 0.15s;
+  line-height: 1;
+}
+
+.eyeBtn:hover {
+  color: #ff6b1a;
+}
+
 .error {
   font-size: 13px;
   color: #f87171;
