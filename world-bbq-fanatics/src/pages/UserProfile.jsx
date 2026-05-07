@@ -134,6 +134,9 @@ export default function UserProfile() {
       // Check whether the current user is already following this profile.
       // Only runs for other people's profiles.
       const ownProfile = isMe || profileData.id === user.id
+      console.log('[Follow check] current user.id:', user.id)
+      console.log('[Follow check] profile user.id:', profileData.id)
+      console.log('[Follow check] ownProfile:', ownProfile)
       if (!ownProfile) {
         const { data: fwRows, error: fwError } = await supabase
           .from('follows')
@@ -142,6 +145,8 @@ export default function UserProfile() {
           .eq('following_id', profileData.id)
           .limit(1)
 
+        console.log('[Follow check] query result — data:', fwRows, '| error:', fwError)
+        console.log('[Follow check] setting isFollowing to:', (fwRows?.length ?? 0) > 0)
         if (fwError) {
           console.error('[UserProfile] follow-check error:', fwError.message)
         } else {
