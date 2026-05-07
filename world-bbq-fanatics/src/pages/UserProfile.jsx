@@ -77,6 +77,16 @@ export default function UserProfile() {
   useEffect(() => {
     if (!user) return
 
+    // Reset every time username or user changes so stale state from a
+    // previous profile never bleeds into the new one while loading.
+    setLoading(true)
+    setNotFound(false)
+    setProfile(null)
+    setRecipes([])
+    setIsFollowing(false)
+    setFollowerCount(0)
+    setFollowingCount(0)
+
     async function load() {
       let profileData
 
@@ -121,16 +131,22 @@ export default function UserProfile() {
       setFollowerCount(fwrs?.length ?? 0)
       setFollowingCount(fwng?.length ?? 0)
 
-      // Is current user following this profile?
+      // Check whether the current user is already following this profile.
+      // Only runs for other people's profiles.
       const ownProfile = isMe || profileData.id === user.id
       if (!ownProfile) {
-        const { data: fwCheck } = await supabase
+        const { data: fwRows, error: fwError } = await supabase
           .from('follows')
           .select('id')
           .eq('follower_id',  user.id)
           .eq('following_id', profileData.id)
-          .maybeSingle()
-        setIsFollowing(!!fwCheck)
+          .limit(1)
+
+        if (fwError) {
+          console.error('[UserProfile] follow-check error:', fwError.message)
+        } else {
+          setIsFollowing(fwRows.length > 0)
+        }
       }
 
       setLoading(false)
