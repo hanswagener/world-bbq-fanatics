@@ -31,8 +31,10 @@ function RecipeCard({ recipe, currentUserId, onFlameToggle }) {
 
   return (
     <div className={styles.card}>
-      {recipe.image_url && (
+      {recipe.image_url ? (
         <img src={recipe.image_url} className={styles.cardImage} alt={recipe.title} />
+      ) : (
+        <div className={styles.cardImagePlaceholder}>🔥</div>
       )}
 
       <div className={styles.cardBody}>

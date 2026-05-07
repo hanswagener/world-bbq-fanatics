@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { useNavigate, useParams, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../supabase'
 import styles from './NewRecipe.module.css'
@@ -13,22 +13,55 @@ const VISIBILITY_OPTIONS = [
   { value: 'private',      label: '🔒 Private',       desc: 'Only you' },
 ]
 
-export default function NewRecipe() {
+export default function EditRecipe() {
   const { user } = useAuth()
+  const { id } = useParams()
   const navigate = useNavigate()
   const fileInputRef = useRef(null)
+
+  const [loading, setLoading] = useState(true)
+  const [notFound, setNotFound] = useState(false)
 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [ingredients, setIngredients] = useState('')
   const [instructions, setInstructions] = useState('')
+  const [visibility, setVisibility] = useState('public')
+
+  // existing URL from DB; null if user removes it
+  const [currentImageUrl, setCurrentImageUrl] = useState(null)
+  // new file selected by user
   const [imageFile, setImageFile] = useState(null)
+  // preview: blob URL for new file, existing URL, or null
   const [imagePreview, setImagePreview] = useState(null)
   const [imageError, setImageError] = useState(null)
   const [uploading, setUploading] = useState(false)
-  const [visibility, setVisibility] = useState('public')
+
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
+
+  useEffect(() => {
+    async function loadRecipe() {
+      const { data, error: fetchError } = await supabase
+        .from('recipes')
+        .select('id, user_id, title, description, ingredients, instructions, image_url, visibility')
+        .eq('id', id)
+        .single()
+
+      if (fetchError || !data) { setNotFound(true); setLoading(false); return }
+      if (data.user_id !== user?.id) { setNotFound(true); setLoading(false); return }
+
+      setTitle(data.title ?? '')
+      setDescription(data.description ?? '')
+      setIngredients(data.ingredients ?? '')
+      setInstructions(data.instructions ?? '')
+      setVisibility(data.visibility ?? 'public')
+      setCurrentImageUrl(data.image_url ?? null)
+      setImagePreview(data.image_url ?? null)
+      setLoading(false)
+    }
+    loadRecipe()
+  }, [id, user])
 
   function handleImageSelect(e) {
     const file = e.target.files?.[0]
@@ -71,7 +104,7 @@ export default function NewRecipe() {
     setError(null)
     setSaving(true)
 
-    let imageUrl = null
+    let imageUrl
     if (imageFile) {
       setUploading(true)
       try {
@@ -83,35 +116,66 @@ export default function NewRecipe() {
         return
       }
       setUploading(false)
+    } else {
+      // null = user removed it; otherwise keep existing
+      imageUrl = imagePreview === null ? null : currentImageUrl
     }
 
-    const { error: insertError } = await supabase.from('recipes').insert({
-      user_id:      user.id,
-      title:        title.trim(),
-      description:  description.trim() || null,
-      ingredients:  ingredients.trim() || null,
-      instructions: instructions.trim() || null,
-      image_url:    imageUrl,
-      visibility,
-    })
+    const { error: updateError } = await supabase
+      .from('recipes')
+      .update({
+        title:        title.trim(),
+        description:  description.trim() || null,
+        ingredients:  ingredients.trim() || null,
+        instructions: instructions.trim() || null,
+        image_url:    imageUrl,
+        visibility,
+      })
+      .eq('id', id)
 
-    if (insertError) {
-      setError(insertError.message)
+    if (updateError) {
+      setError(updateError.message)
       setSaving(false)
     } else {
-      navigate('/recipes')
+      navigate(`/recipes/${id}`)
     }
   }
 
   const isSubmitting = saving || uploading
 
+  if (loading) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.card}>
+          <div className={styles.cardHeader}>
+            <p className={styles.subtitle}>Loading…</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (notFound) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.card}>
+          <div className={styles.cardHeader}>
+            <Link to="/recipes" className={styles.backLink}>← Back to My Recipes</Link>
+            <h1 className={styles.title}>Recipe not found</h1>
+            <p className={styles.subtitle}>This recipe doesn't exist or you don't have permission to edit it.</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className={styles.page}>
       <div className={styles.card}>
         <div className={styles.cardHeader}>
-          <Link to="/recipes" className={styles.backLink}>← Back to My Recipes</Link>
-          <h1 className={styles.title}>Add New Recipe</h1>
-          <p className={styles.subtitle}>Share your BBQ mastery with the community</p>
+          <Link to={`/recipes/${id}`} className={styles.backLink}>← Back to Recipe</Link>
+          <h1 className={styles.title}>Edit Recipe</h1>
+          <p className={styles.subtitle}>Update your BBQ masterpiece</p>
         </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>
@@ -243,9 +307,9 @@ export default function NewRecipe() {
           {error && <p className={styles.error}>{error}</p>}
 
           <div className={styles.formActions}>
-            <Link to="/recipes" className={styles.cancelBtn}>Cancel</Link>
+            <Link to={`/recipes/${id}`} className={styles.cancelBtn}>Cancel</Link>
             <button type="submit" className={styles.submitBtn} disabled={isSubmitting}>
-              {uploading ? 'Uploading image…' : saving ? 'Saving…' : 'Save Recipe'}
+              {uploading ? 'Uploading image…' : saving ? 'Saving…' : 'Save Changes'}
             </button>
           </div>
         </form>

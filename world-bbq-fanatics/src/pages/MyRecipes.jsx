@@ -26,7 +26,7 @@ export default function MyRecipes() {
     if (!user) return
     const { data } = await supabase
       .from('recipes')
-      .select('id, title, description, visibility, created_at, flames(id)')
+      .select('id, title, description, image_url, visibility, created_at, flames(id)')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
     setRecipes(data ?? [])
@@ -75,6 +75,11 @@ export default function MyRecipes() {
             const v = vis(recipe.visibility)
             return (
               <div key={recipe.id} className={styles.card}>
+                {recipe.image_url ? (
+                  <img src={recipe.image_url} className={styles.cardThumb} alt={recipe.title} />
+                ) : (
+                  <div className={styles.cardThumbPlaceholder}>🔥</div>
+                )}
                 <div className={styles.cardMain}>
                   <div className={styles.cardTop}>
                     <span className={`${styles.badge} ${styles[v.cls]}`}>{v.label}</span>

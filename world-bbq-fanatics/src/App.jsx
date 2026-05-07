@@ -8,6 +8,7 @@ import AppLayout from './components/AppLayout'
 import Dashboard from './pages/Dashboard'
 import MyRecipes from './pages/MyRecipes'
 import NewRecipe from './pages/NewRecipe'
+import EditRecipe from './pages/EditRecipe'
 import RecipeDetail from './pages/RecipeDetail'
 import UserProfile from './pages/UserProfile'
 import EditProfile from './pages/EditProfile'
@@ -34,8 +35,9 @@ export default function App() {
           <Route path="/profile/edit"      element={<EditProfile />} />
           <Route path="/profile/:username" element={<UserProfile />} />
           <Route path="/recipes"         element={<MyRecipes />} />
-          <Route path="/recipes/new"     element={<NewRecipe />} />
-          <Route path="/recipes/:id"     element={<RecipeDetail />} />
+          <Route path="/recipes/new"        element={<NewRecipe />} />
+          <Route path="/recipes/:id/edit" element={<EditRecipe />} />
+          <Route path="/recipes/:id"      element={<RecipeDetail />} />
           <Route path="/community"        element={<Community />} />
           <Route path="/community/:id"   element={<ChannelChat />} />
           <Route path="/chat"            element={<Chat />} />
