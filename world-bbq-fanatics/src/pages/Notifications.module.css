@@ -1,0 +1,153 @@
+.page {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 40px 24px 64px;
+}
+
+.header {
+  margin-bottom: 28px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  letter-spacing: -0.4px;
+}
+
+/* ── List ── */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* ── Notification item ── */
+.item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: background 0.12s;
+  position: relative;
+}
+
+.item:hover {
+  background: #1e1e1e;
+}
+
+.itemUnread {
+  background: rgba(255, 107, 26, 0.05);
+  border: 1px solid rgba(255, 107, 26, 0.12);
+}
+
+.itemUnread:hover {
+  background: rgba(255, 107, 26, 0.09);
+}
+
+.itemRead {
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+/* ── Avatar ── */
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.avatarInitials {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ff6b1a;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Item body ── */
+.itemBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.itemText {
+  font-size: 14px;
+  color: #ccc;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.flameIcon {
+  margin-right: 4px;
+}
+
+.username {
+  color: #f0f0f0;
+  font-weight: 700;
+}
+
+.recipeTitle {
+  color: #ff6b1a;
+  font-weight: 600;
+}
+
+.time {
+  font-size: 12px;
+  color: #555;
+}
+
+/* ── Unread dot ── */
+.unreadDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff6b1a;
+  flex-shrink: 0;
+}
+
+/* ── Empty state ── */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  text-align: center;
+  gap: 12px;
+}
+
+.emptyIcon {
+  font-size: 52px;
+}
+
+.emptyTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #f0f0f0;
+  margin: 0;
+}
+
+.emptyText {
+  font-size: 15px;
+  color: #666;
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .page { padding: 24px 16px 48px; }
+}

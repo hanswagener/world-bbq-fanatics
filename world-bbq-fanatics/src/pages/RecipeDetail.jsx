@@ -73,6 +73,16 @@ export default function RecipeDetail() {
       setHasFlamed(true)
       setFlameCount(c => c + 1)
       await supabase.from('flames').insert({ recipe_id: id, user_id: user.id })
+
+      if (recipe.user_id !== user.id) {
+        supabase.from('notifications').insert({
+          user_id: recipe.user_id,
+          from_user_id: user.id,
+          type: 'flame',
+          recipe_id: id,
+          read: false,
+        })
+      }
     }
     setFlamePending(false)
   }

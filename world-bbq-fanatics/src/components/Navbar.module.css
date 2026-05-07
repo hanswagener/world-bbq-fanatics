@@ -83,6 +83,63 @@
 
 .searchLink:hover { color: #ff6b1a; }
 
+/* ── Bell / notifications ── */
+.bellLink {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.bellIcon {
+  font-size: 18px;
+  filter: grayscale(0.3);
+  transition: filter 0.15s, transform 0.15s;
+}
+
+.bellLink:hover .bellIcon {
+  filter: grayscale(0);
+  transform: rotate(-10deg);
+}
+
+.bellBadge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 9999px;
+  background: #e53e3e;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+.mobileBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9999px;
+  background: #e53e3e;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  margin-left: 8px;
+  box-sizing: border-box;
+}
+
 /* ── Right section ── */
 .right {
   display: flex;

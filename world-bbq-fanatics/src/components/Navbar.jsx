@@ -24,10 +24,11 @@ function Avatar({ profile, size = 32 }) {
 }
 
 export default function Navbar() {
-  const { profile } = useAuth()
+  const { profile, user } = useAuth()
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
   const dropdownRef = useRef(null)
 
   useEffect(() => {
@@ -39,6 +40,33 @@ export default function Navbar() {
     document.addEventListener('mousedown', onOutsideClick)
     return () => document.removeEventListener('mousedown', onOutsideClick)
   }, [])
+
+  useEffect(() => {
+    if (!user) return
+
+    async function fetchCount() {
+      const { count } = await supabase
+        .from('notifications')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('read', false)
+      setUnreadCount(count ?? 0)
+    }
+
+    fetchCount()
+
+    const channel = supabase
+      .channel(`navbar-notifs:${user.id}`)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'notifications',
+        filter: `user_id=eq.${user.id}`,
+      }, fetchCount)
+      .subscribe()
+
+    return () => supabase.removeChannel(channel)
+  }, [user])
 
   async function handleSignOut() {
     setDropdownOpen(false)
@@ -81,6 +109,16 @@ export default function Navbar() {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
+        </Link>
+
+        {/* Bell / notifications icon */}
+        <Link to="/notifications" className={styles.bellLink} aria-label="Notifications">
+          <span className={styles.bellIcon}>🔔</span>
+          {unreadCount > 0 && (
+            <span className={styles.bellBadge}>
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </span>
+          )}
         </Link>
 
         {/* Right: user dropdown + hamburger */}
@@ -142,6 +180,9 @@ export default function Navbar() {
             {label}
           </NavLink>
         ))}
+        <NavLink to="/notifications" className={styles.mobileLink} onClick={closeMobile}>
+          🔔 Notifications{unreadCount > 0 && <span className={styles.mobileBadge}>{unreadCount}</span>}
+        </NavLink>
         <div className={styles.mobileDivider} />
         <div className={styles.mobileUser}>
           <Avatar profile={profile} size={28} />

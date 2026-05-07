@@ -17,6 +17,7 @@ import ChannelChat from './pages/ChannelChat'
 import Chat from './pages/Chat'
 import PrivateChat from './pages/PrivateChat'
 import Search from './pages/Search'
+import Notifications from './pages/Notifications'
 
 export default function App() {
   return (
@@ -43,6 +44,7 @@ export default function App() {
           <Route path="/chat"            element={<Chat />} />
           <Route path="/chat/:id"        element={<PrivateChat />} />
           <Route path="/search"          element={<Search />} />
+          <Route path="/notifications"   element={<Notifications />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/login" replace />} />

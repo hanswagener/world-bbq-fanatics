@@ -110,6 +110,17 @@ export default function Dashboard() {
         .eq('user_id', user.id)
     } else {
       await supabase.from('flames').insert({ recipe_id: recipeId, user_id: user.id })
+
+      const recipe = recipes.find(r => r.id === recipeId)
+      if (recipe && recipe.user_id !== user.id) {
+        supabase.from('notifications').insert({
+          user_id: recipe.user_id,
+          from_user_id: user.id,
+          type: 'flame',
+          recipe_id: recipeId,
+          read: false,
+        })
+      }
     }
 
     fetchRecipes()
