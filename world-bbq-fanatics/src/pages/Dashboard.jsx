@@ -101,7 +101,7 @@ export default function Dashboard() {
     if (!user) return
 
     const { data: followData } = await supabase
-      .from('follows')
+      .from('user_follows')
       .select('following_id')
       .eq('follower_id', user.id)
 

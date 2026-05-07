@@ -125,8 +125,8 @@ export default function UserProfile() {
 
       // Follower / following counts (run in parallel)
       const [{ data: fwrs }, { data: fwng }] = await Promise.all([
-        supabase.from('follows').select('id').eq('following_id', profileData.id),
-        supabase.from('follows').select('id').eq('follower_id',  profileData.id),
+        supabase.from('user_follows').select('id').eq('following_id', profileData.id),
+        supabase.from('user_follows').select('id').eq('follower_id',  profileData.id),
       ])
       setFollowerCount(fwrs?.length ?? 0)
       setFollowingCount(fwng?.length ?? 0)
@@ -150,7 +150,7 @@ export default function UserProfile() {
       console.log('Following:', profile.id)
 
       const { data } = await supabase
-        .from('follows')
+        .from('user_follows')
         .select('id')
         .eq('follower_id',  user.id)
         .eq('following_id', profile.id)
@@ -169,14 +169,14 @@ export default function UserProfile() {
 
     if (isFollowing) {
       await supabase
-        .from('follows')
+        .from('user_follows')
         .delete()
         .eq('follower_id',  user.id)
         .eq('following_id', profile.id)
       setIsFollowing(false)
       setFollowerCount(c => Math.max(0, c - 1))
     } else {
-      await supabase.from('follows').insert({
+      await supabase.from('user_follows').insert({
         follower_id:  user.id,
         following_id: profile.id,
       })
