@@ -304,3 +304,17 @@
   color: #666;
   margin: 0;
 }
+
+.findPeopleLink {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ff6b1a;
+  text-decoration: none;
+  transition: color 0.12s;
+}
+
+.findPeopleLink:hover {
+  color: #e55c0f;
+}

@@ -240,6 +240,7 @@ export default function Dashboard() {
             <span className={styles.emptyIcon}>🍖</span>
             <h2 className={styles.emptyTitle}>No one followed yet</h2>
             <p className={styles.emptyText}>Follow some BBQ fanatics to see their recipes here!</p>
+            <Link to="/search" className={styles.findPeopleLink}>Find people to follow →</Link>
           </div>
         ) : followingRecipes.length === 0 ? (
           <div className={styles.emptyState}>

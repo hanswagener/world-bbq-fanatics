@@ -206,9 +206,28 @@ export default function UserProfile() {
         </div>
 
         <div className={styles.profileMain}>
+          {/* Name + skill badge — no button here so wrapping can't hide it */}
           <div className={styles.profileNameRow}>
             <h1 className={styles.username}>{profile.username}</h1>
             {profile.skill_level && <SkillBadge level={profile.skill_level} />}
+          </div>
+
+          {profile.bio && <p className={styles.bio}>{profile.bio}</p>}
+
+          {/* Stats + action button always on the same dedicated row */}
+          <div className={styles.profileActionsRow}>
+            <div className={styles.statsRow}>
+              <span className={styles.stat}>
+                <strong className={styles.statNum}>{followerCount}</strong>
+                <span className={styles.statLabel}> followers</span>
+              </span>
+              <span className={styles.statSep}>·</span>
+              <span className={styles.stat}>
+                <strong className={styles.statNum}>{followingCount}</strong>
+                <span className={styles.statLabel}> following</span>
+              </span>
+            </div>
+
             {isOwnProfile ? (
               <Link to="/profile/edit" className={styles.editBtn}>Edit Profile</Link>
             ) : (
@@ -217,24 +236,9 @@ export default function UserProfile() {
                 onClick={handleFollow}
                 disabled={followLoading}
               >
-                {followLoading ? '…' : isFollowing ? 'Unfollow' : 'Follow'}
+                {followLoading ? '…' : isFollowing ? '✓ Following' : '+ Follow'}
               </button>
             )}
-          </div>
-
-          {profile.bio && <p className={styles.bio}>{profile.bio}</p>}
-
-          {/* Follower / following counts */}
-          <div className={styles.statsRow}>
-            <span className={styles.stat}>
-              <strong className={styles.statNum}>{followerCount}</strong>
-              <span className={styles.statLabel}> followers</span>
-            </span>
-            <span className={styles.statSep}>·</span>
-            <span className={styles.stat}>
-              <strong className={styles.statNum}>{followingCount}</strong>
-              <span className={styles.statLabel}> following</span>
-            </span>
           </div>
 
           <div className={styles.metaRow}>
