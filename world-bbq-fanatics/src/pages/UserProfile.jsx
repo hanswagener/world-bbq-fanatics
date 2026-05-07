@@ -131,34 +131,37 @@ export default function UserProfile() {
       setFollowerCount(fwrs?.length ?? 0)
       setFollowingCount(fwng?.length ?? 0)
 
-      // Check whether the current user is already following this profile.
-      // Only runs for other people's profiles.
-      const ownProfile = isMe || profileData.id === user.id
-      console.log('[Follow check] current user.id:', user.id)
-      console.log('[Follow check] profile user.id:', profileData.id)
-      console.log('[Follow check] ownProfile:', ownProfile)
-      if (!ownProfile) {
-        const { data: fwRows, error: fwError } = await supabase
-          .from('follows')
-          .select('id')
-          .eq('follower_id',  user.id)
-          .eq('following_id', profileData.id)
-          .limit(1)
-
-        console.log('[Follow check] query result — data:', fwRows, '| error:', fwError)
-        console.log('[Follow check] setting isFollowing to:', (fwRows?.length ?? 0) > 0)
-        if (fwError) {
-          console.error('[UserProfile] follow-check error:', fwError.message)
-        } else {
-          setIsFollowing(fwRows.length > 0)
-        }
-      }
-
       setLoading(false)
     }
 
     load()
   }, [username, isMe, user, navigate])
+
+  // Separate effect so the follow check re-runs whenever the profile or
+  // the logged-in user changes, with profileId as an explicit dependency.
+  useEffect(() => {
+    if (!user || !profile) return
+
+    const ownProfile = isMe || profile.id === user.id
+    if (ownProfile) return
+
+    async function checkFollowStatus() {
+      console.log('Checking follow status for follower:', user.id)
+      console.log('Following:', profile.id)
+
+      const { data } = await supabase
+        .from('follows')
+        .select('id')
+        .eq('follower_id',  user.id)
+        .eq('following_id', profile.id)
+        .maybeSingle()
+
+      console.log('Follow record found:', data)
+      setIsFollowing(!!data)
+    }
+
+    checkFollowStatus()
+  }, [profile?.id, user?.id, isMe])
 
   async function handleFollow() {
     if (!user || !profile || followLoading) return
@@ -257,7 +260,7 @@ export default function UserProfile() {
                 onClick={handleFollow}
                 disabled={followLoading}
               >
-                {followLoading ? '…' : isFollowing ? '✓ Following' : '+ Follow'}
+                {followLoading ? '…' : isFollowing ? 'Following' : '+ Follow'}
               </button>
             )}
           </div>
