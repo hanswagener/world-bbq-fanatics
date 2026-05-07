@@ -42,19 +42,24 @@ export default function Navbar() {
   }, [])
 
   useEffect(() => {
+    console.log('[Notifications] user from useAuth:', user?.id ?? 'null — effect will exit early')
     if (!user) return
 
     async function fetchCount() {
+      console.log('[Notifications] querying notifications for user_id:', user.id)
       const { data, error } = await supabase
         .from('notifications')
         .select('id')
         .eq('user_id', user.id)
         .eq('read', false)
+      console.log('[Notifications] query result — data:', data, '| error:', error)
       if (error) {
-        console.error('[Notifications] fetchCount error:', error.message)
+        console.error('[Notifications] fetchCount failed:', error.message)
         return
       }
-      setUnreadCount(data?.length ?? 0)
+      const count = data?.length ?? 0
+      console.log('[Notifications] setting unreadCount to:', count)
+      setUnreadCount(count)
     }
 
     fetchCount()
@@ -66,13 +71,21 @@ export default function Navbar() {
         schema: 'public',
         table: 'notifications',
         filter: `user_id=eq.${user.id}`,
-      }, fetchCount)
+      }, (payload) => {
+        console.log('[Notifications] realtime event received:', payload)
+        fetchCount()
+      })
       .subscribe(status => {
+        console.log('[Notifications] realtime subscription status:', status)
         if (status === 'SUBSCRIBED') fetchCount()
       })
 
     return () => supabase.removeChannel(channel)
   }, [user])
+
+  useEffect(() => {
+    console.log('[Notifications] unreadCount is now:', unreadCount)
+  }, [unreadCount])
 
   async function handleSignOut() {
     setDropdownOpen(false)

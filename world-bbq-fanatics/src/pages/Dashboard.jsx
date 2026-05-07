@@ -112,14 +112,18 @@ export default function Dashboard() {
       await supabase.from('flames').insert({ recipe_id: recipeId, user_id: user.id })
 
       const recipe = recipes.find(r => r.id === recipeId)
+      console.log('[Flame] recipe found:', recipe?.id, '| owner:', recipe?.user_id, '| current user:', user.id)
       if (recipe && recipe.user_id !== user.id) {
-        supabase.from('notifications').insert({
+        const { error: notifError } = await supabase.from('notifications').insert({
           user_id: recipe.user_id,
           from_user_id: user.id,
           type: 'flame',
           recipe_id: recipeId,
           read: false,
         })
+        console.log('[Flame] notification insert result — error:', notifError)
+      } else {
+        console.log('[Flame] skipping notification — own recipe or recipe not found')
       }
     }
 
