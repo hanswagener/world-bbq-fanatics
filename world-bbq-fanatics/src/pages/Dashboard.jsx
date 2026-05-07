@@ -68,41 +68,80 @@ function RecipeCard({ recipe, currentUserId, onFlameToggle }) {
   )
 }
 
+const RECIPE_SELECT = `
+  id, title, description, image_url, visibility, created_at, user_id,
+  profiles(username, avatar_url),
+  flames(id, user_id)
+`
+
 export default function Dashboard() {
   const { user } = useAuth()
+  const [activeTab, setActiveTab] = useState('all')
+
+  // All-recipes tab
   const [recipes, setRecipes] = useState([])
   const [loading, setLoading] = useState(true)
+
+  // Following tab
+  const [followingRecipes, setFollowingRecipes] = useState([])
+  const [loadingFollowing, setLoadingFollowing] = useState(true)
+  const [noFollows, setNoFollows] = useState(false)
 
   const fetchRecipes = useCallback(async () => {
     const { data } = await supabase
       .from('recipes')
-      .select(`
-        id, title, description, image_url, visibility, created_at, user_id,
-        profiles(username, avatar_url),
-        flames(id, user_id)
-      `)
+      .select(RECIPE_SELECT)
       .eq('visibility', 'public')
       .order('created_at', { ascending: false })
-
     setRecipes(data ?? [])
     setLoading(false)
   }, [])
 
-  useEffect(() => {
-    fetchRecipes()
-  }, [fetchRecipes])
+  const fetchFollowingRecipes = useCallback(async () => {
+    if (!user) return
+
+    const { data: followData } = await supabase
+      .from('follows')
+      .select('following_id')
+      .eq('follower_id', user.id)
+
+    if (!followData || followData.length === 0) {
+      setNoFollows(true)
+      setFollowingRecipes([])
+      setLoadingFollowing(false)
+      return
+    }
+
+    setNoFollows(false)
+    const ids = followData.map(f => f.following_id)
+
+    const { data } = await supabase
+      .from('recipes')
+      .select(RECIPE_SELECT)
+      .in('user_id', ids)
+      .eq('visibility', 'public')
+      .order('created_at', { ascending: false })
+
+    setFollowingRecipes(data ?? [])
+    setLoadingFollowing(false)
+  }, [user])
+
+  useEffect(() => { fetchRecipes() }, [fetchRecipes])
+  useEffect(() => { fetchFollowingRecipes() }, [fetchFollowingRecipes])
 
   async function handleFlameToggle(recipeId, hasFlamed) {
     if (!user) return
 
-    // Optimistic update
-    setRecipes(prev => prev.map(r => {
+    // Optimistic update on both arrays
+    const applyUpdate = prev => prev.map(r => {
       if (r.id !== recipeId) return r
       const flames = hasFlamed
         ? r.flames.filter(f => f.user_id !== user.id)
         : [...r.flames, { id: 'optimistic', user_id: user.id }]
       return { ...r, flames }
-    }))
+    })
+    setRecipes(applyUpdate)
+    setFollowingRecipes(applyUpdate)
 
     if (hasFlamed) {
       await supabase.from('flames').delete()
@@ -111,15 +150,17 @@ export default function Dashboard() {
     } else {
       await supabase.from('flames').insert({ recipe_id: recipeId, user_id: user.id })
 
-      const recipe = recipes.find(r => r.id === recipeId)
+      const recipe =
+        recipes.find(r => r.id === recipeId) ||
+        followingRecipes.find(r => r.id === recipeId)
       console.log('[Flame] recipe found:', recipe?.id, '| owner:', recipe?.user_id, '| current user:', user.id)
       if (recipe && recipe.user_id !== user.id) {
         const { error: notifError } = await supabase.from('notifications').insert({
-          user_id: recipe.user_id,
+          user_id:      recipe.user_id,
           from_user_id: user.id,
-          type: 'flame',
-          recipe_id: recipeId,
-          read: false,
+          type:         'flame',
+          recipe_id:    recipeId,
+          read:         false,
         })
         console.log('[Flame] notification insert result — error:', notifError)
       } else {
@@ -128,6 +169,22 @@ export default function Dashboard() {
     }
 
     fetchRecipes()
+    fetchFollowingRecipes()
+  }
+
+  function RecipeGrid({ items }) {
+    return (
+      <div className={styles.grid}>
+        {items.map(recipe => (
+          <RecipeCard
+            key={recipe.id}
+            recipe={recipe}
+            currentUserId={user?.id}
+            onFlameToggle={handleFlameToggle}
+          />
+        ))}
+      </div>
+    )
   }
 
   return (
@@ -137,28 +194,62 @@ export default function Dashboard() {
         <p className={styles.feedSubtitle}>Fresh BBQ recipes from the community</p>
       </div>
 
-      {loading ? (
-        <div className={styles.emptyState}>
-          <span className={styles.emptyIcon}>🔥</span>
-          <p className={styles.emptyText}>Loading recipes…</p>
-        </div>
-      ) : recipes.length === 0 ? (
-        <div className={styles.emptyState}>
-          <span className={styles.emptyIcon}>🍖</span>
-          <h2 className={styles.emptyTitle}>The grill is cold…</h2>
-          <p className={styles.emptyText}>No recipes yet. Be the first to fire one up!</p>
-        </div>
-      ) : (
-        <div className={styles.grid}>
-          {recipes.map(recipe => (
-            <RecipeCard
-              key={recipe.id}
-              recipe={recipe}
-              currentUserId={user?.id}
-              onFlameToggle={handleFlameToggle}
-            />
-          ))}
-        </div>
+      {/* ── Tabs ── */}
+      <div className={styles.tabs}>
+        <button
+          className={`${styles.tab} ${activeTab === 'all' ? styles.tabActive : ''}`}
+          onClick={() => setActiveTab('all')}
+        >
+          All Recipes
+        </button>
+        <button
+          className={`${styles.tab} ${activeTab === 'following' ? styles.tabActive : ''}`}
+          onClick={() => setActiveTab('following')}
+        >
+          Following
+        </button>
+      </div>
+
+      {/* ── All Recipes tab ── */}
+      {activeTab === 'all' && (
+        loading ? (
+          <div className={styles.emptyState}>
+            <span className={styles.emptyIcon}>🔥</span>
+            <p className={styles.emptyText}>Loading recipes…</p>
+          </div>
+        ) : recipes.length === 0 ? (
+          <div className={styles.emptyState}>
+            <span className={styles.emptyIcon}>🍖</span>
+            <h2 className={styles.emptyTitle}>The grill is cold…</h2>
+            <p className={styles.emptyText}>No recipes yet. Be the first to fire one up!</p>
+          </div>
+        ) : (
+          <RecipeGrid items={recipes} />
+        )
+      )}
+
+      {/* ── Following tab ── */}
+      {activeTab === 'following' && (
+        loadingFollowing ? (
+          <div className={styles.emptyState}>
+            <span className={styles.emptyIcon}>🔥</span>
+            <p className={styles.emptyText}>Loading…</p>
+          </div>
+        ) : noFollows ? (
+          <div className={styles.emptyState}>
+            <span className={styles.emptyIcon}>🍖</span>
+            <h2 className={styles.emptyTitle}>No one followed yet</h2>
+            <p className={styles.emptyText}>Follow some BBQ fanatics to see their recipes here!</p>
+          </div>
+        ) : followingRecipes.length === 0 ? (
+          <div className={styles.emptyState}>
+            <span className={styles.emptyIcon}>🍖</span>
+            <h2 className={styles.emptyTitle}>Nothing on the grill yet</h2>
+            <p className={styles.emptyText}>The people you follow haven't posted any recipes yet.</p>
+          </div>
+        ) : (
+          <RecipeGrid items={followingRecipes} />
+        )
       )}
     </div>
   )

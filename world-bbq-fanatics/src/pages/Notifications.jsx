@@ -32,14 +32,37 @@ function NotifAvatar({ profile }) {
 
 function NotifItem({ notif }) {
   const from = notif.from_profile
-  const recipe = notif.recipe
   const username = from?.username ?? 'Someone'
-  const recipeTitle = recipe?.title ?? 'a recipe'
+  const itemClass = `${styles.item} ${notif.read ? styles.itemRead : styles.itemUnread}`
+  const unreadDot = !notif.read && <span className={styles.unreadDot} />
 
+  if (notif.type === 'follow') {
+    return (
+      <Link
+        to={from?.username ? `/profile/${from.username}` : '/dashboard'}
+        className={itemClass}
+      >
+        <NotifAvatar profile={from} />
+        <div className={styles.itemBody}>
+          <p className={styles.itemText}>
+            <span className={styles.flameIcon}>🔥</span>
+            <strong className={styles.username}>{username}</strong>
+            {' started following you'}
+          </p>
+          <span className={styles.time}>{timeAgo(notif.created_at)}</span>
+        </div>
+        {unreadDot}
+      </Link>
+    )
+  }
+
+  // type === 'flame'
+  const recipe = notif.recipe
+  const recipeTitle = recipe?.title ?? 'a recipe'
   return (
     <Link
       to={recipe?.id ? `/recipes/${recipe.id}` : '/dashboard'}
-      className={`${styles.item} ${notif.read ? styles.itemRead : styles.itemUnread}`}
+      className={itemClass}
     >
       <NotifAvatar profile={from} />
       <div className={styles.itemBody}>
@@ -51,7 +74,7 @@ function NotifItem({ notif }) {
         </p>
         <span className={styles.time}>{timeAgo(notif.created_at)}</span>
       </div>
-      {!notif.read && <span className={styles.unreadDot} />}
+      {unreadDot}
     </Link>
   )
 }

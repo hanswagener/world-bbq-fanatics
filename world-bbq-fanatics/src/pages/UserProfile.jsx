@@ -65,34 +65,33 @@ export default function UserProfile() {
 
   const isMe = username === 'me'
 
-  const [profile,  setProfile]  = useState(null)
-  const [recipes,  setRecipes]  = useState([])
-  const [loading,  setLoading]  = useState(true)
-  const [notFound, setNotFound] = useState(false)
+  const [profile,      setProfile]      = useState(null)
+  const [recipes,      setRecipes]      = useState([])
+  const [loading,      setLoading]      = useState(true)
+  const [notFound,     setNotFound]     = useState(false)
+  const [isFollowing,  setIsFollowing]  = useState(false)
+  const [followerCount, setFollowerCount] = useState(0)
+  const [followingCount, setFollowingCount] = useState(0)
+  const [followLoading, setFollowLoading] = useState(false)
 
   useEffect(() => {
-    // Wait until the auth user is available
     if (!user) return
 
     async function load() {
       let profileData
 
       if (isMe) {
-        // Always fetch by auth user id — never rely on context cache
         const { data } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
           .maybeSingle()
         profileData = data
-
-        // No profile yet — send them to setup instead of showing "not found"
         if (!profileData) {
           navigate('/profile-setup', { replace: true })
           return
         }
       } else {
-        // Public profile — fetch by username column
         const { data } = await supabase
           .from('profiles')
           .select('*')
@@ -110,18 +109,68 @@ export default function UserProfile() {
         .select('id, title, description, image_url, visibility, created_at, flames(id)')
         .eq('user_id', profileData.id)
         .order('created_at', { ascending: false })
-
-      if (!isMe) {
-        query = query.eq('visibility', 'public')
-      }
-
+      if (!isMe) query = query.eq('visibility', 'public')
       const { data: recipesData } = await query
       setRecipes(recipesData ?? [])
+
+      // Follower / following counts (run in parallel)
+      const [{ data: fwrs }, { data: fwng }] = await Promise.all([
+        supabase.from('follows').select('id').eq('following_id', profileData.id),
+        supabase.from('follows').select('id').eq('follower_id',  profileData.id),
+      ])
+      setFollowerCount(fwrs?.length ?? 0)
+      setFollowingCount(fwng?.length ?? 0)
+
+      // Is current user following this profile?
+      const ownProfile = isMe || profileData.id === user.id
+      if (!ownProfile) {
+        const { data: fwCheck } = await supabase
+          .from('follows')
+          .select('id')
+          .eq('follower_id',  user.id)
+          .eq('following_id', profileData.id)
+          .maybeSingle()
+        setIsFollowing(!!fwCheck)
+      }
+
       setLoading(false)
     }
 
     load()
   }, [username, isMe, user, navigate])
+
+  async function handleFollow() {
+    if (!user || !profile || followLoading) return
+    setFollowLoading(true)
+
+    if (isFollowing) {
+      await supabase
+        .from('follows')
+        .delete()
+        .eq('follower_id',  user.id)
+        .eq('following_id', profile.id)
+      setIsFollowing(false)
+      setFollowerCount(c => Math.max(0, c - 1))
+    } else {
+      await supabase.from('follows').insert({
+        follower_id:  user.id,
+        following_id: profile.id,
+      })
+      setIsFollowing(true)
+      setFollowerCount(c => c + 1)
+
+      // Notify the followed user
+      await supabase.from('notifications').insert({
+        user_id:      profile.id,
+        from_user_id: user.id,
+        type:         'follow',
+        recipe_id:    null,
+        read:         false,
+      })
+    }
+
+    setFollowLoading(false)
+  }
 
   if (loading) {
     return (
@@ -142,6 +191,8 @@ export default function UserProfile() {
     )
   }
 
+  const isOwnProfile = isMe || (user && profile && user.id === profile.id)
+
   return (
     <div className={styles.page}>
 
@@ -158,12 +209,33 @@ export default function UserProfile() {
           <div className={styles.profileNameRow}>
             <h1 className={styles.username}>{profile.username}</h1>
             {profile.skill_level && <SkillBadge level={profile.skill_level} />}
-            {isMe && (
+            {isOwnProfile ? (
               <Link to="/profile/edit" className={styles.editBtn}>Edit Profile</Link>
+            ) : (
+              <button
+                className={`${styles.followBtn} ${isFollowing ? styles.followBtnActive : ''}`}
+                onClick={handleFollow}
+                disabled={followLoading}
+              >
+                {followLoading ? '…' : isFollowing ? 'Unfollow' : 'Follow'}
+              </button>
             )}
           </div>
 
           {profile.bio && <p className={styles.bio}>{profile.bio}</p>}
+
+          {/* Follower / following counts */}
+          <div className={styles.statsRow}>
+            <span className={styles.stat}>
+              <strong className={styles.statNum}>{followerCount}</strong>
+              <span className={styles.statLabel}> followers</span>
+            </span>
+            <span className={styles.statSep}>·</span>
+            <span className={styles.stat}>
+              <strong className={styles.statNum}>{followingCount}</strong>
+              <span className={styles.statLabel}> following</span>
+            </span>
+          </div>
 
           <div className={styles.metaRow}>
             {profile.location  && <span className={styles.meta}>📍 {profile.location}</span>}

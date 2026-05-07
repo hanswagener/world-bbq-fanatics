@@ -23,6 +23,38 @@
   margin: 0;
 }
 
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid #222;
+  padding-bottom: 0;
+}
+
+.tab {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  border-radius: 0;
+}
+
+.tab:hover {
+  color: #ccc;
+}
+
+.tabActive {
+  color: #ff6b1a;
+  border-bottom-color: #ff6b1a;
+}
+
 /* ── Recipe grid ── */
 .grid {
   display: grid;
