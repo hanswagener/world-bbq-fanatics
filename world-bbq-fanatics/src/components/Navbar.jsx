@@ -45,25 +45,31 @@ export default function Navbar() {
     if (!user) return
 
     async function fetchCount() {
-      const { count } = await supabase
+      const { data, error } = await supabase
         .from('notifications')
-        .select('id', { count: 'exact', head: true })
+        .select('id')
         .eq('user_id', user.id)
         .eq('read', false)
-      setUnreadCount(count ?? 0)
+      if (error) {
+        console.error('[Notifications] fetchCount error:', error.message)
+        return
+      }
+      setUnreadCount(data?.length ?? 0)
     }
 
     fetchCount()
 
     const channel = supabase
-      .channel(`navbar-notifs:${user.id}`)
+      .channel(`navbar_notifs_${user.id}`)
       .on('postgres_changes', {
         event: '*',
         schema: 'public',
         table: 'notifications',
         filter: `user_id=eq.${user.id}`,
       }, fetchCount)
-      .subscribe()
+      .subscribe(status => {
+        if (status === 'SUBSCRIBED') fetchCount()
+      })
 
     return () => supabase.removeChannel(channel)
   }, [user])
