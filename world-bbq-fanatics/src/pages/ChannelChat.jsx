@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../supabase'
 import { useAuth } from '../context/AuthContext'
 import styles from './ChannelChat.module.css'
@@ -33,16 +33,19 @@ function MessageAvatar({ profile }) {
 export default function ChannelChat() {
   const { id } = useParams()
   const { user, profile: myProfile } = useAuth()
+  const navigate = useNavigate()
 
-  const [channel,  setChannel]  = useState(null)
-  const [messages, setMessages] = useState([])
-  const [loading,  setLoading]  = useState(true)
-  const [text,     setText]     = useState('')
-  const [sending,  setSending]  = useState(false)
+  const [channel,       setChannel]       = useState(null)
+  const [messages,      setMessages]      = useState([])
+  const [loading,       setLoading]       = useState(true)
+  const [isMember,      setIsMember]      = useState(false)
+  const [memberChecked, setMemberChecked] = useState(false)
+  const [text,          setText]          = useState('')
+  const [sending,       setSending]       = useState(false)
 
-  const bottomRef    = useRef(null)
-  const inputRef     = useRef(null)
-  const isFirstLoad  = useRef(true)
+  const bottomRef   = useRef(null)
+  const inputRef    = useRef(null)
+  const isFirstLoad = useRef(true)
 
   // Fetch channel info
   useEffect(() => {
@@ -54,12 +57,35 @@ export default function ChannelChat() {
       .then(({ data }) => setChannel(data))
   }, [id])
 
+  // Check membership
+  useEffect(() => {
+    if (!user) {
+      setMemberChecked(true)
+      return
+    }
+    supabase
+      .from('channel_members')
+      .select('channel_id')
+      .eq('channel_id', id)
+      .eq('user_id', user.id)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (error) console.error('[ChannelChat] membership check error:', error.message)
+        setIsMember(!!data)
+        setMemberChecked(true)
+      })
+      .catch(err => {
+        console.error('[ChannelChat] membership check threw:', err)
+        setMemberChecked(true)
+      })
+  }, [id, user])
+
   // Load initial messages
   useEffect(() => {
     async function loadMessages() {
       const { data } = await supabase
         .from('channel_messages')
-        .select('id, content, created_at, user_id, profiles(username, avatar_url)')
+        .select('id, content, created_at, user_id, is_system, profiles(username, avatar_url)')
         .eq('channel_id', id)
         .order('created_at', { ascending: true })
         .limit(200)
@@ -83,16 +109,14 @@ export default function ChannelChat() {
           filter: `channel_id=eq.${id}`,
         },
         async (payload) => {
-          // Fetch the full row with profile join so we have username/avatar
           const { data } = await supabase
             .from('channel_messages')
-            .select('id, content, created_at, user_id, profiles(username, avatar_url)')
+            .select('id, content, created_at, user_id, is_system, profiles(username, avatar_url)')
             .eq('id', payload.new.id)
             .maybeSingle()
 
           if (data) {
             setMessages(prev => {
-              // Deduplicate — optimistic message may already be present
               if (prev.some(m => m.id === data.id)) return prev
               return [...prev, data]
             })
@@ -115,10 +139,34 @@ export default function ChannelChat() {
     }
   }, [messages, loading])
 
+  async function handleJoin() {
+    if (!user) return
+    await supabase.from('channel_members').insert({ channel_id: id, user_id: user.id })
+    await supabase.from('channel_messages').insert({
+      channel_id: id,
+      user_id:    user.id,
+      content:    `👋 ${myProfile?.username ?? 'Someone'} joined the channel`,
+      is_system:  true,
+    })
+    setIsMember(true)
+  }
+
+  async function handleLeave() {
+    if (!window.confirm(`Leave #${channel?.name}?`)) return
+    await supabase.from('channel_messages').insert({
+      channel_id: id,
+      user_id:    user.id,
+      content:    `👋 ${myProfile?.username ?? 'Someone'} left the channel`,
+      is_system:  true,
+    })
+    await supabase.from('channel_members').delete().eq('channel_id', id).eq('user_id', user.id)
+    navigate('/community')
+  }
+
   async function handleSend(e) {
     e.preventDefault()
     const content = text.trim()
-    if (!content || sending) return
+    if (!content || sending || !isMember) return
 
     setSending(true)
     setText('')
@@ -152,6 +200,11 @@ export default function ChannelChat() {
             <p className={styles.channelDesc}>{channel.description}</p>
           )}
         </div>
+        {memberChecked && isMember && (
+          <button className={styles.leaveBtn} onClick={handleLeave} title="Leave channel">
+            🚪 Leave
+          </button>
+        )}
       </div>
 
       {/* ── Messages ── */}
@@ -167,9 +220,18 @@ export default function ChannelChat() {
           </div>
         ) : (
           messages.map((msg, i) => {
-            const isMe      = msg.user_id === user?.id
-            const prevMsg   = messages[i - 1]
-            const grouped   = prevMsg?.user_id === msg.user_id &&
+            if (msg.is_system) {
+              return (
+                <div key={msg.id} className={styles.msgSystem}>
+                  {msg.content}
+                </div>
+              )
+            }
+
+            const isMe    = msg.user_id === user?.id
+            const prevMsg = messages[i - 1]
+            const grouped = !prevMsg?.is_system &&
+              prevMsg?.user_id === msg.user_id &&
               (new Date(msg.created_at) - new Date(prevMsg.created_at)) < 5 * 60 * 1000
 
             return (
@@ -203,29 +265,40 @@ export default function ChannelChat() {
         <div ref={bottomRef} />
       </div>
 
-      {/* ── Input ── */}
-      <form className={styles.inputBar} onSubmit={handleSend}>
-        <textarea
-          ref={inputRef}
-          className={styles.input}
-          value={text}
-          onChange={e => setText(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={`Message #${channel?.name ?? '…'}`}
-          rows={1}
-          disabled={sending}
-        />
-        <button
-          type="submit"
-          className={styles.sendBtn}
-          disabled={!text.trim() || sending}
-          title="Send (Enter)"
-        >
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M16 9L2 2l3 7-3 7 14-7z" fill="currentColor" />
-          </svg>
-        </button>
-      </form>
+      {/* ── Input / Join bar ── */}
+      {memberChecked && (
+        isMember ? (
+          <form className={styles.inputBar} onSubmit={handleSend}>
+            <textarea
+              ref={inputRef}
+              className={styles.input}
+              value={text}
+              onChange={e => setText(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={`Message #${channel?.name ?? '…'}`}
+              rows={1}
+              disabled={sending}
+            />
+            <button
+              type="submit"
+              className={styles.sendBtn}
+              disabled={!text.trim() || sending}
+              title="Send (Enter)"
+            >
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M16 9L2 2l3 7-3 7 14-7z" fill="currentColor" />
+              </svg>
+            </button>
+          </form>
+        ) : (
+          <div className={styles.joinBar}>
+            <p className={styles.joinBarText}>Join this channel to participate in the conversation</p>
+            <button className={styles.joinBarBtn} onClick={handleJoin}>
+              Join Channel
+            </button>
+          </div>
+        )
+      )}
     </div>
   )
 }

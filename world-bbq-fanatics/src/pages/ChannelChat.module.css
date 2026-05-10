@@ -51,6 +51,27 @@
   text-overflow: ellipsis;
 }
 
+/* ── Leave button in header ── */
+.leaveBtn {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.22);
+  border-radius: 7px;
+  padding: 7px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.15s, border-color 0.15s;
+  align-self: center;
+}
+
+.leaveBtn:hover {
+  background: rgba(248, 113, 113, 0.18);
+  border-color: #f87171;
+}
+
 /* ── Messages ── */
 .messages {
   flex: 1;
@@ -83,6 +104,51 @@
 
 .centerMsg span { font-size: 40px; }
 .centerMsg p    { margin: 0; }
+
+/* ── System messages ── */
+.msgSystem {
+  text-align: center;
+  font-size: 12px;
+  font-style: italic;
+  color: #484848;
+  padding: 6px 24px;
+  margin: 4px 0;
+  user-select: none;
+}
+
+/* ── Join bar (non-members) ── */
+.joinBar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 24px;
+  background: #1a1a1a;
+  border-top: 1px solid #2a2a2a;
+}
+
+.joinBarText {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+.joinBarBtn {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111;
+  background: #ff6b1a;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.12s;
+}
+
+.joinBarBtn:hover { background: #e55c0f; }
 
 /* ── Message row ── */
 .msgRow {
