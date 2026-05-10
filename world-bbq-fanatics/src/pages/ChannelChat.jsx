@@ -123,16 +123,6 @@ export default function ChannelChat() {
     setSending(true)
     setText('')
 
-    // Optimistic insert
-    const optimisticId = `opt-${Date.now()}`
-    setMessages(prev => [...prev, {
-      id:         optimisticId,
-      content,
-      created_at: new Date().toISOString(),
-      user_id:    user.id,
-      profiles:   myProfile,
-    }])
-
     await supabase.from('channel_messages').insert({
       channel_id: id,
       user_id:    user.id,
