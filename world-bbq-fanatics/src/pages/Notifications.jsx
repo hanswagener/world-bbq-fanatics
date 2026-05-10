@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../supabase'
 import styles from './Notifications.module.css'
@@ -126,6 +126,7 @@ function findInvite(notif, chatInvites) {
 
 export default function Notifications() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [notifications, setNotifications] = useState([])
   const [chatInvites,   setChatInvites]   = useState([])
   const [loading,       setLoading]       = useState(true)
@@ -176,7 +177,7 @@ export default function Notifications() {
       .from('chat_invites')
       .update({ status: 'accepted' })
       .eq('id', invite.id)
-    setChatInvites(prev => prev.map(i => i.id === invite.id ? { ...i, status: 'accepted' } : i))
+    navigate(`/chat/${invite.room_id}`)
   }
 
   async function handleDecline(invite) {
