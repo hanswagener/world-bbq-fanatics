@@ -236,7 +236,7 @@ export default function PrivateChat() {
     async function loadMessages() {
       const { data } = await supabase
         .from('private_messages')
-        .select('id, content, created_at, user_id, profiles(username, avatar_url)')
+        .select('id, content, created_at, user_id, is_system, profiles(username, avatar_url)')
         .eq('room_id', id)
         .order('created_at', { ascending: true })
         .limit(200)
@@ -262,7 +262,7 @@ export default function PrivateChat() {
         async (payload) => {
           const { data } = await supabase
             .from('private_messages')
-            .select('id, content, created_at, user_id, profiles(username, avatar_url)')
+            .select('id, content, created_at, user_id, is_system, profiles(username, avatar_url)')
             .eq('id', payload.new.id)
             .maybeSingle()
 
@@ -334,6 +334,14 @@ export default function PrivateChat() {
   async function handleLeave() {
     if (!window.confirm('Are you sure you want to leave this chat room?')) return
 
+    // Insert system message while still a member so RLS allows the write
+    await supabase.from('private_messages').insert({
+      room_id:   id,
+      user_id:   user.id,
+      content:   `👋 ${myProfile?.username ?? 'Someone'} has left the chat`,
+      is_system: true,
+    })
+
     await supabase
       .from('private_room_members')
       .delete()
@@ -394,9 +402,18 @@ export default function PrivateChat() {
           </div>
         ) : (
           messages.map((msg, i) => {
+            if (msg.is_system) {
+              return (
+                <div key={msg.id} className={styles.msgSystem}>
+                  {msg.content}
+                </div>
+              )
+            }
+
             const isMe    = msg.user_id === user?.id
             const prevMsg = messages[i - 1]
-            const grouped = prevMsg?.user_id === msg.user_id &&
+            const grouped = !prevMsg?.is_system &&
+              prevMsg?.user_id === msg.user_id &&
               (new Date(msg.created_at) - new Date(prevMsg.created_at)) < 5 * 60 * 1000
 
             return (

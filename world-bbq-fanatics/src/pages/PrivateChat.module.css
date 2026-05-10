@@ -182,6 +182,17 @@
 .centerMsg span { font-size: 40px; }
 .centerMsg p    { margin: 0; }
 
+/* ── System messages ── */
+.msgSystem {
+  text-align: center;
+  font-size: 12px;
+  font-style: italic;
+  color: #484848;
+  padding: 6px 24px;
+  margin: 4px 0;
+  user-select: none;
+}
+
 /* ── Message rows ── */
 .msgRow {
   display: flex;
