@@ -67,13 +67,17 @@ function InviteModal({ roomId, currentUserId, existingMemberIds, onClose, onInvi
     setSaving(true)
     setError(null)
 
-    const { error } = await supabase
-      .from('private_room_members')
-      .insert(selected.map(u => ({ room_id: roomId, user_id: u.id })))
+    const { error: inviteErr } = await supabase
+      .from('chat_invites')
+      .insert(selected.map(u => ({
+        room_id:      roomId,
+        from_user_id: currentUserId,
+        to_user_id:   u.id,
+        status:       'pending',
+      })))
 
-    if (error) { setError(error.message); setSaving(false); return }
+    if (inviteErr) { setError(inviteErr.message); setSaving(false); return }
 
-    // Notify every invited user
     await supabase.from('notifications').insert(
       selected.map(u => ({
         user_id:      u.id,
@@ -84,7 +88,6 @@ function InviteModal({ roomId, currentUserId, existingMemberIds, onClose, onInvi
       }))
     )
 
-    onInvited(selected)
     onClose()
   }
 

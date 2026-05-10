@@ -105,19 +105,26 @@ function CreateRoomModal({ currentUserId, onClose, onCreate }) {
 
     if (roomErr) { setError(roomErr.message); setSaving(false); return }
 
-    // 2. Add creator + invited users as members
-    const members = [
-      { room_id: room.id, user_id: currentUserId },
-      ...invited.map(u => ({ room_id: room.id, user_id: u.id })),
-    ]
+    // 2. Add only the creator as a member immediately
     const { error: membersErr } = await supabase
       .from('private_room_members')
-      .insert(members)
+      .insert([{ room_id: room.id, user_id: currentUserId }])
 
     if (membersErr) { setError(membersErr.message); setSaving(false); return }
 
-    // Notify every invited user
+    // 3. Create pending invites + notifications for invited users
     if (invited.length > 0) {
+      const { error: inviteErr } = await supabase
+        .from('chat_invites')
+        .insert(invited.map(u => ({
+          room_id:      room.id,
+          from_user_id: currentUserId,
+          to_user_id:   u.id,
+          status:       'pending',
+        })))
+
+      if (inviteErr) { setError(inviteErr.message); setSaving(false); return }
+
       await supabase.from('notifications').insert(
         invited.map(u => ({
           user_id:      u.id,

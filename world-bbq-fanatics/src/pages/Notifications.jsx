@@ -30,7 +30,7 @@ function NotifAvatar({ profile }) {
   )
 }
 
-function NotifItem({ notif }) {
+function NotifItem({ notif, invite, onAccept, onDecline }) {
   const from = notif.from_profile
   const username = from?.username ?? 'Someone'
   const itemClass = `${styles.item} ${notif.read ? styles.itemRead : styles.itemUnread}`
@@ -58,7 +58,7 @@ function NotifItem({ notif }) {
 
   if (notif.type === 'chat_invite') {
     return (
-      <Link to="/chat" className={itemClass}>
+      <div className={itemClass}>
         <NotifAvatar profile={from} />
         <div className={styles.itemBody}>
           <p className={styles.itemText}>
@@ -67,9 +67,26 @@ function NotifItem({ notif }) {
             {' invited you to a private chat room'}
           </p>
           <span className={styles.time}>{timeAgo(notif.created_at)}</span>
+
+          {invite?.status === 'pending' && (
+            <div className={styles.inviteActions}>
+              <button className={styles.acceptBtn} onClick={() => onAccept(invite)}>
+                ✅ Accept
+              </button>
+              <button className={styles.declineBtn} onClick={() => onDecline(invite)}>
+                ❌ Decline
+              </button>
+            </div>
+          )}
+          {invite?.status === 'accepted' && (
+            <span className={styles.inviteAccepted}>✓ Accepted</span>
+          )}
+          {invite?.status === 'declined' && (
+            <span className={styles.inviteDeclined}>✗ Declined</span>
+          )}
         </div>
         {unreadDot}
-      </Link>
+      </div>
     )
   }
 
@@ -96,27 +113,47 @@ function NotifItem({ notif }) {
   )
 }
 
+// Match a chat_invite notification to its invite record by from_user_id +
+// closest created_at (both are created in the same request, so within ms).
+function findInvite(notif, chatInvites) {
+  const candidates = chatInvites.filter(i => i.from_user_id === notif.from_user_id)
+  if (!candidates.length) return null
+  return candidates.reduce((best, cur) =>
+    Math.abs(new Date(cur.created_at) - new Date(notif.created_at)) <
+    Math.abs(new Date(best.created_at) - new Date(notif.created_at)) ? cur : best
+  )
+}
+
 export default function Notifications() {
   const { user } = useAuth()
   const [notifications, setNotifications] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [chatInvites,   setChatInvites]   = useState([])
+  const [loading,       setLoading]       = useState(true)
 
-  const fetchNotifications = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     if (!user) return
-    const { data } = await supabase
-      .from('notifications')
-      .select(`
-        id, type, read, created_at, recipe_id,
-        from_profile:from_user_id(username, avatar_url),
-        recipe:recipe_id(id, title)
-      `)
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-    setNotifications(data ?? [])
+
+    const [{ data: notifData }, { data: inviteData }] = await Promise.all([
+      supabase
+        .from('notifications')
+        .select(`
+          id, type, read, created_at, recipe_id, from_user_id,
+          from_profile:from_user_id(username, avatar_url),
+          recipe:recipe_id(id, title)
+        `)
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false }),
+      supabase
+        .from('chat_invites')
+        .select('id, room_id, from_user_id, status, created_at')
+        .eq('to_user_id', user.id),
+    ])
+
+    setNotifications(notifData ?? [])
+    setChatInvites(inviteData ?? [])
     setLoading(false)
   }, [user])
 
-  // Mark all unread as read
   async function markAllRead() {
     if (!user) return
     await supabase
@@ -127,9 +164,28 @@ export default function Notifications() {
   }
 
   useEffect(() => {
-    fetchNotifications()
+    fetchData()
     markAllRead()
-  }, [fetchNotifications])
+  }, [fetchData])
+
+  async function handleAccept(invite) {
+    await supabase
+      .from('private_room_members')
+      .insert({ room_id: invite.room_id, user_id: user.id })
+    await supabase
+      .from('chat_invites')
+      .update({ status: 'accepted' })
+      .eq('id', invite.id)
+    setChatInvites(prev => prev.map(i => i.id === invite.id ? { ...i, status: 'accepted' } : i))
+  }
+
+  async function handleDecline(invite) {
+    await supabase
+      .from('chat_invites')
+      .update({ status: 'declined' })
+      .eq('id', invite.id)
+    setChatInvites(prev => prev.map(i => i.id === invite.id ? { ...i, status: 'declined' } : i))
+  }
 
   return (
     <div className={styles.page}>
@@ -151,7 +207,13 @@ export default function Notifications() {
       ) : (
         <div className={styles.list}>
           {notifications.map(n => (
-            <NotifItem key={n.id} notif={n} />
+            <NotifItem
+              key={n.id}
+              notif={n}
+              invite={n.type === 'chat_invite' ? findInvite(n, chatInvites) : null}
+              onAccept={handleAccept}
+              onDecline={handleDecline}
+            />
           ))}
         </div>
       )}
