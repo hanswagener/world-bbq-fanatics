@@ -116,6 +116,19 @@ function CreateRoomModal({ currentUserId, onClose, onCreate }) {
 
     if (membersErr) { setError(membersErr.message); setSaving(false); return }
 
+    // Notify every invited user
+    if (invited.length > 0) {
+      await supabase.from('notifications').insert(
+        invited.map(u => ({
+          user_id:      u.id,
+          from_user_id: currentUserId,
+          type:         'chat_invite',
+          recipe_id:    null,
+          read:         false,
+        }))
+      )
+    }
+
     onCreate(room.id)
   }
 

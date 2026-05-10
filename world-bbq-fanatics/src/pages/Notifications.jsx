@@ -56,6 +56,23 @@ function NotifItem({ notif }) {
     )
   }
 
+  if (notif.type === 'chat_invite') {
+    return (
+      <Link to="/chat" className={itemClass}>
+        <NotifAvatar profile={from} />
+        <div className={styles.itemBody}>
+          <p className={styles.itemText}>
+            <span className={styles.flameIcon}>💬</span>
+            <strong className={styles.username}>{username}</strong>
+            {' invited you to a private chat room'}
+          </p>
+          <span className={styles.time}>{timeAgo(notif.created_at)}</span>
+        </div>
+        {unreadDot}
+      </Link>
+    )
+  }
+
   // type === 'flame'
   const recipe = notif.recipe
   const recipeTitle = recipe?.title ?? 'a recipe'

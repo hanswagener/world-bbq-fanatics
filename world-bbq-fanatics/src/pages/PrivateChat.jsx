@@ -72,6 +72,18 @@ function InviteModal({ roomId, currentUserId, existingMemberIds, onClose, onInvi
       .insert(selected.map(u => ({ room_id: roomId, user_id: u.id })))
 
     if (error) { setError(error.message); setSaving(false); return }
+
+    // Notify every invited user
+    await supabase.from('notifications').insert(
+      selected.map(u => ({
+        user_id:      u.id,
+        from_user_id: currentUserId,
+        type:         'chat_invite',
+        recipe_id:    null,
+        read:         false,
+      }))
+    )
+
     onInvited(selected)
     onClose()
   }
