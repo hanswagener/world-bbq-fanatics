@@ -331,6 +331,26 @@ export default function PrivateChat() {
     ])
   }
 
+  async function handleLeave() {
+    if (!window.confirm('Are you sure you want to leave this chat room?')) return
+
+    await supabase
+      .from('private_room_members')
+      .delete()
+      .eq('room_id', id)
+      .eq('user_id', user.id)
+
+    // If this was the last member, clean up the room itself
+    if (members.length === 1) {
+      await supabase
+        .from('private_rooms')
+        .delete()
+        .eq('id', id)
+    }
+
+    navigate('/chat')
+  }
+
   const memberIds = members.map(m => m.user_id)
 
   return (
@@ -352,6 +372,9 @@ export default function PrivateChat() {
 
         <button className={styles.inviteHeaderBtn} onClick={() => setShowInvite(true)}>
           + Invite
+        </button>
+        <button className={styles.leaveBtn} onClick={handleLeave} title="Leave room">
+          🚪 Leave
         </button>
       </div>
 
