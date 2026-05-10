@@ -298,15 +298,6 @@ export default function PrivateChat() {
     setSending(true)
     setText('')
 
-    const optimisticId = `opt-${Date.now()}`
-    setMessages(prev => [...prev, {
-      id:         optimisticId,
-      content,
-      created_at: new Date().toISOString(),
-      user_id:    user.id,
-      profiles:   myProfile,
-    }])
-
     await supabase.from('private_messages').insert({
       room_id: id,
       user_id: user.id,
