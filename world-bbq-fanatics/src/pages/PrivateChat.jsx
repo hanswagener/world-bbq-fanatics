@@ -298,10 +298,33 @@ export default function PrivateChat() {
     setSending(true)
     setText('')
 
-    await supabase.from('private_messages').insert({
-      room_id: id,
-      user_id: user.id,
-      content,
+    console.log('Sending message:', content)
+
+    const { data: inserted, error } = await supabase
+      .from('private_messages')
+      .insert({ room_id: id, user_id: user.id, content })
+      .select('id, created_at')
+      .single()
+
+    if (error) {
+      console.log('Message insert error:', error)
+      setSending(false)
+      return
+    }
+
+    console.log('Message sent successfully', inserted)
+
+    // Add with real DB id so the realtime deduplication guard works if it also fires
+    setMessages(prev => {
+      if (prev.some(m => m.id === inserted.id)) return prev
+      return [...prev, {
+        id:        inserted.id,
+        content,
+        created_at: inserted.created_at,
+        user_id:   user.id,
+        is_system: false,
+        profiles:  myProfile,
+      }]
     })
 
     setSending(false)
