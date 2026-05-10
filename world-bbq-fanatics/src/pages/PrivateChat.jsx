@@ -362,12 +362,15 @@ export default function PrivateChat() {
       .eq('room_id', id)
       .eq('user_id', user.id)
 
-    // If this was the last member, clean up the room itself
-    if (members.length === 1) {
-      await supabase
-        .from('private_rooms')
-        .delete()
-        .eq('id', id)
+    // Query the DB for remaining members — never trust local state since
+    // RLS may have only returned the current user's own row on load.
+    const { data: remaining } = await supabase
+      .from('private_room_members')
+      .select('id')
+      .eq('room_id', id)
+
+    if (!remaining || remaining.length === 0) {
+      await supabase.from('private_rooms').delete().eq('id', id)
     }
 
     navigate('/chat')
