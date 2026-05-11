@@ -349,9 +349,10 @@ export default function PrivateChat() {
     if (!window.confirm('Are you sure you want to leave this chat room?')) return
 
     // Use the members list already loaded when the page opened.
-    // Querying private_room_members again here is unreliable because RLS
-    // may only return the current user's own row, giving a count of 1
-    // regardless of how many members are actually in the room.
+    console.log('Members list when leaving:', JSON.stringify(members))
+    console.log('Members count:', members.length)
+    console.log('Will delete room:', members.length <= 1)
+
     const memberCount = members.length
     const isLastMember = memberCount <= 1
 
