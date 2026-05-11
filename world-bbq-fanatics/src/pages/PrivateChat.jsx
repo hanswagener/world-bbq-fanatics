@@ -348,40 +348,33 @@ export default function PrivateChat() {
   async function handleLeave() {
     if (!window.confirm('Are you sure you want to leave this chat room?')) return
 
-    // Count ALL members BEFORE the delete, while still a member so RLS allows it.
-    const { count, error: countErr } = await supabase
-      .from('private_room_members')
-      .select('*', { count: 'exact', head: true })
-      .eq('room_id', id)
-    console.log('[Leave] member count:', count, '| error:', countErr?.message)
-
-    const isLastMember = (count ?? 0) <= 1
-
-    // System message BEFORE removing membership so RLS allows the insert
-    const { error: sysErr } = await supabase.from('private_messages').insert({
+    // Step 1: system message first, while still a member so RLS allows the write
+    await supabase.from('private_messages').insert({
       room_id:   id,
       user_id:   user.id,
       content:   `👋 ${myProfile?.username ?? 'Someone'} has left the chat`,
       is_system: true,
     })
-    console.log('[Leave] system message insert error:', sysErr?.message ?? 'none')
 
-    // Remove only the current user's membership row
-    const { error: deleteErr } = await supabase
+    // Step 2: remove only the current user's row
+    await supabase
       .from('private_room_members')
       .delete()
       .eq('room_id', id)
       .eq('user_id', user.id)
-    console.log('[Leave] membership delete error:', deleteErr?.message ?? 'none')
 
-    // Only delete the room itself if no other members existed
-    if (isLastMember) {
-      console.log('[Leave] last member — deleting room')
+    // Step 3: count remaining members after the delete
+    const { count } = await supabase
+      .from('private_room_members')
+      .select('*', { count: 'exact', head: true })
+      .eq('room_id', id)
+
+    // Step 4: only delete room when nobody is left
+    if (count === 0) {
       await supabase.from('private_rooms').delete().eq('id', id)
-    } else {
-      console.log('[Leave] other members remain — keeping room')
     }
 
+    // Step 5: redirect
     navigate('/chat')
   }
 
