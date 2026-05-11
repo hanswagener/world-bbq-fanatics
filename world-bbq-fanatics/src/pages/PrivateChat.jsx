@@ -348,7 +348,14 @@ export default function PrivateChat() {
   async function handleLeave() {
     if (!window.confirm('Are you sure you want to leave this chat room?')) return
 
-    // Step 1: system message first, while still a member so RLS allows the write
+    // Use the members list already loaded when the page opened.
+    // Querying private_room_members again here is unreliable because RLS
+    // may only return the current user's own row, giving a count of 1
+    // regardless of how many members are actually in the room.
+    const memberCount = members.length
+    const isLastMember = memberCount <= 1
+
+    // System message first, while still a member so RLS allows the write
     await supabase.from('private_messages').insert({
       room_id:   id,
       user_id:   user.id,
@@ -356,25 +363,18 @@ export default function PrivateChat() {
       is_system: true,
     })
 
-    // Step 2: remove only the current user's row
+    // Remove only the current user's row
     await supabase
       .from('private_room_members')
       .delete()
       .eq('room_id', id)
       .eq('user_id', user.id)
 
-    // Step 3: count remaining members after the delete
-    const { count } = await supabase
-      .from('private_room_members')
-      .select('*', { count: 'exact', head: true })
-      .eq('room_id', id)
-
-    // Step 4: only delete room when nobody is left
-    if (count === 0) {
+    // Delete the room only when the leaving user was the sole member
+    if (isLastMember) {
       await supabase.from('private_rooms').delete().eq('id', id)
     }
 
-    // Step 5: redirect
     navigate('/chat')
   }
 
