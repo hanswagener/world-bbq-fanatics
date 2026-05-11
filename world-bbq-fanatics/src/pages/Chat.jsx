@@ -97,24 +97,32 @@ function CreateRoomModal({ currentUserId, onClose, onCreate }) {
     setSaving(true)
 
     // 1. Create room
+    console.log('Creating room...')
     const { data: room, error: roomErr } = await supabase
       .from('private_rooms')
       .insert({ name: name.trim() })
       .select('id')
       .single()
+    console.log('Room insert result — data:', room, '| error:', roomErr)
 
     if (roomErr) { setError(roomErr.message); setSaving(false); return }
 
     // 2. Add only the creator as a member immediately
-    const { error: membersErr } = await supabase
+    console.log('Adding creator to room...')
+    const { data: memberData, error: membersErr } = await supabase
       .from('private_room_members')
       .insert([{ room_id: room.id, user_id: currentUserId }])
+      .select()
+    console.log('Creator member insert — data:', memberData, '| error:', membersErr)
 
     if (membersErr) { setError(membersErr.message); setSaving(false); return }
 
     // 3. Create pending invites + notifications for invited users
     if (invited.length > 0) {
-      const { error: inviteErr } = await supabase
+      for (const u of invited) {
+        console.log('Sending invite to:', u.id)
+      }
+      const { data: inviteData, error: inviteErr } = await supabase
         .from('chat_invites')
         .insert(invited.map(u => ({
           room_id:      room.id,
@@ -122,10 +130,12 @@ function CreateRoomModal({ currentUserId, onClose, onCreate }) {
           to_user_id:   u.id,
           status:       'pending',
         })))
+        .select()
+      console.log('chat_invites insert — data:', inviteData, '| error:', inviteErr)
 
       if (inviteErr) { setError(inviteErr.message); setSaving(false); return }
 
-      await supabase.from('notifications').insert(
+      const { error: notifErr } = await supabase.from('notifications').insert(
         invited.map(u => ({
           user_id:      u.id,
           from_user_id: currentUserId,
@@ -134,6 +144,7 @@ function CreateRoomModal({ currentUserId, onClose, onCreate }) {
           read:         false,
         }))
       )
+      console.log('notifications insert error:', notifErr)
     }
 
     onCreate(room.id)
