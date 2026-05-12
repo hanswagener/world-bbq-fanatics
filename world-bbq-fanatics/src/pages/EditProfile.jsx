@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { supabase } from '../supabase'
 import styles from './ProfileSetup.module.css'
 
-const BBQ_TYPES   = ['Gas', 'Charcoal', 'Electric', 'Wood', 'Kamado', 'Multiple']
+const BBQ_TYPES   = ['Gas', 'Charcoal', 'Electric', 'Wood', 'Kamado', 'Pellets', 'Smoker', 'Multiple']
 const SKILL_LEVELS = ['Orientating', 'Beginner', 'Backyard Pro', 'Pitmaster', 'Professional']
 
 export default function EditProfile() {
