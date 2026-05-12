@@ -169,13 +169,13 @@ function MembersPanel({ members }) {
     <div className={styles.membersPanel}>
       <p className={styles.membersPanelTitle}>Members ({members.length})</p>
       {members.map(m => (
-        <div key={m.user_id} className={styles.memberRow}>
+        <div key={m.id} className={styles.memberRow}>
           <span className={styles.memberAvatar}>
-            {m.profiles?.avatar_url
-              ? <img src={m.profiles.avatar_url} alt="" />
-              : m.profiles?.username?.[0]?.toUpperCase() ?? '?'}
+            {m.avatar_url
+              ? <img src={m.avatar_url} alt="" />
+              : m.username?.[0]?.toUpperCase() ?? '?'}
           </span>
-          <span className={styles.memberName}>{m.profiles?.username ?? 'Unknown'}</span>
+          <span className={styles.memberName}>{m.username ?? 'Unknown'}</span>
         </div>
       ))}
     </div>
@@ -221,10 +221,15 @@ export default function PrivateChat() {
 
       setRoom(roomData)
 
+      // Query profiles directly so RLS on private_room_members cannot
+      // restrict the result to only the current user's own row.
       const { data: memberData } = await supabase
-        .from('private_room_members')
-        .select('user_id, profiles(id, username, avatar_url)')
-        .eq('room_id', id)
+        .from('profiles')
+        .select('id, username, avatar_url')
+        .in(
+          'id',
+          supabase.from('private_room_members').select('user_id').eq('room_id', id)
+        )
 
       setMembers(memberData ?? [])
     }
@@ -339,10 +344,7 @@ export default function PrivateChat() {
   }
 
   function handleInvited(newMembers) {
-    setMembers(prev => [
-      ...prev,
-      ...newMembers.map(u => ({ user_id: u.id, profiles: u })),
-    ])
+    setMembers(prev => [...prev, ...newMembers])
   }
 
   async function handleLeave() {
@@ -379,7 +381,7 @@ export default function PrivateChat() {
     navigate('/chat')
   }
 
-  const memberIds = members.map(m => m.user_id)
+  const memberIds = members.map(m => m.id)
 
   return (
     <div className={styles.page}>
