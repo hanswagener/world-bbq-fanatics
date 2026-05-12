@@ -303,8 +303,6 @@ export default function PrivateChat() {
     setSending(true)
     setText('')
 
-    console.log('Sending message:', content)
-
     const { data: inserted, error } = await supabase
       .from('private_messages')
       .insert({ room_id: id, user_id: user.id, content })
@@ -316,8 +314,6 @@ export default function PrivateChat() {
       setSending(false)
       return
     }
-
-    console.log('Message sent successfully', inserted)
 
     // Add with real DB id so the realtime deduplication guard works if it also fires
     setMessages(prev => {
@@ -352,8 +348,6 @@ export default function PrivateChat() {
 
     const { data: count } = await supabase
       .rpc('get_room_member_count', { p_room_id: id })
-
-    console.log('Room member count from RPC:', count)
 
     const isLastMember = count <= 1
 
