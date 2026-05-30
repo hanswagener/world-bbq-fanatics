@@ -6,7 +6,7 @@ import styles from './NewRecipe.module.css'
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024
 const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
-const CATEGORIES = ['Rund', 'Varken', 'Kip', 'Vis', 'Groenten', 'Rub', 'Sauzen']
+const CATEGORIES = ['Rund', 'Lam', 'Varken', 'Kip', 'Vis', 'Groenten', 'Rub', 'Sauzen']
 
 const VISIBILITY_OPTIONS = [
   { value: 'public',       label: '🌍 Public',       desc: 'Visible to everyone' },

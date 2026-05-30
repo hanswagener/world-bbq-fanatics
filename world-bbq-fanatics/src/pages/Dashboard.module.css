@@ -227,6 +227,7 @@
 
 /* Category badge colors */
 .catRund     { background: rgba(239, 68, 68, 0.12);  color: #f87171; border: 1px solid rgba(239, 68, 68, 0.25); }
+.catLam      { background: rgba(180, 120, 60, 0.12); color: #c9935a; border: 1px solid rgba(180, 120, 60, 0.25); }
 .catVarken   { background: rgba(236, 72, 153, 0.12); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.25); }
 .catKip      { background: rgba(234, 179, 8, 0.12);  color: #facc15; border: 1px solid rgba(234, 179, 8, 0.25); }
 .catVis      { background: rgba(59, 130, 246, 0.12); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.25); }

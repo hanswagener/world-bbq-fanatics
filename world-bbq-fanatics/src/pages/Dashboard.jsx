@@ -86,10 +86,11 @@ function RecipeCard({ recipe, currentUserId, onFlameToggle }) {
   )
 }
 
-const CATEGORIES = ['Rund', 'Varken', 'Kip', 'Vis', 'Groenten', 'Rub', 'Sauzen']
+const CATEGORIES = ['Rund', 'Lam', 'Varken', 'Kip', 'Vis', 'Groenten', 'Rub', 'Sauzen']
 
 const CATEGORY_CLASS = {
   Rund:     styles.catRund,
+  Lam:      styles.catLam,
   Varken:   styles.catVarken,
   Kip:      styles.catKip,
   Vis:      styles.catVis,
