@@ -23,6 +23,12 @@ function AuthorAvatar({ profile }) {
   )
 }
 
+function VisibilityBadge({ visibility }) {
+  if (visibility === 'private')      return <span className={styles.badgePrivate}>Private</span>
+  if (visibility === 'friends_only') return <span className={styles.badgeFriendsOnly}>Friends Only</span>
+  return <span className={styles.badgePublic}>Public</span>
+}
+
 function RecipeCard({ recipe, currentUserId, onFlameToggle }) {
   const author = recipe.profiles
   const flames = recipe.flames ?? []
@@ -43,7 +49,7 @@ function RecipeCard({ recipe, currentUserId, onFlameToggle }) {
             <AuthorAvatar profile={author} />
             <span className={styles.authorName}>{author?.username ?? 'Unknown'}</span>
           </Link>
-          <span className={styles.badgePublic}>Public</span>
+          <VisibilityBadge visibility={recipe.visibility} />
         </div>
 
         <Link to={`/recipes/${recipe.id}`} className={styles.cardTitle}>{recipe.title}</Link>
@@ -82,6 +88,10 @@ export default function Dashboard() {
   const [recipes, setRecipes] = useState([])
   const [loading, setLoading] = useState(true)
 
+  // My Recipes tab
+  const [myRecipes, setMyRecipes] = useState([])
+  const [loadingMyRecipes, setLoadingMyRecipes] = useState(true)
+
   // Following tab
   const [followingRecipes, setFollowingRecipes] = useState([])
   const [loadingFollowing, setLoadingFollowing] = useState(true)
@@ -96,6 +106,17 @@ export default function Dashboard() {
     setRecipes(data ?? [])
     setLoading(false)
   }, [])
+
+  const fetchMyRecipes = useCallback(async () => {
+    if (!user) return
+    const { data } = await supabase
+      .from('recipes')
+      .select(RECIPE_SELECT)
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+    setMyRecipes(data ?? [])
+    setLoadingMyRecipes(false)
+  }, [user])
 
   const fetchFollowingRecipes = useCallback(async () => {
     if (!user) return
@@ -127,12 +148,13 @@ export default function Dashboard() {
   }, [user])
 
   useEffect(() => { fetchRecipes() }, [fetchRecipes])
+  useEffect(() => { fetchMyRecipes() }, [fetchMyRecipes])
   useEffect(() => { fetchFollowingRecipes() }, [fetchFollowingRecipes])
 
   async function handleFlameToggle(recipeId, hasFlamed) {
     if (!user) return
 
-    // Optimistic update on both arrays
+    // Optimistic update on all arrays
     const applyUpdate = prev => prev.map(r => {
       if (r.id !== recipeId) return r
       const flames = hasFlamed
@@ -141,6 +163,7 @@ export default function Dashboard() {
       return { ...r, flames }
     })
     setRecipes(applyUpdate)
+    setMyRecipes(applyUpdate)
     setFollowingRecipes(applyUpdate)
 
     if (hasFlamed) {
@@ -152,6 +175,7 @@ export default function Dashboard() {
 
       const recipe =
         recipes.find(r => r.id === recipeId) ||
+        myRecipes.find(r => r.id === recipeId) ||
         followingRecipes.find(r => r.id === recipeId)
       console.log('[Flame] recipe found:', recipe?.id, '| owner:', recipe?.user_id, '| current user:', user.id)
       if (recipe && recipe.user_id !== user.id) {
@@ -169,6 +193,7 @@ export default function Dashboard() {
     }
 
     fetchRecipes()
+    fetchMyRecipes()
     fetchFollowingRecipes()
   }
 
@@ -203,6 +228,12 @@ export default function Dashboard() {
           All Recipes
         </button>
         <button
+          className={`${styles.tab} ${activeTab === 'mine' ? styles.tabActive : ''}`}
+          onClick={() => setActiveTab('mine')}
+        >
+          My Recipes
+        </button>
+        <button
           className={`${styles.tab} ${activeTab === 'following' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('following')}
         >
@@ -225,6 +256,25 @@ export default function Dashboard() {
           </div>
         ) : (
           <RecipeGrid items={recipes} />
+        )
+      )}
+
+      {/* ── My Recipes tab ── */}
+      {activeTab === 'mine' && (
+        loadingMyRecipes ? (
+          <div className={styles.emptyState}>
+            <span className={styles.emptyIcon}>🔥</span>
+            <p className={styles.emptyText}>Loading your recipes…</p>
+          </div>
+        ) : myRecipes.length === 0 ? (
+          <div className={styles.emptyState}>
+            <span className={styles.emptyIcon}>🍖</span>
+            <h2 className={styles.emptyTitle}>No recipes yet</h2>
+            <p className={styles.emptyText}>Share your BBQ secrets with the world!</p>
+            <Link to="/recipes/new" className={styles.addRecipeBtn}>Add Your First Recipe →</Link>
+          </div>
+        ) : (
+          <RecipeGrid items={myRecipes} />
         )
       )}
 

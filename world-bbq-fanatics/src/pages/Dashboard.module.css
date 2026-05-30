@@ -190,6 +190,12 @@
   border: 1px solid rgba(34, 197, 94, 0.2);
 }
 
+.badgeFriendsOnly {
+  background: rgba(255, 107, 26, 0.1);
+  color: #ff6b1a;
+  border: 1px solid rgba(255, 107, 26, 0.25);
+}
+
 .badgePrivate {
   background: rgba(148, 163, 184, 0.08);
   color: #94a3b8;
@@ -317,4 +323,22 @@
 
 .findPeopleLink:hover {
   color: #e55c0f;
+}
+
+.addRecipeBtn {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 11px 24px;
+  background: #ff6b1a;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.addRecipeBtn:hover {
+  background: #e55c0f;
+  transform: translateY(-1px);
 }
