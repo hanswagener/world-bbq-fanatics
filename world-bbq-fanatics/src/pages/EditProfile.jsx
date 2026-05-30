@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../supabase'
 import styles from './ProfileSetup.module.css'
+
+const MAX_AVATAR_SIZE = 2 * 1024 * 1024
+const AVATAR_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
 
 const BBQ_TYPES   = ['Gas', 'Charcoal', 'Electric', 'Wood', 'Kamado', 'Pellets', 'Smoker', 'Multiple']
 const SKILL_LEVELS = ['Orientating', 'Beginner', 'Backyard Pro', 'Pitmaster', 'Professional']
@@ -10,14 +13,19 @@ const SKILL_LEVELS = ['Orientating', 'Beginner', 'Backyard Pro', 'Pitmaster', 'P
 export default function EditProfile() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const avatarInputRef = useRef(null)
 
-  const [loading,    setLoading]    = useState(true)
-  const [saving,     setSaving]     = useState(false)
-  const [error,      setError]      = useState(null)
+  const [loading,       setLoading]       = useState(true)
+  const [saving,        setSaving]        = useState(false)
+  const [uploading,     setUploading]     = useState(false)
+  const [error,         setError]         = useState(null)
+  const [avatarError,   setAvatarError]   = useState(null)
 
   const [username,   setUsername]   = useState('')
   const [bio,        setBio]        = useState('')
   const [avatarUrl,  setAvatarUrl]  = useState('')
+  const [avatarFile, setAvatarFile] = useState(null)
+  const [avatarPreview, setAvatarPreview] = useState(null)
   const [location,   setLocation]   = useState('')
   const [bbqBrand,   setBbqBrand]   = useState('')
   const [bbqType,    setBbqType]    = useState('')
@@ -46,22 +54,66 @@ export default function EditProfile() {
       })
   }, [user])
 
+  function handleAvatarSelect(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setAvatarError(null)
+    if (!AVATAR_TYPES.includes(file.type)) {
+      setAvatarError('Only JPG, PNG, and WebP images are allowed.')
+      e.target.value = ''
+      return
+    }
+    if (file.size > MAX_AVATAR_SIZE) {
+      setAvatarError('Image must be smaller than 2MB.')
+      e.target.value = ''
+      return
+    }
+    setAvatarFile(file)
+    setAvatarPreview(URL.createObjectURL(file))
+  }
+
+  async function uploadAvatar() {
+    const ext = avatarFile.name.split('.').pop().toLowerCase()
+    const path = `${user.id}/${Date.now()}.${ext}`
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(path, avatarFile, { contentType: avatarFile.type })
+    if (uploadError) throw uploadError
+    const { data } = supabase.storage.from('avatars').getPublicUrl(path)
+    return data.publicUrl
+  }
+
   async function handleSubmit(e) {
     e.preventDefault()
     setError(null)
     setSaving(true)
 
+    let finalAvatarUrl = avatarUrl
+
+    if (avatarFile) {
+      setUploading(true)
+      try {
+        finalAvatarUrl = await uploadAvatar()
+      } catch (err) {
+        setError('Avatar upload failed: ' + err.message)
+        setSaving(false)
+        setUploading(false)
+        return
+      }
+      setUploading(false)
+    }
+
     const { error } = await supabase
       .from('profiles')
       .update({
         username:    username.trim(),
-        bio:         bio.trim()        || null,
-        avatar_url:  avatarUrl.trim()  || null,
-        location:    location.trim()   || null,
-        bbq_brand:   bbqBrand.trim()   || null,
-        bbq_type:    bbqType           || null,
-        birthday:    birthday          || null,
-        skill_level: skillLevel        || null,
+        bio:         bio.trim()              || null,
+        avatar_url:  finalAvatarUrl.trim()   || null,
+        location:    location.trim()         || null,
+        bbq_brand:   bbqBrand.trim()         || null,
+        bbq_type:    bbqType                 || null,
+        birthday:    birthday                || null,
+        skill_level: skillLevel              || null,
       })
       .eq('id', user.id)
 
@@ -131,15 +183,37 @@ export default function EditProfile() {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="avatarUrl" className={styles.label}>Avatar URL</label>
-            <input
-              id="avatarUrl"
-              type="url"
-              className={styles.input}
-              value={avatarUrl}
-              onChange={e => setAvatarUrl(e.target.value)}
-              placeholder="https://example.com/avatar.jpg"
-            />
+            <label className={styles.label}>Profile Photo</label>
+            <div className={styles.avatarSection}>
+              <div
+                className={styles.avatarCircle}
+                onClick={() => avatarInputRef.current?.click()}
+                title="Click to upload photo"
+              >
+                {(avatarPreview || avatarUrl) ? (
+                  <img src={avatarPreview || avatarUrl} alt="Avatar" className={styles.avatarImg} />
+                ) : (
+                  <span className={styles.avatarEmoji}>🔥</span>
+                )}
+              </div>
+              <input
+                ref={avatarInputRef}
+                type="file"
+                accept=".jpg,.jpeg,.png,.webp"
+                style={{ display: 'none' }}
+                onChange={handleAvatarSelect}
+              />
+              <button
+                type="button"
+                className={styles.uploadBtn}
+                onClick={() => avatarInputRef.current?.click()}
+                disabled={uploading}
+              >
+                {uploading ? 'Uploading…' : 'Upload Photo'}
+              </button>
+              {uploading && <p className={styles.uploadProgress}>Uploading your photo…</p>}
+              {avatarError && <p className={styles.error}>{avatarError}</p>}
+            </div>
           </div>
 
           <div className={styles.row}>
