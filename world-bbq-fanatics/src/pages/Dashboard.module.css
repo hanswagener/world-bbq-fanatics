@@ -78,6 +78,38 @@
   }
 }
 
+/* ── Category filter bar ── */
+.filterBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.filterBtn {
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 20px;
+  border: 1px solid #2e2e2e;
+  background: transparent;
+  color: #777;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  font-family: inherit;
+}
+
+.filterBtn:hover {
+  border-color: #444;
+  color: #ccc;
+}
+
+.filterBtnActive {
+  border-color: #ff6b1a;
+  color: #ff6b1a;
+  background: rgba(255, 107, 26, 0.08);
+}
+
 /* ── Recipe card ── */
 .card {
   background: #1a1a1a;
@@ -121,12 +153,19 @@
   gap: 10px;
 }
 
-/* ── Card top row: author + badge ── */
+/* ── Card top row: author + badges ── */
 .cardTop {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+}
+
+.cardBadges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .author {
@@ -174,7 +213,9 @@
 
 /* Badges */
 .badgePublic,
-.badgePrivate {
+.badgeFriendsOnly,
+.badgePrivate,
+.categoryBadge {
   font-size: 11px;
   font-weight: 600;
   padding: 2px 8px;
@@ -183,6 +224,15 @@
   letter-spacing: 0.3px;
   text-transform: uppercase;
 }
+
+/* Category badge colors */
+.catRund     { background: rgba(239, 68, 68, 0.12);  color: #f87171; border: 1px solid rgba(239, 68, 68, 0.25); }
+.catVarken   { background: rgba(236, 72, 153, 0.12); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.25); }
+.catKip      { background: rgba(234, 179, 8, 0.12);  color: #facc15; border: 1px solid rgba(234, 179, 8, 0.25); }
+.catVis      { background: rgba(59, 130, 246, 0.12); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.25); }
+.catGroenten { background: rgba(34, 197, 94, 0.12);  color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.25); }
+.catRub      { background: rgba(255, 107, 26, 0.12); color: #ff6b1a; border: 1px solid rgba(255, 107, 26, 0.25); }
+.catSauzen   { background: rgba(168, 85, 247, 0.12); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.25); }
 
 .badgePublic {
   background: rgba(34, 197, 94, 0.1);

@@ -6,6 +6,7 @@ import styles from './NewRecipe.module.css'
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024
 const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+const CATEGORIES = ['Rund', 'Varken', 'Kip', 'Vis', 'Groenten', 'Rub', 'Sauzen']
 
 const VISIBILITY_OPTIONS = [
   { value: 'public',       label: '🌍 Public',       desc: 'Visible to everyone' },
@@ -26,6 +27,7 @@ export default function EditRecipe() {
   const [description, setDescription] = useState('')
   const [ingredients, setIngredients] = useState('')
   const [instructions, setInstructions] = useState('')
+  const [category, setCategory] = useState('')
   const [visibility, setVisibility] = useState('public')
 
   // existing URL from DB; null if user removes it
@@ -44,7 +46,7 @@ export default function EditRecipe() {
     async function loadRecipe() {
       const { data, error: fetchError } = await supabase
         .from('recipes')
-        .select('id, user_id, title, description, ingredients, instructions, image_url, visibility')
+        .select('id, user_id, title, description, ingredients, instructions, image_url, visibility, category')
         .eq('id', id)
         .single()
 
@@ -55,6 +57,7 @@ export default function EditRecipe() {
       setDescription(data.description ?? '')
       setIngredients(data.ingredients ?? '')
       setInstructions(data.instructions ?? '')
+      setCategory(data.category ?? '')
       setVisibility(data.visibility ?? 'public')
       setCurrentImageUrl(data.image_url ?? null)
       setImagePreview(data.image_url ?? null)
@@ -129,6 +132,7 @@ export default function EditRecipe() {
         ingredients:  ingredients.trim() || null,
         instructions: instructions.trim() || null,
         image_url:    imageUrl,
+        category:     category || null,
         visibility,
       })
       .eq('id', id)
@@ -206,6 +210,23 @@ export default function EditRecipe() {
               onChange={e => setDescription(e.target.value)}
               placeholder="A short intro to your recipe…"
             />
+          </div>
+
+          {/* Category */}
+          <div className={styles.field}>
+            <label htmlFor="category" className={styles.label}>
+              Category <span className={styles.required}>*</span>
+            </label>
+            <select
+              id="category"
+              className={styles.select}
+              value={category}
+              onChange={e => setCategory(e.target.value)}
+              required
+            >
+              <option value="">Select category…</option>
+              {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
           </div>
 
           {/* Image Upload */}

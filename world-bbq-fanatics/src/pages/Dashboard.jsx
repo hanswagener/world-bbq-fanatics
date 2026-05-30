@@ -29,6 +29,15 @@ function VisibilityBadge({ visibility }) {
   return <span className={styles.badgePublic}>Public</span>
 }
 
+function CategoryBadge({ category }) {
+  if (!category) return null
+  return (
+    <span className={`${styles.categoryBadge} ${CATEGORY_CLASS[category] ?? ''}`}>
+      {category}
+    </span>
+  )
+}
+
 function RecipeCard({ recipe, currentUserId, onFlameToggle }) {
   const author = recipe.profiles
   const flames = recipe.flames ?? []
@@ -49,7 +58,10 @@ function RecipeCard({ recipe, currentUserId, onFlameToggle }) {
             <AuthorAvatar profile={author} />
             <span className={styles.authorName}>{author?.username ?? 'Unknown'}</span>
           </Link>
-          <VisibilityBadge visibility={recipe.visibility} />
+          <div className={styles.cardBadges}>
+            <CategoryBadge category={recipe.category} />
+            <VisibilityBadge visibility={recipe.visibility} />
+          </div>
         </div>
 
         <Link to={`/recipes/${recipe.id}`} className={styles.cardTitle}>{recipe.title}</Link>
@@ -74,8 +86,20 @@ function RecipeCard({ recipe, currentUserId, onFlameToggle }) {
   )
 }
 
+const CATEGORIES = ['Rund', 'Varken', 'Kip', 'Vis', 'Groenten', 'Rub', 'Sauzen']
+
+const CATEGORY_CLASS = {
+  Rund:     styles.catRund,
+  Varken:   styles.catVarken,
+  Kip:      styles.catKip,
+  Vis:      styles.catVis,
+  Groenten: styles.catGroenten,
+  Rub:      styles.catRub,
+  Sauzen:   styles.catSauzen,
+}
+
 const RECIPE_SELECT = `
-  id, title, description, image_url, visibility, created_at, user_id,
+  id, title, description, image_url, visibility, category, created_at, user_id,
   profiles(username, avatar_url),
   flames(id, user_id)
 `
@@ -83,6 +107,7 @@ const RECIPE_SELECT = `
 export default function Dashboard() {
   const { user } = useAuth()
   const [activeTab, setActiveTab] = useState('all')
+  const [categoryFilter, setCategoryFilter] = useState(null)
 
   // All-recipes tab
   const [recipes, setRecipes] = useState([])
@@ -242,22 +267,44 @@ export default function Dashboard() {
       </div>
 
       {/* ── All Recipes tab ── */}
-      {activeTab === 'all' && (
-        loading ? (
-          <div className={styles.emptyState}>
-            <span className={styles.emptyIcon}>🔥</span>
-            <p className={styles.emptyText}>Loading recipes…</p>
-          </div>
-        ) : recipes.length === 0 ? (
-          <div className={styles.emptyState}>
-            <span className={styles.emptyIcon}>🍖</span>
-            <h2 className={styles.emptyTitle}>The grill is cold…</h2>
-            <p className={styles.emptyText}>No recipes yet. Be the first to fire one up!</p>
-          </div>
-        ) : (
-          <RecipeGrid items={recipes} />
+      {activeTab === 'all' && (() => {
+        const filtered = categoryFilter ? recipes.filter(r => r.category === categoryFilter) : recipes
+        return (
+          <>
+            <div className={styles.filterBar}>
+              <button
+                className={`${styles.filterBtn} ${categoryFilter === null ? styles.filterBtnActive : ''}`}
+                onClick={() => setCategoryFilter(null)}
+              >
+                All
+              </button>
+              {CATEGORIES.map(cat => (
+                <button
+                  key={cat}
+                  className={`${styles.filterBtn} ${categoryFilter === cat ? styles.filterBtnActive : ''}`}
+                  onClick={() => setCategoryFilter(cat)}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+            {loading ? (
+              <div className={styles.emptyState}>
+                <span className={styles.emptyIcon}>🔥</span>
+                <p className={styles.emptyText}>Loading recipes…</p>
+              </div>
+            ) : filtered.length === 0 ? (
+              <div className={styles.emptyState}>
+                <span className={styles.emptyIcon}>🍖</span>
+                <h2 className={styles.emptyTitle}>{categoryFilter ? `No ${categoryFilter} recipes yet` : 'The grill is cold…'}</h2>
+                <p className={styles.emptyText}>{categoryFilter ? 'Be the first to add one!' : 'No recipes yet. Be the first to fire one up!'}</p>
+              </div>
+            ) : (
+              <RecipeGrid items={filtered} />
+            )}
+          </>
         )
-      )}
+      })()}
 
       {/* ── My Recipes tab ── */}
       {activeTab === 'mine' && (
