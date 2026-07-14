@@ -29,8 +29,9 @@ export default function Login() {
   return (
     <div className={styles.page}>
       <div className={styles.card}>
-        <div className={styles.logo}>🔥</div>
-        <h1 className={styles.title}>World BBQ Fanatics</h1>
+        <div className={styles.logo}>
+          <img src="/logo.png" alt="BBQ Fanatics" style={{ height: '120px', objectFit: 'contain' }} />
+        </div>
         <p className={styles.subtitle}>Sign in to your account</p>
 
         <form onSubmit={handleSubmit} className={styles.form}>

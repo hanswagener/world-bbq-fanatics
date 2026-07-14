@@ -1,8 +1,8 @@
-.nav {
+﻿.nav {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: #1a1a1a;
+  background: #0d0d0d;
   border-bottom: 1px solid #2a2a2a;
 }
 
@@ -11,7 +11,7 @@
   align-items: center;
   gap: 32px;
   padding: 0 28px;
-  height: 62px;
+  height: 72px;
   max-width: 1280px;
   margin: 0 auto;
 }
@@ -20,22 +20,15 @@
 .brand {
   display: flex;
   align-items: center;
-  gap: 8px;
   text-decoration: none;
   flex-shrink: 0;
 }
 
-.brandFlame {
-  font-size: 22px;
-  line-height: 1;
-}
-
-.brandText {
-  font-size: 16px;
-  font-weight: 700;
-  color: #ff6b1a;
-  letter-spacing: -0.2px;
-  white-space: nowrap;
+.brandLogo {
+  height: 50px;
+  width: auto;
+  object-fit: contain;
+  display: block;
 }
 
 /* ── Desktop nav links ── */
@@ -62,13 +55,13 @@
 }
 
 .linkActive {
-  color: #ff6b1a;
-  background: rgba(255, 107, 26, 0.1);
+  color: #ff6600;
+  background: rgba(255, 102, 0, 0.1);
 }
 
 .linkActive:hover {
-  color: #ff6b1a;
-  background: rgba(255, 107, 26, 0.15);
+  color: #ff6600;
+  background: rgba(255, 102, 0, 0.15);
 }
 
 /* ── Search icon ── */
@@ -81,7 +74,7 @@
   flex-shrink: 0;
 }
 
-.searchLink:hover { color: #ff6b1a; }
+.searchLink:hover { color: #ff6600; }
 
 /* ── Bell / notifications ── */
 .bellLink {
@@ -182,7 +175,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: #ff6b1a;
+  background: #cc0000;
   color: #fff;
   font-weight: 700;
   flex-shrink: 0;
@@ -319,8 +312,8 @@
 }
 
 .mobileLinkActive {
-  color: #ff6b1a;
-  background: rgba(255, 107, 26, 0.08);
+  color: #ff6600;
+  background: rgba(255, 102, 0, 0.08);
 }
 
 .mobileDivider {

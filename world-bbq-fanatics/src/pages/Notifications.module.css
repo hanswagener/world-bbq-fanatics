@@ -1,4 +1,4 @@
-.page {
+﻿.page {
   max-width: 680px;
   margin: 0 auto;
   padding: 40px 24px 64px;
@@ -40,12 +40,12 @@
 }
 
 .itemUnread {
-  background: rgba(255, 107, 26, 0.05);
-  border: 1px solid rgba(255, 107, 26, 0.12);
+  background: rgba(255, 102, 0, 0.05);
+  border: 1px solid rgba(255, 102, 0, 0.12);
 }
 
 .itemUnread:hover {
-  background: rgba(255, 107, 26, 0.09);
+  background: rgba(255, 102, 0, 0.09);
 }
 
 .itemRead {
@@ -66,7 +66,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #ff6b1a;
+  background: #cc0000;
   color: #fff;
   font-size: 16px;
   font-weight: 700;
@@ -102,7 +102,7 @@
 }
 
 .recipeTitle {
-  color: #ff6b1a;
+  color: #ff6600;
   font-weight: 600;
 }
 
@@ -124,14 +124,15 @@
   padding: 6px 14px;
   border-radius: 6px;
   border: none;
-  background: #ff6b1a;
-  color: #111;
+  background: linear-gradient(135deg, #ff6600, #cc0000);
+  color: #fff;
   cursor: pointer;
-  transition: background 0.12s;
+  transition: background 0.12s, box-shadow 0.12s;
 }
 
 .acceptBtn:hover {
-  background: #e55c0f;
+  background: linear-gradient(135deg, #ff7700, #dd0000);
+  box-shadow: 0 4px 14px rgba(204, 0, 0, 0.35);
 }
 
 .declineBtn {
@@ -173,7 +174,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #ff6b1a;
+  background: #ff6600;
   flex-shrink: 0;
 }
 

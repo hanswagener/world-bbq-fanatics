@@ -1,8 +1,8 @@
-/* Full-height chat layout */
+﻿/* Full-height chat layout */
 .page {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 62px);
+  height: calc(100vh - 72px);
   background: #0d0d0d;
   overflow: hidden;
 }
@@ -28,7 +28,7 @@
   flex-shrink: 0;
 }
 
-.backLink:hover { color: #ff6b1a; }
+.backLink:hover { color: #ff6600; }
 
 .roomInfo {
   flex: 1;
@@ -61,23 +61,23 @@
   flex-shrink: 0;
 }
 
-.membersBtn:hover { border-color: #ff6b1a; color: #ff6b1a; }
+.membersBtn:hover { border-color: #ff6600; color: #ff6600; }
 
 .inviteHeaderBtn {
   font-size: 13px;
   font-weight: 600;
   color: #fff;
-  background: #ff6b1a;
+  background: linear-gradient(135deg, #ff6600, #cc0000);
   border: none;
   border-radius: 7px;
   padding: 7px 14px;
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
-  transition: background 0.15s;
+  transition: background 0.15s, box-shadow 0.15s;
 }
 
-.inviteHeaderBtn:hover { background: #e55c0f; }
+.inviteHeaderBtn:hover { background: linear-gradient(135deg, #ff7700, #dd0000); box-shadow: 0 4px 14px rgba(204, 0, 0, 0.35); }
 
 .leaveBtn {
   font-size: 13px;
@@ -131,7 +131,7 @@
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: #ff6b1a;
+  background: #cc0000;
   color: #fff;
   font-size: 11px;
   font-weight: 700;
@@ -217,7 +217,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #ff6b1a;
+  background: #cc0000;
   color: #fff;
   font-size: 13px;
   font-weight: 700;
@@ -256,7 +256,7 @@
   color: #bbb;
 }
 
-.msgRowMe .msgUsername { color: #ff6b1a; }
+.msgRowMe .msgUsername { color: #ff6600; }
 
 .msgTime {
   font-size: 11px;
@@ -276,8 +276,8 @@
 }
 
 .msgBubbleMe {
-  background: rgba(255, 107, 26, 0.14);
-  border-color: rgba(255, 107, 26, 0.25);
+  background: rgba(255, 102, 0, 0.14);
+  border-color: rgba(255, 102, 0, 0.25);
   color: #f0f0f0;
   border-radius: 10px 0 10px 10px;
 }
@@ -313,15 +313,15 @@
 .input::placeholder { color: #3a3a3a; }
 
 .input:focus {
-  border-color: #ff6b1a;
-  box-shadow: 0 0 0 3px rgba(255, 107, 26, 0.1);
+  border-color: #ff6600;
+  box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
 }
 
 .sendBtn {
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: #ff6b1a;
+  background: linear-gradient(135deg, #ff6600, #cc0000);
   border: none;
   color: #fff;
   cursor: pointer;
@@ -329,10 +329,10 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: background 0.15s, transform 0.1s;
+  transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
 }
 
-.sendBtn:hover:not(:disabled)  { background: #e55c0f; }
+.sendBtn:hover:not(:disabled)  { background: linear-gradient(135deg, #ff7700, #dd0000); box-shadow: 0 4px 14px rgba(204, 0, 0, 0.35); }
 .sendBtn:active:not(:disabled) { transform: scale(0.93); }
 
 .sendBtn:disabled {
@@ -411,7 +411,7 @@
 }
 
 .modalInput::placeholder { color: #3a3a3a; }
-.modalInput:focus { border-color: #ff6b1a; }
+.modalInput:focus { border-color: #ff6600; }
 
 .searchResults {
   list-style: none;
@@ -435,14 +435,14 @@
 }
 
 .searchResult:hover          { background: #1e1e1e; }
-.searchResultSelected        { background: rgba(255, 107, 26, 0.08); }
-.searchResultSelected:hover  { background: rgba(255, 107, 26, 0.13); }
+.searchResultSelected        { background: rgba(255, 102, 0, 0.08); }
+.searchResultSelected:hover  { background: rgba(255, 102, 0, 0.13); }
 
 .srAvatar {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: #ff6b1a;
+  background: #cc0000;
   color: #fff;
   font-size: 12px;
   font-weight: 700;
@@ -456,7 +456,7 @@
 .srAvatar img { width: 100%; height: 100%; object-fit: cover; }
 
 .srName  { flex: 1; font-size: 14px; color: #ddd; }
-.srCheck { font-size: 14px; font-weight: 700; color: #ff6b1a; width: 16px; text-align: center; }
+.srCheck { font-size: 14px; font-weight: 700; color: #ff6600; width: 16px; text-align: center; }
 
 .searchEmpty { font-size: 13px; color: #555; margin: 0; }
 
@@ -466,18 +466,18 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: rgba(255, 107, 26, 0.12);
-  border: 1px solid rgba(255, 107, 26, 0.3);
+  background: rgba(255, 102, 0, 0.12);
+  border: 1px solid rgba(255, 102, 0, 0.3);
   border-radius: 20px;
   padding: 3px 10px;
   font-size: 13px;
-  color: #ff6b1a;
+  color: #ff6600;
 }
 
 .chipRemove {
   background: transparent;
   border: none;
-  color: #ff6b1a;
+  color: #ff6600;
   cursor: pointer;
   font-size: 15px;
   line-height: 1;
@@ -525,13 +525,13 @@
   font-size: 14px;
   font-weight: 700;
   color: #fff;
-  background: #ff6b1a;
+  background: linear-gradient(135deg, #ff6600, #cc0000);
   border: none;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, box-shadow 0.15s;
 }
 
-.inviteBtn:hover:not(:disabled)  { background: #e55c0f; }
+.inviteBtn:hover:not(:disabled)  { background: linear-gradient(135deg, #ff7700, #dd0000); box-shadow: 0 4px 14px rgba(204, 0, 0, 0.35); }
 .inviteBtn:disabled { opacity: 0.45; cursor: not-allowed; }
 
 @media (max-width: 600px) {

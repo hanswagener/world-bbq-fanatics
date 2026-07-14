@@ -104,8 +104,7 @@ export default function Navbar() {
 
         {/* Brand */}
         <NavLink to="/dashboard" className={styles.brand}>
-          <span className={styles.brandFlame}>🔥</span>
-          <span className={styles.brandText}>World BBQ Fanatics</span>
+          <img src="/logo.png" alt="BBQ Fanatics" className={styles.brandLogo} />
         </NavLink>
 
         {/* Desktop nav links */}

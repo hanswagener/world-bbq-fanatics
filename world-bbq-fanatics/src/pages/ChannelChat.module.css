@@ -1,8 +1,8 @@
-/* Full-height chat layout that fills the viewport below the navbar */
+﻿/* Full-height chat layout that fills the viewport below the navbar */
 .page {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 62px);   /* 62px = navbar height */
+  height: calc(100vh - 72px);   /* 72px = navbar height */
   background: #0d0d0d;
   overflow: hidden;
 }
@@ -28,7 +28,7 @@
   transition: color 0.12s;
 }
 
-.backLink:hover { color: #ff6b1a; }
+.backLink:hover { color: #ff6600; }
 
 .channelInfo { flex: 1; min-width: 0; }
 
@@ -137,18 +137,18 @@
 .joinBarBtn {
   font-size: 13px;
   font-weight: 700;
-  color: #111;
-  background: #ff6b1a;
+  color: #fff;
+  background: linear-gradient(135deg, #ff6600, #cc0000);
   border: none;
   border-radius: 8px;
   padding: 9px 20px;
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
-  transition: background 0.12s;
+  transition: background 0.12s, box-shadow 0.12s;
 }
 
-.joinBarBtn:hover { background: #e55c0f; }
+.joinBarBtn:hover { background: linear-gradient(135deg, #ff7700, #dd0000); box-shadow: 0 4px 14px rgba(204, 0, 0, 0.35); }
 
 /* ── Message row ── */
 .msgRow {
@@ -178,7 +178,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #ff6b1a;
+  background: #cc0000;
   color: #fff;
   font-size: 13px;
   font-weight: 700;
@@ -222,7 +222,7 @@
   color: #bbb;
 }
 
-.msgRowMe .msgUsername { color: #ff6b1a; }
+.msgRowMe .msgUsername { color: #ff6600; }
 
 .msgTime {
   font-size: 11px;
@@ -243,8 +243,8 @@
 }
 
 .msgBubbleMe {
-  background: rgba(255, 107, 26, 0.14);
-  border-color: rgba(255, 107, 26, 0.25);
+  background: rgba(255, 102, 0, 0.14);
+  border-color: rgba(255, 102, 0, 0.25);
   color: #f0f0f0;
   border-radius: 10px 0 10px 10px;
 }
@@ -280,15 +280,15 @@
 .input::placeholder { color: #3a3a3a; }
 
 .input:focus {
-  border-color: #ff6b1a;
-  box-shadow: 0 0 0 3px rgba(255, 107, 26, 0.1);
+  border-color: #ff6600;
+  box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
 }
 
 .sendBtn {
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: #ff6b1a;
+  background: linear-gradient(135deg, #ff6600, #cc0000);
   border: none;
   color: #fff;
   cursor: pointer;
@@ -296,10 +296,10 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: background 0.15s, transform 0.1s;
+  transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
 }
 
-.sendBtn:hover:not(:disabled) { background: #e55c0f; }
+.sendBtn:hover:not(:disabled) { background: linear-gradient(135deg, #ff7700, #dd0000); box-shadow: 0 4px 14px rgba(204, 0, 0, 0.35); }
 .sendBtn:active:not(:disabled) { transform: scale(0.93); }
 
 .sendBtn:disabled {

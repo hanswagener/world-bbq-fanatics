@@ -1,4 +1,4 @@
-.page {
+﻿.page {
   max-width: 860px;
   margin: 0 auto;
   padding: 40px 24px 64px;
@@ -31,20 +31,21 @@
 .addBtn {
   display: inline-flex;
   align-items: center;
-  background: #ff6b1a;
+  background: linear-gradient(135deg, #ff6600, #cc0000);
   color: #fff;
   font-size: 14px;
   font-weight: 700;
   padding: 10px 20px;
   border-radius: 8px;
   text-decoration: none;
-  transition: background 0.15s, transform 0.1s;
+  transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 .addBtn:hover {
-  background: #e55c0f;
+  background: linear-gradient(135deg, #ff7700, #dd0000);
+  box-shadow: 0 4px 16px rgba(204, 0, 0, 0.35);
 }
 
 .addBtn:active {
@@ -154,7 +155,7 @@
 }
 
 .cardTitle:hover {
-  color: #ff6b1a;
+  color: #ff6600;
 }
 
 .cardDesc {
@@ -200,8 +201,8 @@
 }
 
 .editBtn:hover {
-  border-color: #ff6b1a;
-  color: #ff6b1a;
+  border-color: #ff6600;
+  color: #ff6600;
 }
 
 .deleteBtn {
