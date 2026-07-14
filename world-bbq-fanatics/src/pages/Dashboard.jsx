@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../supabase'
@@ -80,6 +80,52 @@ function RecipeCard({ recipe, currentUserId, onFlameToggle }) {
             🔥
             <span className={styles.flameCount}>{flameCount}</span>
           </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function FeaturedRecipe({ recipe }) {
+  const author = recipe.profiles
+  const flameCount = (recipe.flames ?? []).length
+
+  return (
+    <div className={styles.featured}>
+      {recipe.image_url ? (
+        <img src={recipe.image_url} className={styles.featuredImage} alt={recipe.title} />
+      ) : (
+        <div className={styles.featuredImagePlaceholder}>🔥</div>
+      )}
+      <div className={styles.featuredOverlay} />
+
+      <span className={styles.featuredBadge}>🏆 Most Popular Recipe</span>
+
+      <div className={styles.featuredContent}>
+        <div className={styles.featuredMeta}>
+          <CategoryBadge category={recipe.category} />
+          <span className={styles.featuredFlameCount}>🔥 {flameCount}</span>
+        </div>
+
+        <Link to={`/recipes/${recipe.id}`} className={styles.featuredTitle}>{recipe.title}</Link>
+
+        {recipe.description && (
+          <p className={styles.featuredDesc}>{recipe.description}</p>
+        )}
+
+        <div className={styles.featuredFooter}>
+          <Link to={`/profile/${author?.username ?? ''}`} className={styles.featuredAuthor}>
+            {author?.avatar_url ? (
+              <img src={author.avatar_url} className={styles.featuredAuthorImg} alt="" />
+            ) : (
+              <span className={styles.featuredAuthorInitials}>
+                {author?.username?.[0]?.toUpperCase() ?? '?'}
+              </span>
+            )}
+            <span className={styles.featuredAuthorName}>{author?.username ?? 'Unknown'}</span>
+          </Link>
+
+          <Link to={`/recipes/${recipe.id}`} className={styles.featuredBtn}>View Recipe →</Link>
         </div>
       </div>
     </div>
@@ -177,6 +223,13 @@ export default function Dashboard() {
   useEffect(() => { fetchMyRecipes() }, [fetchMyRecipes])
   useEffect(() => { fetchFollowingRecipes() }, [fetchFollowingRecipes])
 
+  const featured = useMemo(() => {
+    if (recipes.length === 0) return null
+    return recipes.reduce((best, r) =>
+      (r.flames?.length ?? 0) > (best.flames?.length ?? 0) ? r : best
+    , recipes[0])
+  }, [recipes])
+
   async function handleFlameToggle(recipeId, hasFlamed) {
     if (!user) return
 
@@ -240,6 +293,8 @@ export default function Dashboard() {
 
   return (
     <div className={styles.page}>
+      {!loading && featured && <FeaturedRecipe recipe={featured} />}
+
       <div className={styles.feedHeader}>
         <h1 className={styles.feedTitle}>Latest from the Pit</h1>
         <p className={styles.feedSubtitle}>Fresh BBQ recipes from the community</p>
@@ -269,7 +324,8 @@ export default function Dashboard() {
 
       {/* ── All Recipes tab ── */}
       {activeTab === 'all' && (() => {
-        const filtered = categoryFilter ? recipes.filter(r => r.category === categoryFilter) : recipes
+        const withoutFeatured = featured ? recipes.filter(r => r.id !== featured.id) : recipes
+        const filtered = categoryFilter ? withoutFeatured.filter(r => r.category === categoryFilter) : withoutFeatured
         return (
           <>
             <div className={styles.filterBar}>
@@ -308,8 +364,9 @@ export default function Dashboard() {
       })()}
 
       {/* ── My Recipes tab ── */}
-      {activeTab === 'mine' && (
-        loadingMyRecipes ? (
+      {activeTab === 'mine' && (() => {
+        const items = featured ? myRecipes.filter(r => r.id !== featured.id) : myRecipes
+        return loadingMyRecipes ? (
           <div className={styles.emptyState}>
             <span className={styles.emptyIcon}>🔥</span>
             <p className={styles.emptyText}>Loading your recipes…</p>
@@ -321,14 +378,20 @@ export default function Dashboard() {
             <p className={styles.emptyText}>Share your BBQ secrets with the world!</p>
             <Link to="/recipes/new" className={styles.addRecipeBtn}>Add Your First Recipe →</Link>
           </div>
+        ) : items.length === 0 ? (
+          <div className={styles.emptyState}>
+            <span className={styles.emptyIcon}>🏆</span>
+            <p className={styles.emptyText}>Your only recipe is the featured one above!</p>
+          </div>
         ) : (
-          <RecipeGrid items={myRecipes} />
+          <RecipeGrid items={items} />
         )
-      )}
+      })()}
 
       {/* ── Following tab ── */}
-      {activeTab === 'following' && (
-        loadingFollowing ? (
+      {activeTab === 'following' && (() => {
+        const items = featured ? followingRecipes.filter(r => r.id !== featured.id) : followingRecipes
+        return loadingFollowing ? (
           <div className={styles.emptyState}>
             <span className={styles.emptyIcon}>🔥</span>
             <p className={styles.emptyText}>Loading…</p>
@@ -346,10 +409,15 @@ export default function Dashboard() {
             <h2 className={styles.emptyTitle}>Nothing on the grill yet</h2>
             <p className={styles.emptyText}>The people you follow haven't posted any recipes yet.</p>
           </div>
+        ) : items.length === 0 ? (
+          <div className={styles.emptyState}>
+            <span className={styles.emptyIcon}>🏆</span>
+            <p className={styles.emptyText}>The only recipe from people you follow is the featured one above!</p>
+          </div>
         ) : (
-          <RecipeGrid items={followingRecipes} />
+          <RecipeGrid items={items} />
         )
-      )}
+      })()}
     </div>
   )
 }
