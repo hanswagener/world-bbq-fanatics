@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext'
 import styles from './Navbar.module.css'
 
 const NAV_LINKS = [
-  { to: '/dashboard', label: 'Feed' },
+  { to: '/dashboard', label: 'Home' },
   { to: '/recipes',   label: 'Recipes' },
   { to: '/community', label: 'Community' },
   { to: '/chat',      label: 'Chat' },
@@ -103,9 +103,9 @@ export default function Navbar() {
       <div className={styles.inner}>
 
         {/* Brand */}
-        <div className={styles.brand} aria-label="BBQ Fanatics">
+        <Link to="/dashboard" className={styles.brand} aria-label="BBQ Fanatics">
           <img src="/logo.png" alt="BBQ Fanatics" className={styles.brandLogo} />
-        </div>
+        </Link>
 
         {/* Desktop nav links */}
         <div className={styles.links}>
