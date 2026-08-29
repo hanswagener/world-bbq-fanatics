@@ -5,10 +5,10 @@ import { useAuth } from '../context/AuthContext'
 import styles from './Navbar.module.css'
 
 const NAV_LINKS = [
-  { to: '/dashboard',  label: 'Feed' },
-  { to: '/recipes',    label: 'Recipes' },
-  { to: '/community',  label: 'Community' },
-  { to: '/chat',       label: 'Chat' },
+  { to: '/dashboard', label: 'Feed' },
+  { to: '/recipes',   label: 'Recipes' },
+  { to: '/community', label: 'Community' },
+  { to: '/chat',      label: 'Chat' },
 ]
 
 function Avatar({ profile, size = 32 }) {
