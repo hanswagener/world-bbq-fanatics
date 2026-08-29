@@ -383,20 +383,6 @@ a[href="/dashboard"]:not(.brand) {
 }
 
 /* ── Responsive ── */
-@media (min-width: 768px) {
-  .links {
-    display: flex;
-  }
-
-  .hamburger {
-    display: none;
-  }
-
-  .mobileMenu {
-    display: none;
-  }
-}
-
 @media (max-width: 767px) {
   .links {
     display: none;
@@ -432,5 +418,19 @@ a[href="/dashboard"]:not(.brand) {
   .inner {
     padding: 0 16px;
     gap: 12px;
+  }
+}
+
+@media (min-width: 768px) {
+  .links {
+    display: flex;
+  }
+
+  .hamburger {
+    display: none;
+  }
+
+  .mobileMenu {
+    display: none;
   }
 }
