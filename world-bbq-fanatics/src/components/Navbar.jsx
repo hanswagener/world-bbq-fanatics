@@ -103,9 +103,9 @@ export default function Navbar() {
       <div className={styles.inner}>
 
         {/* Brand */}
-        <NavLink to="/dashboard" className={styles.brand}>
+        <div className={styles.brand} aria-label="BBQ Fanatics">
           <img src="/logo.png" alt="BBQ Fanatics" className={styles.brandLogo} />
-        </NavLink>
+        </div>
 
         {/* Desktop nav links */}
         <div className={styles.links}>
