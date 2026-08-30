@@ -204,7 +204,7 @@ export default function NewRecipe() {
                 <span className={styles.uploadHint}>{t('recipe.uploadHint')}</span>
               </label>
             )}
-            <p className={styles.photoTip}>📸 Recepten met foto krijgen 3x meer flames! 🔥</p>
+            <p className={styles.photoTip}>{t('photoTip')}</p>
             {imageError && <p className={styles.imageError}>{imageError}</p>}
             {uploading && (
               <div className={styles.progressBar}>
