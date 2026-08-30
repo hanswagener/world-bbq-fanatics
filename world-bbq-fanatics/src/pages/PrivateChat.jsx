@@ -310,7 +310,6 @@ export default function PrivateChat() {
       .single()
 
     if (error) {
-      console.log('Message insert error:', error)
       setSending(false)
       return
     }
@@ -438,8 +437,6 @@ export default function PrivateChat() {
             const language = msg.profiles?.language
             const normalizedLanguage = language?.toLowerCase()?.split('-')[0]
             const flag = flags[normalizedLanguage] || flags[language] || flags[language?.toUpperCase()] || '🇳🇱'
-            console.log('[PrivateChat] message language:', language, 'flag:', flag)
-
             return (
               <div
                 key={msg.id}

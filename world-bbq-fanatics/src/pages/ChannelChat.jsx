@@ -110,7 +110,6 @@ export default function ChannelChat() {
           filter: `channel_id=eq.${id}`,
         },
         async (payload) => {
-          console.log('[ChannelChat] realtime INSERT received:', payload.new)
           const { data, error } = await supabase
             .from('channel_messages')
             .select('id, content, created_at, user_id, is_system, profiles(username, avatar_url, language)')
@@ -127,7 +126,6 @@ export default function ChannelChat() {
         }
       )
       .subscribe((status, error) => {
-        console.log('[ChannelChat] realtime subscription status:', status)
         if (error) console.error('[ChannelChat] realtime subscription error:', error)
       })
 
@@ -177,14 +175,11 @@ export default function ChannelChat() {
     setSending(true)
     setText('')
 
-    console.log('Sending message:', content)
     const result = await supabase.from('channel_messages').insert({
       channel_id: id,
       user_id:    user.id,
       content,
     }).select('id, content, created_at, user_id, is_system, profiles(username, avatar_url, language)').single()
-
-    console.log('[ChannelChat] message insert result:', result)
 
     if (result.error) {
       console.error('[ChannelChat] message insert failed:', result.error)
@@ -264,8 +259,6 @@ export default function ChannelChat() {
             const language = msg.profiles?.language
             const normalizedLanguage = language?.toLowerCase()?.split('-')[0]
             const flag = flags[normalizedLanguage] || flags[language] || flags[language?.toUpperCase()] || '🇳🇱'
-            console.log('[ChannelChat] message language:', language, 'flag:', flag)
-
             return (
               <div
                 key={msg.id}
