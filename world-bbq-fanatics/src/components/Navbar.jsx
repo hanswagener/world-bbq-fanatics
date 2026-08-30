@@ -1,14 +1,24 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../supabase'
 import { useAuth } from '../context/AuthContext'
 import styles from './Navbar.module.css'
 
 const NAV_LINKS = [
-  { to: '/dashboard', label: 'Home' },
-  { to: '/recipes',   label: 'Recipes' },
-  { to: '/community', label: 'Community' },
-  { to: '/chat',      label: 'Chat' },
+  { to: '/dashboard', labelKey: 'nav.home' },
+  { to: '/recipes', labelKey: 'nav.recipes' },
+  { to: '/community', labelKey: 'nav.community' },
+  { to: '/chat', labelKey: 'nav.chat' },
+]
+
+const LANGUAGE_OPTIONS = [
+  { code: 'nl', label: '🇳🇱 NL' },
+  { code: 'en', label: '🇬🇧 EN' },
+  { code: 'de', label: '🇩🇪 DE' },
+  { code: 'fr', label: '🇫🇷 FR' },
+  { code: 'es', label: '🇪🇸 ES' },
+  { code: 'it', label: '🇮🇹 IT' },
 ]
 
 function Avatar({ profile, size = 32 }) {
@@ -25,16 +35,24 @@ function Avatar({ profile, size = 32 }) {
 
 export default function Navbar() {
   const { profile, user } = useAuth()
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [langOpen, setLangOpen] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
   const dropdownRef = useRef(null)
+  const langRef = useRef(null)
+
+  const activeLanguage = LANGUAGE_OPTIONS.find(opt => opt.code === i18n.language) ?? LANGUAGE_OPTIONS[0]
 
   useEffect(() => {
     function onOutsideClick(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setDropdownOpen(false)
+      }
+      if (langRef.current && !langRef.current.contains(e.target)) {
+        setLangOpen(false)
       }
     }
     document.addEventListener('mousedown', onOutsideClick)
@@ -109,7 +127,7 @@ export default function Navbar() {
 
         {/* Desktop nav links */}
         <div className={styles.links}>
-          {NAV_LINKS.map(({ to, label }) => (
+          {NAV_LINKS.map(({ to, labelKey }) => (
             <NavLink
               key={to}
               to={to}
@@ -117,20 +135,20 @@ export default function Navbar() {
                 `${styles.link} ${isActive ? styles.linkActive : ''}`
               }
             >
-              {label}
+              {t(labelKey)}
             </NavLink>
           ))}
         </div>
 
         {/* Search icon */}
-        <Link to="/search" className={styles.searchLink} aria-label="Search">
+        <Link to="/search" className={styles.searchLink} aria-label={t('nav.search')}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
         </Link>
 
         {/* Bell / notifications icon */}
-        <Link to="/notifications" className={styles.bellLink} aria-label="Notifications">
+        <Link to="/notifications" className={styles.bellLink} aria-label={t('nav.notifications')}>
           <span className={styles.bellIcon}>🔔</span>
           {unreadCount > 0 && (
             <span className={styles.bellBadge}>
@@ -138,6 +156,34 @@ export default function Navbar() {
             </span>
           )}
         </Link>
+
+        <div className={styles.langWrap} ref={langRef}>
+          <button
+            type="button"
+            className={styles.langButton}
+            onClick={() => setLangOpen(v => !v)}
+            aria-label={t('common.search')}
+          >
+            <span>{activeLanguage.label}</span>
+          </button>
+          {langOpen && (
+            <div className={styles.langMenu}>
+              {LANGUAGE_OPTIONS.map(option => (
+                <button
+                  key={option.code}
+                  type="button"
+                  className={`${styles.langOption} ${i18n.language === option.code ? styles.langOptionActive : ''}`}
+                  onClick={() => {
+                    i18n.changeLanguage(option.code)
+                    setLangOpen(false)
+                  }}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Right: user dropdown + hamburger */}
         <div className={styles.right}>
@@ -162,11 +208,11 @@ export default function Navbar() {
 
             {dropdownOpen && (
               <div className={styles.dropdown}>
-                <NavLink to="/profile/me" className={styles.dropItem} onClick={() => setDropdownOpen(false)}>My Profile</NavLink>
-                <NavLink to="/recipes" className={styles.dropItem} onClick={() => setDropdownOpen(false)}>My Recipes</NavLink>
-                <NavLink to="/settings"   className={styles.dropItem} onClick={() => setDropdownOpen(false)}>Settings</NavLink>
+                <NavLink to="/profile/me" className={styles.dropItem} onClick={() => setDropdownOpen(false)}>{t('nav.myProfile')}</NavLink>
+                <NavLink to="/recipes" className={styles.dropItem} onClick={() => setDropdownOpen(false)}>{t('nav.myRecipes')}</NavLink>
+                <NavLink to="/settings" className={styles.dropItem} onClick={() => setDropdownOpen(false)}>{t('nav.settings')}</NavLink>
                 <div className={styles.dropDivider} />
-                <button className={styles.dropItemDanger} onClick={handleSignOut}>Sign Out</button>
+                <button className={styles.dropItemDanger} onClick={handleSignOut}>{t('nav.signOut')}</button>
               </div>
             )}
           </div>
@@ -186,7 +232,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       <div className={`${styles.mobileMenu} ${mobileOpen ? styles.mobileMenuOpen : ''}`}>
-        {NAV_LINKS.map(({ to, label }) => (
+        {NAV_LINKS.map(({ to, labelKey }) => (
           <NavLink
             key={to}
             to={to}
@@ -195,21 +241,21 @@ export default function Navbar() {
             }
             onClick={closeMobile}
           >
-            {label}
+            {t(labelKey)}
           </NavLink>
         ))}
         <NavLink to="/notifications" className={styles.mobileLink} onClick={closeMobile}>
-          🔔 Notifications{unreadCount > 0 && <span className={styles.mobileBadge}>{unreadCount}</span>}
+          🔔 {t('nav.notifications')}{unreadCount > 0 && <span className={styles.mobileBadge}>{unreadCount}</span>}
         </NavLink>
         <div className={styles.mobileDivider} />
         <div className={styles.mobileUser}>
           <Avatar profile={profile} size={28} />
           <span className={styles.mobileUsername}>{profile?.username ?? '…'}</span>
         </div>
-        <NavLink to="/profile/me" className={styles.mobileLink} onClick={closeMobile}>My Profile</NavLink>
-        <NavLink to="/recipes" className={styles.mobileLink} onClick={closeMobile}>My Recipes</NavLink>
-        <NavLink to="/settings"   className={styles.mobileLink} onClick={closeMobile}>Settings</NavLink>
-        <button className={styles.mobileSignOut} onClick={handleSignOut}>Sign Out</button>
+        <NavLink to="/profile/me" className={styles.mobileLink} onClick={closeMobile}>{t('nav.myProfile')}</NavLink>
+        <NavLink to="/recipes" className={styles.mobileLink} onClick={closeMobile}>{t('nav.myRecipes')}</NavLink>
+        <NavLink to="/settings" className={styles.mobileLink} onClick={closeMobile}>{t('nav.settings')}</NavLink>
+        <button className={styles.mobileSignOut} onClick={handleSignOut}>{t('nav.signOut')}</button>
       </div>
     </nav>
   )

@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../supabase'
 import { useAuth } from '../context/AuthContext'
 import styles from './Chat.module.css'
 
 // ── User search + multi-select used in the create-room modal ──────────────────
 function UserSearch({ currentUserId, selected, onToggle }) {
+  const { t } = useTranslation()
   const [query,   setQuery]   = useState('')
   const [results, setResults] = useState([])
   const [searching, setSearching] = useState(false)
@@ -35,7 +37,7 @@ function UserSearch({ currentUserId, selected, onToggle }) {
         className={styles.searchInput}
         value={query}
         onChange={e => setQuery(e.target.value)}
-        placeholder="Search by username…"
+        placeholder={t('chat.searchUser')}
         autoComplete="off"
       />
       {results.length > 0 && (
@@ -60,7 +62,7 @@ function UserSearch({ currentUserId, selected, onToggle }) {
         </ul>
       )}
       {query.trim() && !searching && results.length === 0 && (
-        <p className={styles.searchEmpty}>No users found</p>
+        <p className={styles.searchEmpty}>{t('chat.noUsersFound')}</p>
       )}
       {selected.length > 0 && (
         <div className={styles.selectedChips}>
@@ -78,6 +80,7 @@ function UserSearch({ currentUserId, selected, onToggle }) {
 
 // ── Create Room modal ─────────────────────────────────────────────────────────
 function CreateRoomModal({ currentUserId, onClose, onCreate }) {
+  const { t } = useTranslation()
   const [name,     setName]     = useState('')
   const [invited,  setInvited]  = useState([])
   const [saving,   setSaving]   = useState(false)
@@ -154,26 +157,26 @@ function CreateRoomModal({ currentUserId, onClose, onCreate }) {
     <div className={styles.modalOverlay} onClick={e => e.target === e.currentTarget && onClose()}>
       <div className={styles.modal}>
         <div className={styles.modalHeader}>
-          <h2 className={styles.modalTitle}>Create Private Room</h2>
+          <h2 className={styles.modalTitle}>{t('chat.createRoom')}</h2>
           <button className={styles.modalClose} onClick={onClose}>×</button>
         </div>
 
         <form onSubmit={handleCreate} className={styles.modalForm}>
           <div className={styles.modalField}>
-            <label className={styles.modalLabel}>Room Name <span className={styles.req}>*</span></label>
+            <label className={styles.modalLabel}>{t('chat.roomName')} <span className={styles.req}>*</span></label>
             <input
               type="text"
               className={styles.modalInput}
               value={name}
               onChange={e => setName(e.target.value)}
-              placeholder="e.g. Brisket Crew"
+              placeholder={t('chat.roomPlaceholder')}
               required
               autoFocus
             />
           </div>
 
           <div className={styles.modalField}>
-            <label className={styles.modalLabel}>Invite Members</label>
+            <label className={styles.modalLabel}>{t('chat.inviteMembers')}</label>
             <UserSearch
               currentUserId={currentUserId}
               selected={invited}
@@ -184,9 +187,9 @@ function CreateRoomModal({ currentUserId, onClose, onCreate }) {
           {error && <p className={styles.modalError}>{error}</p>}
 
           <div className={styles.modalActions}>
-            <button type="button" className={styles.cancelBtn} onClick={onClose}>Cancel</button>
+            <button type="button" className={styles.cancelBtn} onClick={onClose}>{t('chat.cancel')}</button>
             <button type="submit" className={styles.createBtn} disabled={saving}>
-              {saving ? 'Creating…' : 'Create Room'}
+              {saving ? t('chat.loading') : t('chat.create')}
             </button>
           </div>
         </form>
@@ -216,6 +219,7 @@ function MemberStrip({ members }) {
 // ── Main rooms list page ──────────────────────────────────────────────────────
 export default function Chat() {
   const { user } = useAuth()
+  const { t } = useTranslation()
   const [rooms,      setRooms]      = useState([])
   const [loading,    setLoading]    = useState(true)
   const [showCreate, setShowCreate] = useState(false)
@@ -260,25 +264,25 @@ export default function Chat() {
     <div className={styles.page}>
       <div className={styles.pageHeader}>
         <div>
-          <h1 className={styles.pageTitle}>Private Rooms</h1>
-          <p className={styles.pageSubtitle}>Your private BBQ conversations</p>
+          <h1 className={styles.pageTitle}>{t('chat.privateChats')}</h1>
+          <p className={styles.pageSubtitle}>{t('chat.subtitle')}</p>
         </div>
         <button className={styles.createBtn} onClick={() => setShowCreate(true)}>
-          + New Room
+          {t('chat.newRoom')}
         </button>
       </div>
 
       {loading ? (
         <div className={styles.emptyState}>
-          <span>🔥</span><p>Loading rooms…</p>
+          <span>🔥</span><p>{t('chat.loading')}</p>
         </div>
       ) : rooms.length === 0 ? (
         <div className={styles.emptyState}>
           <span>🔒</span>
-          <h2 className={styles.emptyTitle}>No private rooms yet</h2>
-          <p className={styles.emptyText}>Create a room and invite fellow pitmasters for a private chat.</p>
+          <h2 className={styles.emptyTitle}>{t('chat.noRooms')}</h2>
+          <p className={styles.emptyText}>{t('chat.emptyText')}</p>
           <button className={styles.createBtn} style={{ marginTop: 8 }} onClick={() => setShowCreate(true)}>
-            + New Room
+            {t('chat.newRoom')}
           </button>
         </div>
       ) : (

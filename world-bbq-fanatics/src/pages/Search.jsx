@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../supabase'
 import styles from './Search.module.css'
 
@@ -32,17 +33,18 @@ function UserAvatar({ profile }) {
 }
 
 function RecipeResults({ recipes, loading }) {
+  const { t } = useTranslation()
   if (loading) return <div className={styles.state}><span className={styles.stateIcon}>🔥</span><p>Searching…</p></div>
   if (!recipes) return (
     <div className={styles.state}>
       <span className={styles.stateIcon}>🔍</span>
-      <p>Start typing to search for recipes</p>
+      <p>{t('common.search')}</p>
     </div>
   )
   if (recipes.length === 0) return (
     <div className={styles.state}>
       <span className={styles.stateIcon}>🍖</span>
-      <p>No BBQ recipes found for that search!</p>
+      <p>{t('common.search')}</p>
     </div>
   )
   return (
@@ -63,17 +65,18 @@ function RecipeResults({ recipes, loading }) {
 }
 
 function UserResults({ users, loading }) {
+  const { t } = useTranslation()
   if (loading) return <div className={styles.state}><span className={styles.stateIcon}>🔥</span><p>Searching…</p></div>
   if (!users) return (
     <div className={styles.state}>
       <span className={styles.stateIcon}>🔍</span>
-      <p>Start typing to search for users</p>
+      <p>{t('common.search')}</p>
     </div>
   )
   if (users.length === 0) return (
     <div className={styles.state}>
       <span className={styles.stateIcon}>🍖</span>
-      <p>No BBQ fanatics found with that name!</p>
+      <p>{t('common.search')}</p>
     </div>
   )
   return (
@@ -93,6 +96,7 @@ function UserResults({ users, loading }) {
 }
 
 export default function Search() {
+  const { t } = useTranslation()
   const inputRef = useRef(null)
   const timerRef = useRef(null)
 
@@ -161,7 +165,7 @@ export default function Search() {
           className={styles.input}
           value={query}
           onChange={e => setQuery(e.target.value)}
-          placeholder="Search recipes, users, locations…"
+          placeholder={t('common.search')}
           autoComplete="off"
         />
         {query && (
@@ -177,7 +181,7 @@ export default function Search() {
           className={`${styles.tab} ${tab === 'recipes' ? styles.tabActive : ''}`}
           onClick={() => setTab('recipes')}
         >
-          Recipes
+          {t('common.recipes')}
           {recipes !== null && (
             <span className={styles.tabCount}>{recipeCount}</span>
           )}
@@ -186,7 +190,7 @@ export default function Search() {
           className={`${styles.tab} ${tab === 'users' ? styles.tabActive : ''}`}
           onClick={() => setTab('users')}
         >
-          Users
+          {t('common.users')}
           {users !== null && (
             <span className={styles.tabCount}>{userCount}</span>
           )}

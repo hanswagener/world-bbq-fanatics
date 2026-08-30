@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../supabase'
 import styles from './NewRecipe.module.css'
@@ -16,6 +17,7 @@ const VISIBILITY_OPTIONS = [
 
 export default function NewRecipe() {
   const { user } = useAuth()
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const fileInputRef = useRef(null)
 
@@ -112,16 +114,16 @@ export default function NewRecipe() {
     <div className={styles.page}>
       <div className={styles.card}>
         <div className={styles.cardHeader}>
-          <Link to="/recipes" className={styles.backLink}>← Back to My Recipes</Link>
-          <h1 className={styles.title}>Add New Recipe</h1>
-          <p className={styles.subtitle}>Share your BBQ mastery with the community</p>
+          <Link to="/recipes" className={styles.backLink}>← {t('nav.myRecipes')}</Link>
+          <h1 className={styles.title}>{t('recipe.addRecipe')}</h1>
+          <p className={styles.subtitle}>{t('dashboard.shareSecrets')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>
           {/* Title */}
           <div className={styles.field}>
             <label htmlFor="title" className={styles.label}>
-              Title <span className={styles.required}>*</span>
+              {t('recipe.title')} <span className={styles.required}>*</span>
             </label>
             <input
               id="title"
@@ -136,7 +138,7 @@ export default function NewRecipe() {
 
           {/* Description */}
           <div className={styles.field}>
-            <label htmlFor="description" className={styles.label}>Description</label>
+            <label htmlFor="description" className={styles.label}>{t('recipe.description')}</label>
             <input
               id="description"
               type="text"
@@ -150,7 +152,7 @@ export default function NewRecipe() {
           {/* Category */}
           <div className={styles.field}>
             <label htmlFor="category" className={styles.label}>
-              Category <span className={styles.required}>*</span>
+              {t('recipe.category')} <span className={styles.required}>*</span>
             </label>
             <select
               id="category"
@@ -159,14 +161,14 @@ export default function NewRecipe() {
               onChange={e => setCategory(e.target.value)}
               required
             >
-              <option value="">Select category…</option>
+              <option value="">{t('recipe.selectCategory')}</option>
               {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
 
           {/* Image Upload */}
           <div className={styles.field}>
-            <span className={styles.label}>Recipe Image</span>
+            <span className={styles.label}>{t('recipe.recipeImage')}</span>
             <input
               ref={fileInputRef}
               id="imageFile"
@@ -184,22 +186,22 @@ export default function NewRecipe() {
                     className={styles.changeImageBtn}
                     onClick={() => fileInputRef.current?.click()}
                   >
-                    Change Image
+                    {t('recipe.changeImage')}
                   </button>
                   <button
                     type="button"
                     className={styles.removeImageBtn}
                     onClick={handleRemoveImage}
                   >
-                    Remove
+                    {t('recipe.remove')}
                   </button>
                 </div>
               </div>
             ) : (
               <label htmlFor="imageFile" className={styles.uploadArea}>
                 <span className={styles.uploadIcon}>📷</span>
-                <span className={styles.uploadText}>Click to select an image</span>
-                <span className={styles.uploadHint}>JPG, PNG or WebP · Max 5MB</span>
+                <span className={styles.uploadText}>{t('recipe.clickImage')}</span>
+                <span className={styles.uploadHint}>{t('recipe.uploadHint')}</span>
               </label>
             )}
             {imageError && <p className={styles.imageError}>{imageError}</p>}
@@ -212,7 +214,7 @@ export default function NewRecipe() {
 
           {/* Ingredients */}
           <div className={styles.field}>
-            <label htmlFor="ingredients" className={styles.label}>Ingredients</label>
+            <label htmlFor="ingredients" className={styles.label}>{t('recipe.ingredients')}</label>
             <textarea
               id="ingredients"
               className={styles.textarea}
@@ -225,7 +227,7 @@ export default function NewRecipe() {
 
           {/* Instructions */}
           <div className={styles.field}>
-            <label htmlFor="instructions" className={styles.label}>Instructions</label>
+            <label htmlFor="instructions" className={styles.label}>{t('recipe.instructions')}</label>
             <textarea
               id="instructions"
               className={styles.textarea}
@@ -238,7 +240,7 @@ export default function NewRecipe() {
 
           {/* Visibility */}
           <div className={styles.field}>
-            <span className={styles.label}>Visibility</span>
+            <span className={styles.label}>{t('recipe.visibility')}</span>
             <div className={styles.visibilityGroup}>
               {VISIBILITY_OPTIONS.map(opt => (
                 <label
@@ -263,9 +265,9 @@ export default function NewRecipe() {
           {error && <p className={styles.error}>{error}</p>}
 
           <div className={styles.formActions}>
-            <Link to="/recipes" className={styles.cancelBtn}>Cancel</Link>
+            <Link to="/recipes" className={styles.cancelBtn}>{t('recipe.cancel')}</Link>
             <button type="submit" className={styles.submitBtn} disabled={isSubmitting}>
-              {uploading ? 'Uploading image…' : saving ? 'Saving…' : 'Save Recipe'}
+              {uploading ? t('recipe.uploading') : saving ? t('common.loading') : t('recipe.saveRecipe')}
             </button>
           </div>
         </form>

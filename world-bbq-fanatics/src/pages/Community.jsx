@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../supabase'
 import { useAuth } from '../context/AuthContext'
 import styles from './Community.module.css'
@@ -14,6 +15,7 @@ const CHANNEL_ICONS = {
 
 export default function Community() {
   const { user, profile: myProfile } = useAuth()
+  const { t } = useTranslation()
   const navigate = useNavigate()
 
   const [channels, setChannels] = useState([])
@@ -64,7 +66,7 @@ export default function Community() {
 
   async function handleLeave(e, ch) {
     e.stopPropagation()
-    if (!window.confirm(`Leave #${ch.name}?`)) return
+    if (!window.confirm(t('community.leaveQuestion', { name: ch.name }))) return
     await supabase.from('channel_messages').insert({
       channel_id: ch.id,
       user_id:    user.id,
@@ -87,19 +89,19 @@ export default function Community() {
   return (
     <div className={styles.page}>
       <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>Community Channels</h1>
-        <p className={styles.pageSubtitle}>Join the conversation with fellow BBQ fanatics</p>
+        <h1 className={styles.pageTitle}>{t('community.title')}</h1>
+        <p className={styles.pageSubtitle}>{t('community.subtitle')}</p>
       </div>
 
       {loading ? (
         <div className={styles.emptyState}>
           <span className={styles.emptyIcon}>🔥</span>
-          <p className={styles.emptyText}>Loading channels…</p>
+          <p className={styles.emptyText}>{t('community.loading')}</p>
         </div>
       ) : channels.length === 0 ? (
         <div className={styles.emptyState}>
           <span className={styles.emptyIcon}>💬</span>
-          <p className={styles.emptyText}>No channels found.</p>
+          <p className={styles.emptyText}>{t('community.noChannels')}</p>
         </div>
       ) : (
         <div className={styles.grid}>
@@ -121,7 +123,7 @@ export default function Community() {
                     <p className={styles.cardDesc}>{ch.description}</p>
                   )}
                   {joinHint === ch.id && (
-                    <p className={styles.joinHint}>Join this channel to participate</p>
+                    <p className={styles.joinHint}>{t('community.joinHint')}</p>
                   )}
                 </div>
 
@@ -131,9 +133,9 @@ export default function Community() {
                       <button
                         className={styles.leaveChannelBtn}
                         onClick={(e) => handleLeave(e, ch)}
-                        title="Leave channel"
+                        title={t('community.leave')}
                       >
-                        Leave
+                        {t('community.leave')}
                       </button>
                       <span className={styles.cardArrow}>→</span>
                     </>
@@ -142,7 +144,7 @@ export default function Community() {
                       className={styles.joinChannelBtn}
                       onClick={(e) => handleJoin(e, ch)}
                     >
-                      Join
+                      {t('community.join')}
                     </button>
                   )}
                 </div>

@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../supabase'
 import PasswordInput from '../components/PasswordInput'
 import styles from './Auth.module.css'
 
 export default function Register() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
@@ -17,7 +19,7 @@ export default function Register() {
     setError(null)
 
     if (password !== confirm) {
-      setError('Passwords do not match.')
+      setError(t('auth.passwordsDoNotMatch'))
       return
     }
 
@@ -39,11 +41,11 @@ export default function Register() {
         <div className={styles.logo}>
           <img src="/logo.png" alt="BBQ Fanatics" style={{ height: '120px', objectFit: 'contain' }} />
         </div>
-        <p className={styles.subtitle}>Create your account</p>
+        <p className={styles.subtitle}>{t('auth.createSubtitle')}</p>
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.field}>
-            <label htmlFor="email" className={styles.label}>Email</label>
+            <label htmlFor="email" className={styles.label}>{t('auth.email')}</label>
             <input
               id="email"
               type="email"
@@ -57,7 +59,7 @@ export default function Register() {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="password" className={styles.label}>Password</label>
+            <label htmlFor="password" className={styles.label}>{t('auth.password')}</label>
             <PasswordInput
               id="password"
               value={password}
@@ -69,7 +71,7 @@ export default function Register() {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="confirm" className={styles.label}>Confirm Password</label>
+            <label htmlFor="confirm" className={styles.label}>{t('auth.confirmPassword')}</label>
             <PasswordInput
               id="confirm"
               value={confirm}
@@ -83,13 +85,13 @@ export default function Register() {
           {error && <p className={styles.error}>{error}</p>}
 
           <button type="submit" className={styles.button} disabled={loading}>
-            {loading ? 'Creating account…' : 'Create Account'}
+            {loading ? t('auth.creatingAccount') : t('auth.createAccount')}
           </button>
         </form>
 
         <p className={styles.footer}>
-          Already have an account?{' '}
-          <Link to="/login" className={styles.link}>Sign in</Link>
+          {t('auth.alreadyHaveAccount')}{' '}
+          <Link to="/login" className={styles.link}>{t('auth.signIn')}</Link>
         </p>
       </div>
     </div>

@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../supabase'
 import styles from './Auth.module.css'
 
 export default function ForgotPassword() {
+  const { t } = useTranslation()
   const [email,   setEmail]   = useState('')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -32,21 +34,21 @@ export default function ForgotPassword() {
       <div className={styles.card}>
         <div className={styles.logo}>🔥</div>
         <h1 className={styles.title}>World BBQ Fanatics</h1>
-        <p className={styles.subtitle}>Reset your password</p>
+        <p className={styles.subtitle}>{t('auth.resetSubtitle')}</p>
 
         {success ? (
           <div className={styles.successBox}>
             <p className={styles.successText}>
-              Check your email for a password reset link
+              {t('auth.checkEmail')}
             </p>
             <p className={styles.footer} style={{ marginTop: 16 }}>
-              <Link to="/login" className={styles.link}>Back to Sign In</Link>
+              <Link to="/login" className={styles.link}>{t('auth.backToLogin')}</Link>
             </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.field}>
-              <label htmlFor="email" className={styles.label}>Email</label>
+              <label htmlFor="email" className={styles.label}>{t('auth.email')}</label>
               <input
                 id="email"
                 type="email"
@@ -63,14 +65,14 @@ export default function ForgotPassword() {
             {error && <p className={styles.error}>{error}</p>}
 
             <button type="submit" className={styles.button} disabled={loading}>
-              {loading ? 'Sending…' : 'Send Reset Link'}
+              {loading ? t('auth.sending') : t('auth.sendResetLink')}
             </button>
           </form>
         )}
 
         {!success && (
           <p className={styles.footer}>
-            <Link to="/login" className={styles.link}>← Back to Sign In</Link>
+            <Link to="/login" className={styles.link}>{t('auth.backToSignIn')}</Link>
           </p>
         )}
       </div>

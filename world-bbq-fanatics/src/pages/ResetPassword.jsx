@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../supabase'
 import PasswordInput from '../components/PasswordInput'
 import styles from './Auth.module.css'
 
 export default function ResetPassword() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [password, setPassword] = useState('')
   const [confirm,  setConfirm]  = useState('')
   const [loading,  setLoading]  = useState(false)
@@ -31,7 +33,7 @@ export default function ResetPassword() {
     setError(null)
 
     if (password !== confirm) {
-      setError('Passwords do not match.')
+      setError(t('auth.passwordsDoNotMatch'))
       return
     }
 
@@ -53,18 +55,18 @@ export default function ResetPassword() {
       <div className={styles.card}>
         <div className={styles.logo}>🔥</div>
         <h1 className={styles.title}>World BBQ Fanatics</h1>
-        <p className={styles.subtitle}>Choose a new password</p>
+        <p className={styles.subtitle}>{t('auth.chooseNew')}</p>
 
         {success ? (
           <div className={styles.successBox}>
             <p className={styles.successText}>
-              Password updated! Redirecting you to sign in…
+              {t('auth.passwordUpdated')}
             </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.field}>
-              <label htmlFor="password" className={styles.label}>New Password</label>
+              <label htmlFor="password" className={styles.label}>{t('auth.newPassword')}</label>
               <PasswordInput
                 id="password"
                 value={password}
@@ -77,7 +79,7 @@ export default function ResetPassword() {
             </div>
 
             <div className={styles.field}>
-              <label htmlFor="confirm" className={styles.label}>Confirm New Password</label>
+              <label htmlFor="confirm" className={styles.label}>{t('auth.confirmNewPassword')}</label>
               <PasswordInput
                 id="confirm"
                 value={confirm}
@@ -91,7 +93,7 @@ export default function ResetPassword() {
             {error && <p className={styles.error}>{error}</p>}
 
             <button type="submit" className={styles.button} disabled={loading}>
-              {loading ? 'Updating…' : 'Update Password'}
+              {loading ? t('auth.updating') : t('auth.updatePassword')}
             </button>
           </form>
         )}

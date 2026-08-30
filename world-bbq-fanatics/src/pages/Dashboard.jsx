@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../supabase'
 import styles from './Dashboard.module.css'
@@ -24,9 +25,9 @@ function AuthorAvatar({ profile }) {
 }
 
 function VisibilityBadge({ visibility }) {
-  if (visibility === 'private')      return <span className={styles.badgePrivate}>Private</span>
-  if (visibility === 'friends_only') return <span className={styles.badgeFriendsOnly}>Friends Only</span>
-  return <span className={styles.badgePublic}>Public</span>
+  const label = visibility === 'private' ? 'Private' : visibility === 'friends_only' ? 'Friends Only' : 'Public'
+  const className = visibility === 'private' ? styles.badgePrivate : visibility === 'friends_only' ? styles.badgeFriendsOnly : styles.badgePublic
+  return <span className={className}>{label}</span>
 }
 
 function CategoryBadge({ category }) {
@@ -153,6 +154,7 @@ const RECIPE_SELECT = `
 
 export default function Dashboard() {
   const { user } = useAuth()
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState('all')
   const [categoryFilter, setCategoryFilter] = useState(null)
 
@@ -296,8 +298,8 @@ export default function Dashboard() {
       {!loading && featured && <FeaturedRecipe recipe={featured} />}
 
       <div className={styles.feedHeader}>
-        <h1 className={styles.feedTitle}>Latest from the Pit</h1>
-        <p className={styles.feedSubtitle}>Fresh BBQ recipes from the community</p>
+        <h1 className={styles.feedTitle}>{t('dashboard.latest')}</h1>
+        <p className={styles.feedSubtitle}>{t('dashboard.subtitle')}</p>
       </div>
 
       {/* ── Tabs ── */}
@@ -306,19 +308,19 @@ export default function Dashboard() {
           className={`${styles.tab} ${activeTab === 'all' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('all')}
         >
-          All Recipes
+          {t('dashboard.allRecipes')}
         </button>
         <button
           className={`${styles.tab} ${activeTab === 'mine' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('mine')}
         >
-          My Recipes
+          {t('dashboard.myRecipes')}
         </button>
         <button
           className={`${styles.tab} ${activeTab === 'following' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('following')}
         >
-          Following
+          {t('dashboard.following')}
         </button>
       </div>
 
@@ -348,13 +350,13 @@ export default function Dashboard() {
             {loading ? (
               <div className={styles.emptyState}>
                 <span className={styles.emptyIcon}>🔥</span>
-                <p className={styles.emptyText}>Loading recipes…</p>
+                <p className={styles.emptyText}>{t('dashboard.loading')}</p>
               </div>
             ) : filtered.length === 0 ? (
               <div className={styles.emptyState}>
                 <span className={styles.emptyIcon}>🍖</span>
-                <h2 className={styles.emptyTitle}>{categoryFilter ? `No ${categoryFilter} recipes yet` : 'The grill is cold…'}</h2>
-                <p className={styles.emptyText}>{categoryFilter ? 'Be the first to add one!' : 'No recipes yet. Be the first to fire one up!'}</p>
+                <h2 className={styles.emptyTitle}>{categoryFilter ? t('dashboard.emptyTitleCategory', { category: categoryFilter }) : t('dashboard.emptyTitleCold')}</h2>
+                <p className={styles.emptyText}>{categoryFilter ? t('dashboard.emptyDescCategory') : t('dashboard.emptyDescCold')}</p>
               </div>
             ) : (
               <RecipeGrid items={filtered} />
@@ -369,19 +371,19 @@ export default function Dashboard() {
         return loadingMyRecipes ? (
           <div className={styles.emptyState}>
             <span className={styles.emptyIcon}>🔥</span>
-            <p className={styles.emptyText}>Loading your recipes…</p>
+            <p className={styles.emptyText}>{t('dashboard.loadingMine')}</p>
           </div>
         ) : myRecipes.length === 0 ? (
           <div className={styles.emptyState}>
             <span className={styles.emptyIcon}>🍖</span>
-            <h2 className={styles.emptyTitle}>No recipes yet</h2>
-            <p className={styles.emptyText}>Share your BBQ secrets with the world!</p>
-            <Link to="/recipes/new" className={styles.addRecipeBtn}>Add Your First Recipe →</Link>
+            <h2 className={styles.emptyTitle}>{t('dashboard.noRecipesYet')}</h2>
+            <p className={styles.emptyText}>{t('dashboard.shareSecrets')}</p>
+            <Link to="/recipes/new" className={styles.addRecipeBtn}>{t('dashboard.addFirstRecipe')}</Link>
           </div>
         ) : items.length === 0 ? (
           <div className={styles.emptyState}>
             <span className={styles.emptyIcon}>🏆</span>
-            <p className={styles.emptyText}>Your only recipe is the featured one above!</p>
+            <p className={styles.emptyText}>{t('dashboard.featuredOnly')}</p>
           </div>
         ) : (
           <RecipeGrid items={items} />
@@ -394,25 +396,25 @@ export default function Dashboard() {
         return loadingFollowing ? (
           <div className={styles.emptyState}>
             <span className={styles.emptyIcon}>🔥</span>
-            <p className={styles.emptyText}>Loading…</p>
+            <p className={styles.emptyText}>{t('dashboard.loadingFollowing')}</p>
           </div>
         ) : noFollows ? (
           <div className={styles.emptyState}>
             <span className={styles.emptyIcon}>🍖</span>
-            <h2 className={styles.emptyTitle}>No one followed yet</h2>
-            <p className={styles.emptyText}>Follow some BBQ fanatics to see their recipes here!</p>
-            <Link to="/search" className={styles.findPeopleLink}>Find people to follow →</Link>
+            <h2 className={styles.emptyTitle}>{t('dashboard.emptyTitleNoOne')}</h2>
+            <p className={styles.emptyText}>{t('dashboard.emptyDescFollow')}</p>
+            <Link to="/search" className={styles.findPeopleLink}>{t('dashboard.findPeople')}</Link>
           </div>
         ) : followingRecipes.length === 0 ? (
           <div className={styles.emptyState}>
             <span className={styles.emptyIcon}>🍖</span>
-            <h2 className={styles.emptyTitle}>Nothing on the grill yet</h2>
-            <p className={styles.emptyText}>The people you follow haven't posted any recipes yet.</p>
+            <h2 className={styles.emptyTitle}>{t('dashboard.emptyTitleNothing')}</h2>
+            <p className={styles.emptyText}>{t('dashboard.emptyDescNothing')}</p>
           </div>
         ) : items.length === 0 ? (
           <div className={styles.emptyState}>
             <span className={styles.emptyIcon}>🏆</span>
-            <p className={styles.emptyText}>The only recipe from people you follow is the featured one above!</p>
+            <p className={styles.emptyText}>{t('dashboard.featuredOnly')}</p>
           </div>
         ) : (
           <RecipeGrid items={items} />

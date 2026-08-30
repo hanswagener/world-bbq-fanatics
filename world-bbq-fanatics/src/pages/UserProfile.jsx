@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../supabase'
 import styles from './UserProfile.module.css'
@@ -61,6 +62,7 @@ function RecipeCard({ recipe, showVisibility }) {
 export default function UserProfile() {
   const { username } = useParams()
   const { user } = useAuth()
+  const { t } = useTranslation()
   const navigate = useNavigate()
 
   const isMe = username === 'me'
@@ -199,7 +201,7 @@ export default function UserProfile() {
   if (loading) {
     return (
       <div className={styles.loading}>
-        <span>🔥</span><p>Loading profile…</p>
+        <span>🔥</span><p>{t('profile.loading')}</p>
       </div>
     )
   }
@@ -208,9 +210,9 @@ export default function UserProfile() {
     return (
       <div className={styles.loading}>
         <span>🍖</span>
-        <h2>Profile not found</h2>
-        <p>No pitmaster with that username exists.</p>
-        <Link to="/dashboard" className={styles.backLink}>← Back to Feed</Link>
+        <h2>{t('profile.notFound')}</h2>
+        <p>{t('profile.noPitmaster')}</p>
+        <Link to="/dashboard" className={styles.backLink}>{t('profile.backToFeed')}</Link>
       </div>
     )
   }
@@ -243,24 +245,24 @@ export default function UserProfile() {
             <div className={styles.statsRow}>
               <span className={styles.stat}>
                 <strong className={styles.statNum}>{followerCount}</strong>
-                <span className={styles.statLabel}> followers</span>
+                <span className={styles.statLabel}> {t('profile.followers')}</span>
               </span>
               <span className={styles.statSep}>·</span>
               <span className={styles.stat}>
                 <strong className={styles.statNum}>{followingCount}</strong>
-                <span className={styles.statLabel}> following</span>
+                <span className={styles.statLabel}> {t('profile.following')}</span>
               </span>
             </div>
 
             {isOwnProfile ? (
-              <Link to="/profile/edit" className={styles.editBtn}>Edit Profile</Link>
+              <Link to="/profile/edit" className={styles.editBtn}>{t('profile.editProfile')}</Link>
             ) : (
               <button
                 className={`${styles.followBtn} ${isFollowing ? styles.followBtnActive : ''}`}
                 onClick={handleFollow}
                 disabled={followLoading}
               >
-                {followLoading ? '…' : isFollowing ? 'Following' : '+ Follow'}
+                {followLoading ? '…' : isFollowing ? t('profile.followingState') : t('profile.follow')}
               </button>
             )}
           </div>
@@ -269,7 +271,7 @@ export default function UserProfile() {
             {profile.location  && <span className={styles.meta}>📍 {profile.location}</span>}
             {profile.bbq_brand && <span className={styles.meta}>🔩 {profile.bbq_brand}</span>}
             {profile.bbq_type  && <span className={styles.meta}>🔥 {profile.bbq_type}</span>}
-            <span className={styles.meta}>🗓 Member since {formatMemberDate(profile.created_at)}</span>
+            <span className={styles.meta}>🗓 {t('profile.memberSince')} {formatMemberDate(profile.created_at)}</span>
           </div>
         </div>
       </div>
@@ -277,16 +279,16 @@ export default function UserProfile() {
       {/* ── Recipes section ── */}
       <div className={styles.recipesSection}>
         <h2 className={styles.sectionTitle}>
-          {isMe ? 'My Recipes' : `Recipes by ${profile.username}`}
+          {isMe ? t('profile.myRecipes') : t('profile.recipesBy', { username: profile.username })}
           <span className={styles.recipeCount}>{recipes.length}</span>
         </h2>
 
         {recipes.length === 0 ? (
           <div className={styles.emptyState}>
             <span>🍖</span>
-            <p>{isMe ? "You haven't added any recipes yet." : 'No public recipes yet.'}</p>
+            <p>{isMe ? t('profile.noRecipesAdded') : t('profile.noPublicRecipes')}</p>
             {isMe && (
-              <Link to="/recipes/new" className={styles.addRecipeBtn}>+ Add Recipe</Link>
+              <Link to="/recipes/new" className={styles.addRecipeBtn}>{t('profile.addRecipe')}</Link>
             )}
           </div>
         ) : (

@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../supabase'
 import PasswordInput from '../components/PasswordInput'
 import styles from './Auth.module.css'
 
 export default function Login() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
@@ -32,11 +34,11 @@ export default function Login() {
         <div className={styles.logo}>
           <img src="/logo.png" alt="BBQ Fanatics" style={{ height: '120px', objectFit: 'contain' }} />
         </div>
-        <p className={styles.subtitle}>Sign in to your account</p>
+        <p className={styles.subtitle}>{t('auth.signInSubtitle')}</p>
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.field}>
-            <label htmlFor="email" className={styles.label}>Email</label>
+            <label htmlFor="email" className={styles.label}>{t('auth.email')}</label>
             <input
               id="email"
               type="email"
@@ -50,7 +52,7 @@ export default function Login() {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="password" className={styles.label}>Password</label>
+            <label htmlFor="password" className={styles.label}>{t('auth.password')}</label>
             <PasswordInput
               id="password"
               value={password}
@@ -64,17 +66,17 @@ export default function Login() {
           {error && <p className={styles.error}>{error}</p>}
 
           <div className={styles.forgotRow}>
-            <Link to="/forgot-password" className={styles.forgotLink}>Forgot password?</Link>
+            <Link to="/forgot-password" className={styles.forgotLink}>{t('auth.forgotPassword')}?</Link>
           </div>
 
           <button type="submit" className={styles.button} disabled={loading}>
-            {loading ? 'Signing in…' : 'Sign In'}
+            {loading ? t('auth.signingIn') : t('auth.signIn')}
           </button>
         </form>
 
         <p className={styles.footer}>
-          Don't have an account?{' '}
-          <Link to="/register" className={styles.link}>Create one</Link>
+          {t('auth.dontHaveAccount')}{' '}
+          <Link to="/register" className={styles.link}>{t('auth.createOne')}</Link>
         </p>
       </div>
     </div>

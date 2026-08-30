@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../supabase'
 import styles from './RecipeDetail.module.css'
@@ -24,6 +25,7 @@ export default function RecipeDetail() {
   const { id } = useParams()
   const { user } = useAuth()
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const [recipe, setRecipe] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -95,7 +97,7 @@ export default function RecipeDetail() {
     return (
       <div className={styles.loading}>
         <span>🔥</span>
-        <p>Loading…</p>
+        <p>{t('recipe.loading')}</p>
       </div>
     )
   }
@@ -104,8 +106,8 @@ export default function RecipeDetail() {
     return (
       <div className={styles.loading}>
         <span>🍖</span>
-        <h2>Recipe not found</h2>
-        <Link to="/recipes" className={styles.backBtn}>Back to Recipes</Link>
+        <h2>{t('recipe.notFound')}</h2>
+        <Link to="/recipes" className={styles.backBtn}>{t('recipe.backToRecipes')}</Link>
       </div>
     )
   }
@@ -119,9 +121,9 @@ export default function RecipeDetail() {
 
         {/* Back + owner actions */}
         <div className={styles.topBar}>
-          <button className={styles.backBtn} onClick={() => navigate(-1)}>← Back</button>
+          <button className={styles.backBtn} onClick={() => navigate(-1)}>← {t('recipe.back')}</button>
           {isOwner && (
-            <Link to={`/recipes/${id}/edit`} className={styles.editLink}>Edit Recipe</Link>
+            <Link to={`/recipes/${id}/edit`} className={styles.editLink}>{t('recipe.editRecipe')}</Link>
           )}
         </div>
 
@@ -165,8 +167,8 @@ export default function RecipeDetail() {
           <p className={styles.description}>{recipe.description}</p>
         )}
 
-        <Section title="Ingredients" content={recipe.ingredients} />
-        <Section title="Instructions" content={recipe.instructions} />
+        <Section title={t('recipe.ingredients')} content={recipe.ingredients} />
+        <Section title={t('recipe.instructions')} content={recipe.instructions} />
       </div>
     </div>
   )

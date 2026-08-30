@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../supabase'
 import styles from './Notifications.module.css'
@@ -31,6 +32,7 @@ function NotifAvatar({ profile }) {
 }
 
 function NotifItem({ notif, invite, onAccept, onDecline }) {
+  const { t } = useTranslation()
   const from = notif.from_profile
   const username = from?.username ?? 'Someone'
   const itemClass = `${styles.item} ${notif.read ? styles.itemRead : styles.itemUnread}`
@@ -47,7 +49,7 @@ function NotifItem({ notif, invite, onAccept, onDecline }) {
           <p className={styles.itemText}>
             <span className={styles.flameIcon}>🔥</span>
             <strong className={styles.username}>{username}</strong>
-            {' started following you'}
+            {' ' + t('notifications.startedFollowing')}
           </p>
           <span className={styles.time}>{timeAgo(notif.created_at)}</span>
         </div>
@@ -64,25 +66,25 @@ function NotifItem({ notif, invite, onAccept, onDecline }) {
           <p className={styles.itemText}>
             <span className={styles.flameIcon}>💬</span>
             <strong className={styles.username}>{username}</strong>
-            {' invited you to a private chat room'}
+            {' ' + t('notifications.invitedToChat')}
           </p>
           <span className={styles.time}>{timeAgo(notif.created_at)}</span>
 
           {invite?.status === 'pending' && (
             <div className={styles.inviteActions}>
               <button className={styles.acceptBtn} onClick={() => onAccept(invite)}>
-                ✅ Accept
+                ✅ {t('notifications.accept')}
               </button>
               <button className={styles.declineBtn} onClick={() => onDecline(invite)}>
-                ❌ Decline
+                ❌ {t('notifications.decline')}
               </button>
             </div>
           )}
           {invite?.status === 'accepted' && (
-            <span className={styles.inviteAccepted}>✓ Accepted</span>
+            <span className={styles.inviteAccepted}>✓ {t('notifications.accepted')}</span>
           )}
           {invite?.status === 'declined' && (
-            <span className={styles.inviteDeclined}>✗ Declined</span>
+            <span className={styles.inviteDeclined}>✗ {t('notifications.declined')}</span>
           )}
         </div>
         {unreadDot}
@@ -103,7 +105,7 @@ function NotifItem({ notif, invite, onAccept, onDecline }) {
         <p className={styles.itemText}>
           <span className={styles.flameIcon}>🔥</span>
           <strong className={styles.username}>{username}</strong>
-          {' flamed your recipe '}
+          {' ' + t('notifications.flamedRecipe') + ' '}
           <span className={styles.recipeTitle}>{recipeTitle}</span>
         </p>
         <span className={styles.time}>{timeAgo(notif.created_at)}</span>
@@ -126,6 +128,7 @@ function findInvite(notif, chatInvites) {
 
 export default function Notifications() {
   const { user } = useAuth()
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [notifications, setNotifications] = useState([])
   const [chatInvites,   setChatInvites]   = useState([])
@@ -191,19 +194,19 @@ export default function Notifications() {
   return (
     <div className={styles.page}>
       <div className={styles.header}>
-        <h1 className={styles.title}>Notifications</h1>
+        <h1 className={styles.title}>{t('notifications.title')}</h1>
       </div>
 
       {loading ? (
         <div className={styles.empty}>
           <span className={styles.emptyIcon}>🔥</span>
-          <p className={styles.emptyText}>Loading…</p>
+          <p className={styles.emptyText}>{t('notifications.loading')}</p>
         </div>
       ) : notifications.length === 0 ? (
         <div className={styles.empty}>
           <span className={styles.emptyIcon}>🔔</span>
-          <h2 className={styles.emptyTitle}>No notifications yet</h2>
-          <p className={styles.emptyText}>When someone flames your recipe, you'll see it here.</p>
+          <h2 className={styles.emptyTitle}>{t('notifications.noNotifications')}</h2>
+          <p className={styles.emptyText}>{t('notifications.emptyText')}</p>
         </div>
       ) : (
         <div className={styles.list}>
