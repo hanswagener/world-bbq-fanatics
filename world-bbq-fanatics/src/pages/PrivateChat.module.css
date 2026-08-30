@@ -258,6 +258,12 @@
 
 .msgRowMe .msgUsername { color: #ff6600; }
 
+.msgLanguage {
+  font-size: 12px;
+  line-height: 1;
+  opacity: 0.75;
+}
+
 .msgTime {
   font-size: 11px;
   color: #444;

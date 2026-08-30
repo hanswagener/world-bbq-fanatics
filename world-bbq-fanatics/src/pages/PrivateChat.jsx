@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../supabase'
 import { useAuth } from '../context/AuthContext'
+import { getLanguageFlag } from '../utils/languageFlags'
 import styles from './PrivateChat.module.css'
 
 function formatTime(dateStr) {
@@ -44,7 +45,7 @@ function InviteModal({ roomId, currentUserId, existingMemberIds, onClose, onInvi
     timer.current = setTimeout(async () => {
       const { data } = await supabase
         .from('profiles')
-        .select('id, username, avatar_url')
+        .select('id, username, avatar_url, language')
         .ilike('username', `%${query.trim()}%`)
         .neq('id', currentUserId)
         .limit(8)
@@ -225,7 +226,7 @@ export default function PrivateChat() {
       // restrict the result to only the current user's own row.
       const { data: memberData } = await supabase
         .from('profiles')
-        .select('id, username, avatar_url')
+        .select('id, username, avatar_url, language')
         .in(
           'id',
           supabase.from('private_room_members').select('user_id').eq('room_id', id)
@@ -241,7 +242,7 @@ export default function PrivateChat() {
     async function loadMessages() {
       const { data } = await supabase
         .from('private_messages')
-        .select('id, content, created_at, user_id, is_system, profiles(username, avatar_url)')
+        .select('id, content, created_at, user_id, is_system, profiles(username, avatar_url, language)')
         .eq('room_id', id)
         .order('created_at', { ascending: true })
         .limit(200)
@@ -267,7 +268,7 @@ export default function PrivateChat() {
         async (payload) => {
           const { data } = await supabase
             .from('private_messages')
-            .select('id, content, created_at, user_id, is_system, profiles(username, avatar_url)')
+            .select('id, content, created_at, user_id, is_system, profiles(username, avatar_url, language)')
             .eq('id', payload.new.id)
             .maybeSingle()
 
@@ -444,6 +445,9 @@ export default function PrivateChat() {
                     <div className={styles.msgMeta}>
                       <span className={styles.msgUsername}>
                         {isMe ? 'You' : (msg.profiles?.username ?? 'Unknown')}
+                      </span>
+                      <span className={styles.msgLanguage} aria-label="User language">
+                        {getLanguageFlag(msg.profiles?.language)}
                       </span>
                       <span className={styles.msgTime}>{formatTime(msg.created_at)}</span>
                     </div>

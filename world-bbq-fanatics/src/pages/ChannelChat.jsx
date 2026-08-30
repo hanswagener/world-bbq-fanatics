@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../supabase'
 import { useAuth } from '../context/AuthContext'
+import { getLanguageFlag } from '../utils/languageFlags'
 import styles from './ChannelChat.module.css'
 
 function formatTime(dateStr) {
@@ -85,7 +86,7 @@ export default function ChannelChat() {
     async function loadMessages() {
       const { data } = await supabase
         .from('channel_messages')
-        .select('id, content, created_at, user_id, is_system, profiles(username, avatar_url)')
+        .select('id, content, created_at, user_id, is_system, profiles(username, avatar_url, language)')
         .eq('channel_id', id)
         .order('created_at', { ascending: true })
         .limit(200)
@@ -111,7 +112,7 @@ export default function ChannelChat() {
         async (payload) => {
           const { data } = await supabase
             .from('channel_messages')
-            .select('id, content, created_at, user_id, is_system, profiles(username, avatar_url)')
+            .select('id, content, created_at, user_id, is_system, profiles(username, avatar_url, language)')
             .eq('id', payload.new.id)
             .maybeSingle()
 
@@ -250,6 +251,9 @@ export default function ChannelChat() {
                     <div className={styles.msgMeta}>
                       <span className={styles.msgUsername}>
                         {isMe ? 'You' : (msg.profiles?.username ?? 'Unknown')}
+                      </span>
+                      <span className={styles.msgLanguage} aria-label="User language">
+                        {getLanguageFlag(msg.profiles?.language)}
                       </span>
                       <span className={styles.msgTime}>{formatTime(msg.created_at)}</span>
                     </div>

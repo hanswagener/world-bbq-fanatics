@@ -175,6 +175,15 @@ export default function Navbar() {
                   className={`${styles.langOption} ${i18n.language === option.code ? styles.langOptionActive : ''}`}
                   onClick={() => {
                     i18n.changeLanguage(option.code)
+                    if (user) {
+                      supabase
+                        .from('profiles')
+                        .update({ language: option.code })
+                        .eq('id', user.id)
+                        .then(({ error }) => {
+                          if (error) console.error('[Navbar] language update failed:', error.message)
+                        })
+                    }
                     setLangOpen(false)
                   }}
                 >
