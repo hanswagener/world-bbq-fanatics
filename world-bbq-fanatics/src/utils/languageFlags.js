@@ -1,12 +1,15 @@
-const LANGUAGE_FLAGS = {
-  nl: '🇳🇱',
-  en: '🇬🇧',
-  de: '🇩🇪',
-  fr: '🇫🇷',
-  es: '🇪🇸',
-  it: '🇮🇹',
+export const languageFlags = {
+  'nl': '🇳🇱',
+  'en': '🇬🇧',
+  'de': '🇩🇪',
+  'fr': '🇫🇷',
+  'es': '🇪🇸',
+  'it': '🇮🇹',
 }
 
 export function getLanguageFlag(language) {
-  return LANGUAGE_FLAGS[language?.split('-')[0]] ?? '🌐'
+  const code = typeof language === 'string'
+    ? language.trim().toLowerCase().split('-')[0]
+    : ''
+  return languageFlags[code] ?? '🌐'
 }
