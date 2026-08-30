@@ -84,13 +84,14 @@ export default function ChannelChat() {
   // Load initial messages
   useEffect(() => {
     async function loadMessages() {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('channel_messages')
         .select('id, content, created_at, user_id, is_system, profiles(username, avatar_url, language)')
         .eq('channel_id', id)
         .order('created_at', { ascending: true })
         .limit(200)
 
+      if (error) console.error('[ChannelChat] load messages failed:', error)
       setMessages(data ?? [])
       setLoading(false)
     }
@@ -110,12 +111,14 @@ export default function ChannelChat() {
           filter: `channel_id=eq.${id}`,
         },
         async (payload) => {
-          const { data } = await supabase
+          console.log('[ChannelChat] realtime INSERT received:', payload.new)
+          const { data, error } = await supabase
             .from('channel_messages')
             .select('id, content, created_at, user_id, is_system, profiles(username, avatar_url, language)')
             .eq('id', payload.new.id)
             .maybeSingle()
 
+          if (error) console.error('[ChannelChat] realtime message lookup failed:', error)
           if (data) {
             setMessages(prev => {
               if (prev.some(m => m.id === data.id)) return prev
@@ -124,7 +127,10 @@ export default function ChannelChat() {
           }
         }
       )
-      .subscribe()
+      .subscribe((status, error) => {
+        console.log('[ChannelChat] realtime subscription status:', status)
+        if (error) console.error('[ChannelChat] realtime subscription error:', error)
+      })
 
     return () => { supabase.removeChannel(channel_sub) }
   }, [id])
@@ -172,10 +178,26 @@ export default function ChannelChat() {
     setSending(true)
     setText('')
 
-    await supabase.from('channel_messages').insert({
+    console.log('Sending message:', content)
+    const result = await supabase.from('channel_messages').insert({
       channel_id: id,
       user_id:    user.id,
       content,
+    }).select('id, content, created_at, user_id, is_system, profiles(username, avatar_url, language)').single()
+
+    console.log('[ChannelChat] message insert result:', result)
+
+    if (result.error) {
+      console.error('[ChannelChat] message insert failed:', result.error)
+      setText(content)
+      setSending(false)
+      inputRef.current?.focus()
+      return
+    }
+
+    setMessages(prev => {
+      if (prev.some(message => message.id === result.data.id)) return prev
+      return [...prev, result.data]
     })
 
     setSending(false)
