@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../supabase'
+import RecipePlaceholder from '../components/RecipePlaceholder'
 import styles from './Search.module.css'
 
 const SKILL_COLORS = {
@@ -54,7 +55,7 @@ function RecipeResults({ recipes, loading }) {
           {r.image_url ? (
             <img src={r.image_url} className={styles.recipeImg} alt="" />
           ) : (
-            <div className={styles.recipeImgPlaceholder}>🍖 BBQ</div>
+            <RecipePlaceholder className={styles.recipeImgPlaceholder} />
           )}
           <div className={styles.recipeBody}>
             <h3 className={styles.recipeTitle}>{r.title}</h3>

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../supabase'
+import RecipePlaceholder from '../components/RecipePlaceholder'
 import styles from './MyRecipes.module.css'
 
 function formatDate(dateStr) {
@@ -78,7 +79,7 @@ export default function MyRecipes() {
                 {recipe.image_url ? (
                   <img src={recipe.image_url} className={styles.cardThumb} alt={recipe.title} />
                 ) : (
-                  <div className={styles.cardThumbPlaceholder}>🍖 BBQ</div>
+                  <RecipePlaceholder className={styles.cardThumbPlaceholder} />
                 )}
                 <div className={styles.cardMain}>
                   <div className={styles.cardTop}>

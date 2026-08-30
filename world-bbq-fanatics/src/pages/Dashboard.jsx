@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../supabase'
+import RecipePlaceholder from '../components/RecipePlaceholder'
 import styles from './Dashboard.module.css'
 
 function formatDate(dateStr) {
@@ -50,7 +51,7 @@ function RecipeCard({ recipe, currentUserId, onFlameToggle }) {
       {recipe.image_url ? (
         <img src={recipe.image_url} className={styles.cardImage} alt={recipe.title} />
       ) : (
-        <div className={styles.cardImagePlaceholder}>🍖 BBQ</div>
+        <RecipePlaceholder className={styles.cardImagePlaceholder} />
       )}
 
       <div className={styles.cardBody}>
@@ -96,7 +97,7 @@ function FeaturedRecipe({ recipe }) {
       {recipe.image_url ? (
         <img src={recipe.image_url} className={styles.featuredImage} alt={recipe.title} />
       ) : (
-        <div className={styles.featuredImagePlaceholder}>🍖 BBQ</div>
+        <RecipePlaceholder className={styles.featuredImagePlaceholder} />
       )}
       <div className={styles.featuredOverlay} />
 
