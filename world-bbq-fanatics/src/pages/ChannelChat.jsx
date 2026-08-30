@@ -257,6 +257,7 @@ export default function ChannelChat() {
               (new Date(msg.created_at) - new Date(prevMsg.created_at)) < 5 * 60 * 1000
             const flags = { nl: '🇳🇱', en: '🇬🇧', de: '🇩🇪', fr: '🇫🇷', es: '🇪🇸', it: '🇮🇹' }
             const flag = flags[msg.profiles?.language] || '🇳🇱'
+            console.log('[ChannelChat] message language:', msg.profiles?.language, 'flag:', flag)
 
             return (
               <div
