@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../supabase'
 import { useAuth } from '../context/AuthContext'
-import { getLanguageFlag } from '../utils/languageFlags'
 import styles from './ChannelChat.module.css'
 
 function formatTime(dateStr) {
@@ -256,6 +255,8 @@ export default function ChannelChat() {
             const grouped = !prevMsg?.is_system &&
               prevMsg?.user_id === msg.user_id &&
               (new Date(msg.created_at) - new Date(prevMsg.created_at)) < 5 * 60 * 1000
+            const flags = { nl: '🇳🇱', en: '🇬🇧', de: '🇩🇪', fr: '🇫🇷', es: '🇪🇸', it: '🇮🇹' }
+            const flag = flags[msg.profiles?.language] || '🇳🇱'
 
             return (
               <div
@@ -275,7 +276,7 @@ export default function ChannelChat() {
                         {isMe ? 'You' : (msg.profiles?.username ?? 'Unknown')}
                       </span>
                       <span className={styles.msgLanguage} aria-label="User language">
-                        {getLanguageFlag(msg.profiles?.language)}
+                        {flag}
                       </span>
                       <span className={styles.msgTime}>{formatTime(msg.created_at)}</span>
                     </div>
