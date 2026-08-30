@@ -51,7 +51,11 @@ function RecipeResults({ recipes, loading }) {
     <div className={styles.recipeList}>
       {recipes.map(r => (
         <Link key={r.id} to={`/recipes/${r.id}`} className={styles.recipeCard}>
-          {r.image_url && <img src={r.image_url} className={styles.recipeImg} alt="" />}
+          {r.image_url ? (
+            <img src={r.image_url} className={styles.recipeImg} alt="" />
+          ) : (
+            <div className={styles.recipeImgPlaceholder}>🍖 BBQ</div>
+          )}
           <div className={styles.recipeBody}>
             <h3 className={styles.recipeTitle}>{r.title}</h3>
             <p className={styles.recipeAuthor}>by {r.profiles?.username ?? 'Unknown'}</p>

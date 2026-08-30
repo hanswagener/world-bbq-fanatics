@@ -78,7 +78,7 @@ export default function MyRecipes() {
                 {recipe.image_url ? (
                   <img src={recipe.image_url} className={styles.cardThumb} alt={recipe.title} />
                 ) : (
-                  <div className={styles.cardThumbPlaceholder}>🔥</div>
+                  <div className={styles.cardThumbPlaceholder}>🍖 BBQ</div>
                 )}
                 <div className={styles.cardMain}>
                   <div className={styles.cardTop}>

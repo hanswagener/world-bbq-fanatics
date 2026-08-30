@@ -40,8 +40,10 @@ function RecipeCard({ recipe, showVisibility }) {
   const vis = VISIBILITY_LABELS[recipe.visibility] ?? VISIBILITY_LABELS.private
   return (
     <Link to={`/recipes/${recipe.id}`} className={styles.recipeCard}>
-      {recipe.image_url && (
+      {recipe.image_url ? (
         <img src={recipe.image_url} className={styles.recipeImg} alt={recipe.title} />
+      ) : (
+        <div className={styles.recipeImgPlaceholder}>🍖 BBQ</div>
       )}
       <div className={styles.recipeBody}>
         <div className={styles.recipeTop}>

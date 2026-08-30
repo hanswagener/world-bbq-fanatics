@@ -50,7 +50,7 @@ function RecipeCard({ recipe, currentUserId, onFlameToggle }) {
       {recipe.image_url ? (
         <img src={recipe.image_url} className={styles.cardImage} alt={recipe.title} />
       ) : (
-        <div className={styles.cardImagePlaceholder}>🔥</div>
+        <div className={styles.cardImagePlaceholder}>🍖 BBQ</div>
       )}
 
       <div className={styles.cardBody}>
@@ -96,7 +96,7 @@ function FeaturedRecipe({ recipe }) {
       {recipe.image_url ? (
         <img src={recipe.image_url} className={styles.featuredImage} alt={recipe.title} />
       ) : (
-        <div className={styles.featuredImagePlaceholder}>🔥</div>
+        <div className={styles.featuredImagePlaceholder}>🍖 BBQ</div>
       )}
       <div className={styles.featuredOverlay} />
 
