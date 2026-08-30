@@ -13,6 +13,14 @@ const CHANNEL_ICONS = {
   'BBQ Events & Meetups':   '🏆',
 }
 
+const CHANNEL_KEYS = {
+  'Smoking & Low and Slow': 'smoking',
+  'Rubs & Marinades':       'rubs',
+  'BBQ Equipment':          'equipment',
+  'Recipes & Techniques':   'recipes',
+  'BBQ Events & Meetups':   'events',
+}
+
 export default function Community() {
   const { user, profile: myProfile } = useAuth()
   const { t } = useTranslation()
@@ -66,7 +74,7 @@ export default function Community() {
 
   async function handleLeave(e, ch) {
     e.stopPropagation()
-    if (!window.confirm(t('community.leaveQuestion', { name: ch.name }))) return
+    if (!window.confirm(t('community.leaveQuestion', { name: getChannelName(ch.name) }))) return
     await supabase.from('channel_messages').insert({
       channel_id: ch.id,
       user_id:    user.id,
@@ -84,6 +92,11 @@ export default function Community() {
       return
     }
     navigate(`/community/${ch.id}`)
+  }
+
+  function getChannelName(name) {
+    const key = CHANNEL_KEYS[name]
+    return key ? t(`channels.${key}`) : name
   }
 
   return (
@@ -118,7 +131,7 @@ export default function Community() {
                 </span>
 
                 <div className={styles.cardBody}>
-                  <h2 className={styles.cardName}>{ch.name}</h2>
+                  <h2 className={styles.cardName}>{getChannelName(ch.name)}</h2>
                   {ch.description && (
                     <p className={styles.cardDesc}>{ch.description}</p>
                   )}

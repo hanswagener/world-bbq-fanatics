@@ -1,5 +1,12 @@
 {
   "photoTip": "📸 Le ricette con foto ricevono 3x più flames! 🔥",
+  "channels": {
+    "smoking": "Affumicatura & Low and Slow",
+    "rubs": "Rubs & Marinature",
+    "equipment": "Attrezzatura BBQ",
+    "recipes": "Ricette & Tecniche",
+    "events": "Eventi BBQ & Incontri"
+  },
   "nav": {
     "home": "Home",
     "recipes": "Ricette",

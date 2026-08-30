@@ -1,5 +1,12 @@
 {
   "photoTip": "📸 ¡Las recetas con foto reciben 3x más flames! 🔥",
+  "channels": {
+    "smoking": "Ahumado & Low and Slow",
+    "rubs": "Rubs & Marinadas",
+    "equipment": "Equipamiento BBQ",
+    "recipes": "Recetas & Técnicas",
+    "events": "Eventos BBQ"
+  },
   "nav": {
     "home": "Inicio",
     "recipes": "Recetas",

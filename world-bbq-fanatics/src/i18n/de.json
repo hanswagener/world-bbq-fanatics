@@ -1,5 +1,12 @@
 {
   "photoTip": "📸 Rezepte mit Foto bekommen 3x mehr Flames! 🔥",
+  "channels": {
+    "smoking": "Räuchern & Low and Slow",
+    "rubs": "Rubs & Marinaden",
+    "equipment": "BBQ Ausrüstung",
+    "recipes": "Rezepte & Techniken",
+    "events": "BBQ Events & Treffen"
+  },
   "nav": {
     "home": "Startseite",
     "recipes": "Rezepte",
