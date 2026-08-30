@@ -429,8 +429,16 @@ export default function PrivateChat() {
             const grouped = !prevMsg?.is_system &&
               prevMsg?.user_id === msg.user_id &&
               (new Date(msg.created_at) - new Date(prevMsg.created_at)) < 5 * 60 * 1000
-            const flags = { nl: '🇳🇱', en: '🇬🇧', de: '🇩🇪', fr: '🇫🇷', es: '🇪🇸', it: '🇮🇹' }
-            const flag = flags[msg.profiles?.language] || '🇳🇱'
+            const flags = {
+              nl: '🇳🇱', 'nl-NL': '🇳🇱', 'nl-BE': '🇳🇱', NL: '🇳🇱',
+              en: '🇬🇧', 'en-GB': '🇬🇧', 'en-US': '🇬🇧', GB: '🇬🇧', gb: '🇬🇧',
+              de: '🇩🇪', DE: '🇩🇪', fr: '🇫🇷', FR: '🇫🇷',
+              es: '🇪🇸', ES: '🇪🇸', it: '🇮🇹', IT: '🇮🇹',
+            }
+            const language = msg.profiles?.language
+            const normalizedLanguage = language?.toLowerCase()?.split('-')[0]
+            const flag = flags[normalizedLanguage] || flags[language] || flags[language?.toUpperCase()] || '🇳🇱'
+            console.log('[PrivateChat] message language:', language, 'flag:', flag)
 
             return (
               <div
