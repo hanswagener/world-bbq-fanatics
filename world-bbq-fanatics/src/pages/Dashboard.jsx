@@ -110,7 +110,7 @@ function FeaturedRecipe({ recipe }) {
       )}
       <div className={styles.featuredOverlay} />
 
-      <span className={styles.featuredBadge}>🏆 Most Popular Recipe</span>
+      <span className={styles.featuredBadge}>🏆 {t('dashboard.mostPopular')}</span>
 
       <div className={styles.featuredContent}>
         <div className={styles.featuredMeta}>
@@ -136,7 +136,7 @@ function FeaturedRecipe({ recipe }) {
             <span className={styles.featuredAuthorName}>{author?.username ?? 'Unknown'}</span>
           </Link>
 
-          <Link to={`/recipes/${recipe.id}`} className={styles.featuredBtn}>View Recipe →</Link>
+          <Link to={`/recipes/${recipe.id}`} className={styles.featuredBtn}>{t('dashboard.viewRecipe')} →</Link>
         </div>
       </div>
     </div>
@@ -345,7 +345,7 @@ export default function Dashboard() {
                 className={`${styles.filterBtn} ${categoryFilter === null ? styles.filterBtnActive : ''}`}
                 onClick={() => setCategoryFilter(null)}
               >
-                All
+                {t('dashboard.all')}
               </button>
               {CATEGORIES.map(cat => (
                 <button

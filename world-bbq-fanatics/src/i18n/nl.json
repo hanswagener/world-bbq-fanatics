@@ -28,8 +28,8 @@
     "signOut": "Uitloggen"
   },
   "dashboard": {
-    "mostPopular": "Meest populaire recept",
-    "viewRecipe": "Recept bekijken",
+    "mostPopular": "Meest Populaire Recept",
+    "viewRecipe": "Bekijk Recept",
     "latest": "Laatste van de pit",
     "subtitle": "Verse BBQ-recepten van de community",
     "allRecipes": "Alle recepten",
@@ -52,7 +52,7 @@
     "emptyTitleNoOne": "Nog niemand gevolgd",
     "emptyDescFollow": "Volg wat BBQ-fanaten om hun recepten hier te zien!",
     "addFirstRecipe": "Voeg je eerste recept toe →",
-    "all": "Alles"
+    "all": "Alle"
   },
   "recipe": {
     "ingredients": "Ingrediënten",
