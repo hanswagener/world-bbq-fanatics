@@ -2,10 +2,15 @@
   "photoTip": "📸 Recipes with a photo get 3x more flames! 🔥",
   "channels": {
     "smoking": "Smoking & Low and Slow",
+    "smokingDesc": "Tips, tricks and talk about low-and-slow smoking techniques.",
     "rubs": "Rubs & Marinades",
+    "rubsDesc": "Share your favourite dry rubs, wet marinades and brines.",
     "equipment": "BBQ Equipment",
+    "equipmentDesc": "Grills, smokers, accessories and gear recommendations.",
     "recipes": "Recipes & Techniques",
-    "events": "BBQ Events & Meetups"
+    "recipesDesc": "Full recipes, cook-along guides and technique deep-dives.",
+    "events": "BBQ Events & Meetups",
+    "eventsDesc": "Competitions, festivals, local meetups and community events."
   },
   "nav": {
     "home": "Home",

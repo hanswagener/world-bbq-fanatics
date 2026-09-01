@@ -2,10 +2,15 @@
   "photoTip": "📸 Le ricette con foto ricevono 3x più flames! 🔥",
   "channels": {
     "smoking": "Affumicatura & Low and Slow",
+    "smokingDesc": "Consigli, trucchi e discussioni sulle tecniche di affumicatura lenta e prolungata.",
     "rubs": "Rubs & Marinature",
+    "rubsDesc": "Condividi i tuoi rub più amati, le marinature e le soluzioni di salamoia.",
     "equipment": "Attrezzatura BBQ",
+    "equipmentDesc": "Griglie, affumicatori, accessori e consigli sugli attrezzi.",
     "recipes": "Ricette & Tecniche",
-    "events": "Eventi BBQ & Incontri"
+    "recipesDesc": "Ricette complete, guide di cucina e approfondimenti tecnici.",
+    "events": "Eventi BBQ & Incontri",
+    "eventsDesc": "Competizioni, festival, incontri locali ed eventi della community."
   },
   "nav": {
     "home": "Home",

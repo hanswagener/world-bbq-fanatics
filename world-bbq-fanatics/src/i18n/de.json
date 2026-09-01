@@ -2,10 +2,15 @@
   "photoTip": "📸 Rezepte mit Foto bekommen 3x mehr Flames! 🔥",
   "channels": {
     "smoking": "Räuchern & Low and Slow",
+    "smokingDesc": "Tipps, Tricks und Gespräche über Low-and-Slow Räuchertechniken.",
     "rubs": "Rubs & Marinaden",
+    "rubsDesc": "Teile deine liebsten Dry Rubs, Marinaden und Pökelrezepte.",
     "equipment": "BBQ Ausrüstung",
+    "equipmentDesc": "Grills, Smoker, Zubehör und Ausrüstungsempfehlungen.",
     "recipes": "Rezepte & Techniken",
-    "events": "BBQ Events & Treffen"
+    "recipesDesc": "Vollständige Rezepte, Kochanleiter und Technik-Guides.",
+    "events": "BBQ Events & Treffen",
+    "eventsDesc": "Wettbewerbe, Festivals, lokale Meetups und Community-Veranstaltungen."
   },
   "nav": {
     "home": "Startseite",

@@ -99,6 +99,15 @@ export default function Community() {
     return key ? t(`channels.${key}`) : name
   }
 
+  function getChannelDescription(ch) {
+    const key = CHANNEL_KEYS[ch.name]
+    if (key) {
+      const translated = t(`channels.${key}Desc`)
+      if (translated && translated !== `channels.${key}Desc`) return translated
+    }
+    return ch.description || ''
+  }
+
   return (
     <div className={styles.page}>
       <div className={styles.pageHeader}>
@@ -120,6 +129,7 @@ export default function Community() {
         <div className={styles.grid}>
           {channels.map(ch => {
             const joined = memberOf.has(ch.id)
+            const description = getChannelDescription(ch)
             return (
               <div
                 key={ch.id}
@@ -132,8 +142,8 @@ export default function Community() {
 
                 <div className={styles.cardBody}>
                   <h2 className={styles.cardName}>{getChannelName(ch.name)}</h2>
-                  {ch.description && (
-                    <p className={styles.cardDesc}>{ch.description}</p>
+                  {description && (
+                    <p className={styles.cardDesc}>{description}</p>
                   )}
                   {joinHint === ch.id && (
                     <p className={styles.joinHint}>{t('community.joinHint')}</p>

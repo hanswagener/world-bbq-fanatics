@@ -2,10 +2,15 @@
   "photoTip": "📸 Les recettes avec photo reçoivent 3x plus de flames! 🔥",
   "channels": {
     "smoking": "Fumage & Low and Slow",
+    "smokingDesc": "Conseils, astuces et discussions sur les techniques de fumage à basse température.",
     "rubs": "Rubs & Marinades",
+    "rubsDesc": "Partagez vos meilleurs rubs secs, marinades et saumures.",
     "equipment": "Équipement BBQ",
+    "equipmentDesc": "Grills, fumoirs, accessoires et recommandations d'équipement.",
     "recipes": "Recettes & Techniques",
-    "events": "Événements BBQ"
+    "recipesDesc": "Recettes complètes, guides de cuisson et approfondissements techniques.",
+    "events": "Événements BBQ",
+    "eventsDesc": "Compétitions, festivals, rencontres locales et événements communautaires."
   },
   "nav": {
     "home": "Accueil",

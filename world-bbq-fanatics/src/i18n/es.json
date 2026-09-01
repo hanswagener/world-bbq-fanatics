@@ -2,10 +2,15 @@
   "photoTip": "📸 ¡Las recetas con foto reciben 3x más flames! 🔥",
   "channels": {
     "smoking": "Ahumado & Low and Slow",
+    "smokingDesc": "Consejos, trucos y conversaciones sobre técnicas de ahumado lento y suave.",
     "rubs": "Rubs & Marinadas",
+    "rubsDesc": "Comparte tus rubs secos favoritos, marinadas y salmueras.",
     "equipment": "Equipamiento BBQ",
+    "equipmentDesc": "Parrillas, ahumadores, accesorios y recomendaciones de equipamiento.",
     "recipes": "Recetas & Técnicas",
-    "events": "Eventos BBQ"
+    "recipesDesc": "Recetas completas, guías de cocina y profundizaciones técnicas.",
+    "events": "Eventos BBQ",
+    "eventsDesc": "Competiciones, festivales, reuniones locales y eventos comunitarios."
   },
   "nav": {
     "home": "Inicio",
