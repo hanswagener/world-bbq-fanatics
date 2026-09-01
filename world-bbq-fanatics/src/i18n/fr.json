@@ -1,5 +1,8 @@
 {
   "photoTip": "📸 Les recettes avec photo reçoivent 3x plus de flames! 🔥",
+  "public": "Public",
+  "private": "Privé",
+  "friendsOnly": "Amis seulement",
   "channels": {
     "smoking": "Fumage & Low and Slow",
     "smokingDesc": "Conseils, astuces et discussions sur les techniques de fumage à basse température.",

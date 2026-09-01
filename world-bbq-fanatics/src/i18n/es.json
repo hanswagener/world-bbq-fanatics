@@ -1,5 +1,8 @@
 {
   "photoTip": "📸 ¡Las recetas con foto reciben 3x más flames! 🔥",
+  "public": "Público",
+  "private": "Privado",
+  "friendsOnly": "Solo amigos",
   "channels": {
     "smoking": "Ahumado & Low and Slow",
     "smokingDesc": "Consejos, trucos y conversaciones sobre técnicas de ahumado lento y suave.",

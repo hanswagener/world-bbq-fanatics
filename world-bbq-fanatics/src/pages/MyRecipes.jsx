@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../supabase'
 import RecipePlaceholder from '../components/RecipePlaceholder'
@@ -12,13 +13,14 @@ function formatDate(dateStr) {
 }
 
 const VISIBILITY_LABELS = {
-  public:       { label: 'Public',       cls: 'badgePublic' },
-  friends_only: { label: 'Friends Only', cls: 'badgeFriends' },
-  private:      { label: 'Private',      cls: 'badgePrivate' },
+  public:       { labelKey: 'public', cls: 'badgePublic' },
+  friends_only: { labelKey: 'friendsOnly', cls: 'badgeFriends' },
+  private:      { labelKey: 'private', cls: 'badgePrivate' },
 }
 
 export default function MyRecipes() {
   const { user } = useAuth()
+  const { t } = useTranslation()
   const [recipes, setRecipes] = useState([])
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState(null)
@@ -83,7 +85,7 @@ export default function MyRecipes() {
                 )}
                 <div className={styles.cardMain}>
                   <div className={styles.cardTop}>
-                    <span className={`${styles.badge} ${styles[v.cls]}`}>{v.label}</span>
+                    <span className={`${styles.badge} ${styles[v.cls]}`}>{t(v.labelKey)}</span>
                     <span className={styles.date}>{formatDate(recipe.created_at)}</span>
                   </div>
                   <Link to={`/recipes/${recipe.id}`} className={styles.cardTitle}>

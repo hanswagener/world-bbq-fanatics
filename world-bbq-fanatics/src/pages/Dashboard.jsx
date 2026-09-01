@@ -26,8 +26,17 @@ function AuthorAvatar({ profile }) {
 }
 
 function VisibilityBadge({ visibility }) {
-  const label = visibility === 'private' ? 'Private' : visibility === 'friends_only' ? 'Friends Only' : 'Public'
-  const className = visibility === 'private' ? styles.badgePrivate : visibility === 'friends_only' ? styles.badgeFriendsOnly : styles.badgePublic
+  const { t } = useTranslation()
+  const label = visibility === 'private'
+    ? t('private')
+    : visibility === 'friends_only'
+      ? t('friendsOnly')
+      : t('public')
+  const className = visibility === 'private'
+    ? styles.badgePrivate
+    : visibility === 'friends_only'
+      ? styles.badgeFriendsOnly
+      : styles.badgePublic
   return <span className={className}>{label}</span>
 }
 

@@ -15,9 +15,9 @@ const SKILL_COLORS = {
 }
 
 const VISIBILITY_LABELS = {
-  public:       { label: 'Public',       cls: styles.badgePublic  },
-  friends_only: { label: 'Friends Only', cls: styles.badgeFriends },
-  private:      { label: 'Private',      cls: styles.badgePrivate },
+  public:       { labelKey: 'public',       cls: styles.badgePublic  },
+  friends_only: { labelKey: 'friendsOnly', cls: styles.badgeFriends },
+  private:      { labelKey: 'private',      cls: styles.badgePrivate },
 }
 
 function formatMemberDate(dateStr) {
@@ -37,6 +37,7 @@ function SkillBadge({ level }) {
 }
 
 function RecipeCard({ recipe, showVisibility }) {
+  const { t } = useTranslation()
   const flameCount = recipe.flames?.length ?? 0
   const vis = VISIBILITY_LABELS[recipe.visibility] ?? VISIBILITY_LABELS.private
   return (
@@ -50,7 +51,7 @@ function RecipeCard({ recipe, showVisibility }) {
         <div className={styles.recipeTop}>
           <h3 className={styles.recipeTitle}>{recipe.title}</h3>
           {showVisibility && (
-            <span className={`${styles.badge} ${vis.cls}`}>{vis.label}</span>
+            <span className={`${styles.badge} ${vis.cls}`}>{t(vis.labelKey)}</span>
           )}
         </div>
         {recipe.description && (

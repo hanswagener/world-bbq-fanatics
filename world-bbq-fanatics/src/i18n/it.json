@@ -1,5 +1,8 @@
 {
   "photoTip": "📸 Le ricette con foto ricevono 3x più flames! 🔥",
+  "public": "Pubblico",
+  "private": "Privato",
+  "friendsOnly": "Solo amici",
   "channels": {
     "smoking": "Affumicatura & Low and Slow",
     "smokingDesc": "Consigli, trucchi e discussioni sulle tecniche di affumicatura lenta e prolungata.",

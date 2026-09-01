@@ -1,5 +1,8 @@
 {
   "photoTip": "📸 Recipes with a photo get 3x more flames! 🔥",
+  "public": "Public",
+  "private": "Private",
+  "friendsOnly": "Friends Only",
   "channels": {
     "smoking": "Smoking & Low and Slow",
     "smokingDesc": "Tips, tricks and talk about low-and-slow smoking techniques.",

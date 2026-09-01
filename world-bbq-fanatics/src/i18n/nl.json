@@ -1,5 +1,8 @@
 {
   "photoTip": "📸 Recepten met foto krijgen 3x meer flames! 🔥",
+  "public": "Publiek",
+  "private": "Privé",
+  "friendsOnly": "Vrienden",
   "channels": {
     "smoking": "Roken & Low and Slow",
     "smokingDesc": "Tips, trucs en talk over low-and-slow smoketechnieken.",

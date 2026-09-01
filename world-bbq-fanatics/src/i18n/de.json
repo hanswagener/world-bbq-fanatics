@@ -1,5 +1,8 @@
 {
   "photoTip": "📸 Rezepte mit Foto bekommen 3x mehr Flames! 🔥",
+  "public": "Öffentlich",
+  "private": "Privat",
+  "friendsOnly": "Nur Freunde",
   "channels": {
     "smoking": "Räuchern & Low and Slow",
     "smokingDesc": "Tipps, Tricks und Gespräche über Low-and-Slow Räuchertechniken.",
