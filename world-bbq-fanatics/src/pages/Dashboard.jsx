@@ -98,6 +98,7 @@ function RecipeCard({ recipe, currentUserId, onFlameToggle }) {
 }
 
 function FeaturedRecipe({ recipe }) {
+  const { t } = useTranslation()
   const author = recipe.profiles
   const flameCount = (recipe.flames ?? []).length
 
