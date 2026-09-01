@@ -253,6 +253,36 @@
   font-family: inherit;
 }
 
+.languageSelector {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.languageOption {
+  border: 1px solid #333;
+  background: #111;
+  color: #f0f0f0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+}
+
+.languageOption:hover {
+  border-color: #ff6600;
+  background: #171717;
+}
+
+.languageOptionActive {
+  border-color: #ff6600;
+  background: rgba(255, 102, 0, 0.12);
+  color: #ff6600;
+}
+
 .uploadBtn:hover:not(:disabled) {
   background: rgba(255, 102, 0, 0.1);
 }

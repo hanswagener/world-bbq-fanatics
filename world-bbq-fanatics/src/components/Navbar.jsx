@@ -12,20 +12,6 @@ const NAV_LINKS = [
   { to: '/chat', labelKey: 'nav.chat' },
 ]
 
-const LANGUAGE_OPTIONS = [
-  { code: 'nl', label: '🇳🇱 Nederlands', short: 'NL' },
-  { code: 'en', label: '🇬🇧 English', short: 'EN' },
-  { code: 'de', label: '🇩🇪 Deutsch', short: 'DE' },
-  { code: 'fr', label: '🇫🇷 Français', short: 'FR' },
-  { code: 'es', label: '🇪🇸 Español', short: 'ES' },
-  { code: 'it', label: '🇮🇹 Italiano', short: 'IT' },
-]
-
-function getLanguageCode(language) {
-  const normalized = (language ?? 'en').toLowerCase().split('-')[0]
-  return LANGUAGE_OPTIONS.find(option => option.code === normalized)?.short ?? 'EN'
-}
-
 function Avatar({ profile, size = 32 }) {
   const style = { width: size, height: size, fontSize: size * 0.4 }
   if (profile?.avatar_url) {
@@ -40,25 +26,17 @@ function Avatar({ profile, size = 32 }) {
 
 export default function Navbar() {
   const { profile, user } = useAuth()
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
-  const [langOpen, setLangOpen] = useState(false)
-  const [mobileLangOpen, setMobileLangOpen] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
   const dropdownRef = useRef(null)
-  const langRef = useRef(null)
-
-  const activeLanguage = LANGUAGE_OPTIONS.find(opt => opt.code === (i18n.language || '').split('-')[0]) ?? LANGUAGE_OPTIONS[0]
 
   useEffect(() => {
     function onOutsideClick(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setDropdownOpen(false)
-      }
-      if (langRef.current && !langRef.current.contains(e.target)) {
-        setLangOpen(false)
       }
     }
     document.addEventListener('mousedown', onOutsideClick)
@@ -163,48 +141,6 @@ export default function Navbar() {
           )}
         </Link>
 
-        <div className={styles.langWrap} ref={langRef}>
-          <button
-            type="button"
-            className={styles.langButton}
-            onClick={() => setLangOpen(v => !v)}
-            aria-label={`Language selector: ${activeLanguage.code.toUpperCase()}`}
-          >
-            <svg className={styles.langGlobe} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff6600" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="2" y1="12" x2="22" y2="12"/>
-              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-            </svg>
-            <span className={styles.langCode}>{getLanguageCode(i18n.language)}</span>
-          </button>
-          {langOpen && (
-            <div className={styles.langMenu}>
-              {LANGUAGE_OPTIONS.map(option => (
-                <button
-                  key={option.code}
-                  type="button"
-                  className={`${styles.langOption} ${i18n.language === option.code ? styles.langOptionActive : ''}`}
-                  onClick={() => {
-                    i18n.changeLanguage(option.code)
-                    if (user) {
-                      supabase
-                        .from('profiles')
-                        .update({ language: option.code })
-                        .eq('id', user.id)
-                        .then(({ error }) => {
-                          if (error) console.error('[Navbar] language update failed:', error.message)
-                        })
-                    }
-                    setLangOpen(false)
-                  }}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
         {/* Right: user dropdown + hamburger */}
         <div className={styles.right}>
 
@@ -252,67 +188,17 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       <div className={`${styles.mobileMenu} ${mobileOpen ? styles.mobileMenuOpen : ''}`}>
-        {NAV_LINKS.map(({ to, labelKey }, index) => (
-          <>
-            <NavLink
-              key={to}
-              to={to}
-              className={({ isActive }) =>
-                `${styles.mobileLink} ${isActive ? styles.mobileLinkActive : ''}`
-              }
-              onClick={closeMobile}
-            >
-              {t(labelKey)}
-            </NavLink>
-
-            {index === 0 && (
-              <div key={`${to}-lang`} className={styles.mobileLangWrap}>
-                <button
-                  type="button"
-                  className={styles.mobileLangButton}
-                  onClick={() => setMobileLangOpen(v => !v)}
-                  aria-label={`Language selector: ${activeLanguage.code.toUpperCase()}`}
-                >
-                  <svg className={styles.langGlobe} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff6600" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="2" y1="12" x2="22" y2="12"/>
-                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                  </svg>
-                  <span className={styles.langCode}>{getLanguageCode(i18n.language)}</span>
-                  <span className={`${styles.mobileLangChevron} ${mobileLangOpen ? styles.mobileLangChevronOpen : ''}`}>▾</span>
-                </button>
-
-                {mobileLangOpen && (
-                  <div className={styles.mobileLangMenu}>
-                    {LANGUAGE_OPTIONS.map(option => (
-                      <button
-                        key={option.code}
-                        type="button"
-                        className={`${styles.mobileLangOption} ${i18n.language === option.code ? styles.mobileLangOptionActive : ''}`}
-                        onClick={() => {
-                          i18n.changeLanguage(option.code)
-                          if (user) {
-                            supabase
-                              .from('profiles')
-                              .update({ language: option.code })
-                              .eq('id', user.id)
-                              .then(({ error }) => {
-                                if (error) console.error('[Navbar] language update failed:', error.message)
-                              })
-                          }
-                          setMobileLangOpen(false)
-                          closeMobile()
-                          setLangOpen(false)
-                        }}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </>
+        {NAV_LINKS.map(({ to, labelKey }) => (
+          <NavLink
+            key={to}
+            to={to}
+            className={({ isActive }) =>
+              `${styles.mobileLink} ${isActive ? styles.mobileLinkActive : ''}`
+            }
+            onClick={closeMobile}
+          >
+            {t(labelKey)}
+          </NavLink>
         ))}
 
         <NavLink to="/notifications" className={styles.mobileLink} onClick={closeMobile}>

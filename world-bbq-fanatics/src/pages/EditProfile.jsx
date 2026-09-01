@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../supabase'
 import styles from './ProfileSetup.module.css'
@@ -9,9 +10,18 @@ const AVATAR_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
 
 const BBQ_TYPES   = ['Gas', 'Charcoal', 'Electric', 'Wood', 'Kamado', 'Pellets', 'Smoker', 'Multiple']
 const SKILL_LEVELS = ['Orientating', 'Beginner', 'Backyard Pro', 'Pitmaster', 'Professional']
+const LANGUAGE_OPTIONS = [
+  { code: 'nl', label: '🇳🇱 Nederlands' },
+  { code: 'en', label: '🇬🇧 English' },
+  { code: 'de', label: '🇩🇪 Deutsch' },
+  { code: 'fr', label: '🇫🇷 Français' },
+  { code: 'es', label: '🇪🇸 Español' },
+  { code: 'it', label: '🇮🇹 Italiano' },
+]
 
 export default function EditProfile() {
   const { user } = useAuth()
+  const { i18n } = useTranslation()
   const navigate = useNavigate()
   const avatarInputRef = useRef(null)
 
@@ -31,6 +41,7 @@ export default function EditProfile() {
   const [bbqType,    setBbqType]    = useState('')
   const [birthday,   setBirthday]   = useState('')
   const [skillLevel, setSkillLevel] = useState('')
+  const [selectedLanguage, setSelectedLanguage] = useState(i18n.language || 'en')
 
   useEffect(() => {
     if (!user) return
@@ -49,10 +60,33 @@ export default function EditProfile() {
           setBbqType(data.bbq_type    ?? '')
           setBirthday(data.birthday   ?? '')
           setSkillLevel(data.skill_level ?? '')
+          const savedLang = data.language ?? (i18n.language || 'en')
+          setSelectedLanguage(savedLang)
+          if (savedLang && savedLang !== i18n.language) {
+            i18n.changeLanguage(savedLang)
+            localStorage.setItem('bbq-fanatics-language', savedLang)
+          }
         }
         setLoading(false)
       })
-  }, [user])
+  }, [user, i18n])
+
+  async function handleLanguageChange(code) {
+    setSelectedLanguage(code)
+    localStorage.setItem('bbq-fanatics-language', code)
+    i18n.changeLanguage(code)
+
+    if (!user) return
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ language: code })
+      .eq('id', user.id)
+
+    if (error) {
+      console.error('[EditProfile] language update failed:', error.message)
+    }
+  }
 
   function handleAvatarSelect(e) {
     const file = e.target.files?.[0]
@@ -114,6 +148,7 @@ export default function EditProfile() {
         bbq_type:    bbqType                 || null,
         birthday:    birthday                || null,
         skill_level: skillLevel              || null,
+        language:    selectedLanguage,
       })
       .eq('id', user.id)
 
@@ -167,6 +202,22 @@ export default function EditProfile() {
                 onChange={e => setLocation(e.target.value)}
                 placeholder="Austin, TX"
               />
+            </div>
+          </div>
+
+          <div className={styles.field}>
+            <label className={styles.label}>Taal / Language</label>
+            <div className={styles.languageSelector}>
+              {LANGUAGE_OPTIONS.map(option => (
+                <button
+                  key={option.code}
+                  type="button"
+                  className={`${styles.languageOption} ${selectedLanguage === option.code ? styles.languageOptionActive : ''}`}
+                  onClick={() => handleLanguageChange(option.code)}
+                >
+                  {option.label}
+                </button>
+              ))}
             </div>
           </div>
 
