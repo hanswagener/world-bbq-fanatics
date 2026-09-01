@@ -425,11 +425,11 @@
 .mobileLangButton {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 6px;
-  width: 100%;
-  min-height: 40px;
-  padding: 8px 12px;
+  width: auto;
+  min-height: 32px;
+  padding: 6px 12px;
   border-radius: 8px;
   border: 1px solid #333;
   background: #171717;
@@ -438,6 +438,7 @@
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.02em;
+  align-self: flex-start;
 }
 
 .mobileLangButton:hover {
