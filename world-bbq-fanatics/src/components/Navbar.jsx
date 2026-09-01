@@ -248,63 +248,68 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       <div className={`${styles.mobileMenu} ${mobileOpen ? styles.mobileMenuOpen : ''}`}>
-        {NAV_LINKS.map(({ to, labelKey }) => (
-          <NavLink
-            key={to}
-            to={to}
-            className={({ isActive }) =>
-              `${styles.mobileLink} ${isActive ? styles.mobileLinkActive : ''}`
-            }
-            onClick={closeMobile}
-          >
-            {t(labelKey)}
-          </NavLink>
+        {NAV_LINKS.map(({ to, labelKey }, index) => (
+          <>
+            <NavLink
+              key={to}
+              to={to}
+              className={({ isActive }) =>
+                `${styles.mobileLink} ${isActive ? styles.mobileLinkActive : ''}`
+              }
+              onClick={closeMobile}
+            >
+              {t(labelKey)}
+            </NavLink>
+
+            {index === 0 && (
+              <div key={`${to}-lang`} className={styles.mobileLangWrap}>
+                <button
+                  type="button"
+                  className={styles.mobileLangButton}
+                  onClick={() => setMobileLangOpen(v => !v)}
+                  aria-label={`Language selector: ${activeLanguage.code.toUpperCase()}`}
+                >
+                  <span className={styles.langGlobe}>🌐</span>
+                  <span className={styles.langCode}>{getLanguageCode(i18n.language)}</span>
+                  <span className={`${styles.mobileLangChevron} ${mobileLangOpen ? styles.mobileLangChevronOpen : ''}`}>▾</span>
+                </button>
+
+                {mobileLangOpen && (
+                  <div className={styles.mobileLangMenu}>
+                    {LANGUAGE_OPTIONS.map(option => (
+                      <button
+                        key={option.code}
+                        type="button"
+                        className={`${styles.mobileLangOption} ${i18n.language === option.code ? styles.mobileLangOptionActive : ''}`}
+                        onClick={() => {
+                          i18n.changeLanguage(option.code)
+                          if (user) {
+                            supabase
+                              .from('profiles')
+                              .update({ language: option.code })
+                              .eq('id', user.id)
+                              .then(({ error }) => {
+                                if (error) console.error('[Navbar] language update failed:', error.message)
+                              })
+                          }
+                          setMobileLangOpen(false)
+                          closeMobile()
+                          setLangOpen(false)
+                        }}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </>
         ))}
+
         <NavLink to="/notifications" className={styles.mobileLink} onClick={closeMobile}>
           🔔 {t('nav.notifications')}{unreadCount > 0 && <span className={styles.mobileBadge}>{unreadCount}</span>}
         </NavLink>
-
-        <div className={styles.mobileLangWrap}>
-          <button
-            type="button"
-            className={styles.mobileLangButton}
-            onClick={() => setMobileLangOpen(v => !v)}
-            aria-label={`Language selector: ${activeLanguage.code.toUpperCase()}`}
-          >
-            <span className={styles.langGlobe}>🌐</span>
-            <span className={styles.langCode}>{getLanguageCode(i18n.language)}</span>
-            <span className={`${styles.mobileLangChevron} ${mobileLangOpen ? styles.mobileLangChevronOpen : ''}`}>▾</span>
-          </button>
-
-          {mobileLangOpen && (
-            <div className={styles.mobileLangMenu}>
-              {LANGUAGE_OPTIONS.map(option => (
-                <button
-                  key={option.code}
-                  type="button"
-                  className={`${styles.mobileLangOption} ${i18n.language === option.code ? styles.mobileLangOptionActive : ''}`}
-                  onClick={() => {
-                    i18n.changeLanguage(option.code)
-                    if (user) {
-                      supabase
-                        .from('profiles')
-                        .update({ language: option.code })
-                        .eq('id', user.id)
-                        .then(({ error }) => {
-                          if (error) console.error('[Navbar] language update failed:', error.message)
-                        })
-                    }
-                    setMobileLangOpen(false)
-                    closeMobile()
-                    setLangOpen(false)
-                  }}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
 
         <div className={styles.mobileDivider} />
         <div className={styles.mobileUser}>
