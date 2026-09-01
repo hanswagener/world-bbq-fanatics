@@ -262,6 +262,31 @@ export default function Navbar() {
         <NavLink to="/notifications" className={styles.mobileLink} onClick={closeMobile}>
           🔔 {t('nav.notifications')}{unreadCount > 0 && <span className={styles.mobileBadge}>{unreadCount}</span>}
         </NavLink>
+        <div className={styles.mobileLangMenu}>
+          {LANGUAGE_OPTIONS.map(option => (
+            <button
+              key={option.code}
+              type="button"
+              className={`${styles.mobileLangOption} ${i18n.language === option.code ? styles.mobileLangOptionActive : ''}`}
+              onClick={() => {
+                i18n.changeLanguage(option.code)
+                if (user) {
+                  supabase
+                    .from('profiles')
+                    .update({ language: option.code })
+                    .eq('id', user.id)
+                    .then(({ error }) => {
+                      if (error) console.error('[Navbar] language update failed:', error.message)
+                    })
+                }
+                closeMobile()
+                setLangOpen(false)
+              }}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
         <div className={styles.mobileDivider} />
         <div className={styles.mobileUser}>
           <Avatar profile={profile} size={28} />
