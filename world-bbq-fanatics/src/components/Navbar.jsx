@@ -45,6 +45,7 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [langOpen, setLangOpen] = useState(false)
+  const [mobileLangOpen, setMobileLangOpen] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
   const dropdownRef = useRef(null)
   const langRef = useRef(null)
@@ -262,31 +263,49 @@ export default function Navbar() {
         <NavLink to="/notifications" className={styles.mobileLink} onClick={closeMobile}>
           🔔 {t('nav.notifications')}{unreadCount > 0 && <span className={styles.mobileBadge}>{unreadCount}</span>}
         </NavLink>
-        <div className={styles.mobileLangMenu}>
-          {LANGUAGE_OPTIONS.map(option => (
-            <button
-              key={option.code}
-              type="button"
-              className={`${styles.mobileLangOption} ${i18n.language === option.code ? styles.mobileLangOptionActive : ''}`}
-              onClick={() => {
-                i18n.changeLanguage(option.code)
-                if (user) {
-                  supabase
-                    .from('profiles')
-                    .update({ language: option.code })
-                    .eq('id', user.id)
-                    .then(({ error }) => {
-                      if (error) console.error('[Navbar] language update failed:', error.message)
-                    })
-                }
-                closeMobile()
-                setLangOpen(false)
-              }}
-            >
-              {option.label}
-            </button>
-          ))}
+
+        <div className={styles.mobileLangWrap}>
+          <button
+            type="button"
+            className={styles.mobileLangButton}
+            onClick={() => setMobileLangOpen(v => !v)}
+            aria-label={`Language selector: ${activeLanguage.code.toUpperCase()}`}
+          >
+            <span className={styles.langGlobe}>🌐</span>
+            <span className={styles.langCode}>{getLanguageCode(i18n.language)}</span>
+            <span className={`${styles.mobileLangChevron} ${mobileLangOpen ? styles.mobileLangChevronOpen : ''}`}>▾</span>
+          </button>
+
+          {mobileLangOpen && (
+            <div className={styles.mobileLangMenu}>
+              {LANGUAGE_OPTIONS.map(option => (
+                <button
+                  key={option.code}
+                  type="button"
+                  className={`${styles.mobileLangOption} ${i18n.language === option.code ? styles.mobileLangOptionActive : ''}`}
+                  onClick={() => {
+                    i18n.changeLanguage(option.code)
+                    if (user) {
+                      supabase
+                        .from('profiles')
+                        .update({ language: option.code })
+                        .eq('id', user.id)
+                        .then(({ error }) => {
+                          if (error) console.error('[Navbar] language update failed:', error.message)
+                        })
+                    }
+                    setMobileLangOpen(false)
+                    closeMobile()
+                    setLangOpen(false)
+                  }}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
+
         <div className={styles.mobileDivider} />
         <div className={styles.mobileUser}>
           <Avatar profile={profile} size={28} />
