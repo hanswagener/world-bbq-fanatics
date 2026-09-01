@@ -13,13 +13,18 @@ const NAV_LINKS = [
 ]
 
 const LANGUAGE_OPTIONS = [
-  { code: 'nl', label: '🇳🇱 NL' },
-  { code: 'en', label: '🇬🇧 EN' },
-  { code: 'de', label: '🇩🇪 DE' },
-  { code: 'fr', label: '🇫🇷 FR' },
-  { code: 'es', label: '🇪🇸 ES' },
-  { code: 'it', label: '🇮🇹 IT' },
+  { code: 'nl', label: '🇳🇱 Nederlands', short: 'NL' },
+  { code: 'en', label: '🇬🇧 English', short: 'EN' },
+  { code: 'de', label: '🇩🇪 Deutsch', short: 'DE' },
+  { code: 'fr', label: '🇫🇷 Français', short: 'FR' },
+  { code: 'es', label: '🇪🇸 Español', short: 'ES' },
+  { code: 'it', label: '🇮🇹 Italiano', short: 'IT' },
 ]
+
+function getLanguageCode(language) {
+  const normalized = (language ?? 'en').toLowerCase().split('-')[0]
+  return LANGUAGE_OPTIONS.find(option => option.code === normalized)?.short ?? 'EN'
+}
 
 function Avatar({ profile, size = 32 }) {
   const style = { width: size, height: size, fontSize: size * 0.4 }
@@ -44,7 +49,7 @@ export default function Navbar() {
   const dropdownRef = useRef(null)
   const langRef = useRef(null)
 
-  const activeLanguage = LANGUAGE_OPTIONS.find(opt => opt.code === i18n.language) ?? LANGUAGE_OPTIONS[0]
+  const activeLanguage = LANGUAGE_OPTIONS.find(opt => opt.code === (i18n.language || '').split('-')[0]) ?? LANGUAGE_OPTIONS[0]
 
   useEffect(() => {
     function onOutsideClick(e) {
@@ -162,9 +167,10 @@ export default function Navbar() {
             type="button"
             className={styles.langButton}
             onClick={() => setLangOpen(v => !v)}
-            aria-label={t('common.search')}
+            aria-label={`Language selector: ${activeLanguage.code.toUpperCase()}`}
           >
-            <span>{activeLanguage.label}</span>
+            <span className={styles.langGlobe}>🌐</span>
+            <span className={styles.langCode}>{getLanguageCode(i18n.language)}</span>
           </button>
           {langOpen && (
             <div className={styles.langMenu}>
