@@ -167,6 +167,9 @@ export default function Navbar() {
                 <NavLink to="/profile/me" className={styles.dropItem} onClick={() => setDropdownOpen(false)}>{t('nav.myProfile')}</NavLink>
                 <NavLink to="/recipes" className={styles.dropItem} onClick={() => setDropdownOpen(false)}>{t('nav.myRecipes')}</NavLink>
                 <NavLink to="/settings" className={styles.dropItem} onClick={() => setDropdownOpen(false)}>{t('nav.settings')}</NavLink>
+                {profile?.is_admin && (
+                  <NavLink to="/admin" className={styles.dropItem} onClick={() => setDropdownOpen(false)}>Admin</NavLink>
+                )}
                 <div className={styles.dropDivider} />
                 <button className={styles.dropItemDanger} onClick={handleSignOut}>{t('nav.signOut')}</button>
               </div>
