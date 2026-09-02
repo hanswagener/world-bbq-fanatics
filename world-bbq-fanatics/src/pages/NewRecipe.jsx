@@ -18,6 +18,29 @@ const CORE_TEMP_BY_CATEGORY = {
   Rub: null,
   Sauzen: null,
 }
+const DONENESS_OPTIONS = {
+  Rund: [
+    { value: 'Rauw (Blue)', temp: 45 },
+    { value: 'Bloedig (Rare)', temp: 50 },
+    { value: 'Half doorbakken (Medium Rare)', temp: 55 },
+    { value: 'Rosé (Medium)', temp: 60 },
+    { value: 'Bijna doorbakken (Medium Well)', temp: 65 },
+    { value: 'Doorbakken (Well Done)', temp: 70 },
+  ],
+  Lam: [
+    { value: 'Rauw (Blue)', temp: 45 },
+    { value: 'Bloedig (Rare)', temp: 50 },
+    { value: 'Half doorbakken (Medium Rare)', temp: 55 },
+    { value: 'Rosé (Medium)', temp: 60 },
+    { value: 'Bijna doorbakken (Medium Well)', temp: 65 },
+    { value: 'Doorbakken (Well Done)', temp: 70 },
+  ],
+  Varken: [
+    { value: 'Rosé (Medium)', temp: 65 },
+    { value: 'Doorbakken (Well Done)', temp: 70 },
+  ],
+}
+const FIXED_DONENESS = { Kip: 'Gaar', Vis: 'Gaar' }
 
 const VISIBILITY_OPTIONS = [
   { value: 'public',       label: '🌍 Public',       desc: 'Visible to everyone' },
@@ -41,6 +64,7 @@ export default function NewRecipe() {
   const [uploading, setUploading] = useState(false)
   const [category, setCategory] = useState('')
   const [coreTemp, setCoreTemp] = useState('')
+  const [doneness, setDoneness] = useState('')
   const [visibility, setVisibility] = useState('public')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
@@ -50,7 +74,29 @@ export default function NewRecipe() {
   function handleCategoryChange(nextCategory) {
     setCategory(nextCategory)
     const suggestion = CORE_TEMP_BY_CATEGORY[nextCategory]
-    setCoreTemp(suggestion === null || suggestion === undefined ? '' : String(suggestion))
+    const nextTemp = suggestion === null || suggestion === undefined ? '' : String(suggestion)
+    setCoreTemp(nextTemp)
+    setDoneness(FIXED_DONENESS[nextCategory] ?? findClosestDoneness(nextCategory, Number(nextTemp)))
+  }
+
+  function findClosestDoneness(nextCategory, temperature) {
+    const options = DONENESS_OPTIONS[nextCategory]
+    if (!options || !Number.isFinite(temperature)) return ''
+    return options.reduce((closest, option) =>
+      Math.abs(option.temp - temperature) < Math.abs(closest.temp - temperature) ? option : closest
+    ).value
+  }
+
+  function handleCoreTempChange(nextTemp) {
+    setCoreTemp(nextTemp)
+    if (FIXED_DONENESS[category]) return
+    setDoneness(findClosestDoneness(category, Number(nextTemp)))
+  }
+
+  function handleDonenessChange(nextDoneness) {
+    setDoneness(nextDoneness)
+    const option = DONENESS_OPTIONS[category]?.find(item => item.value === nextDoneness)
+    if (option) setCoreTemp(String(option.temp))
   }
 
   function handleImageSelect(e) {
@@ -117,6 +163,7 @@ export default function NewRecipe() {
       image_url:    imageUrl,
       category:     category || null,
       core_temp:    (coreTemp === '' || coreTemp === null) ? null : Number(coreTemp),
+      doneness:     doneness || null,
       visibility,
     })
 
@@ -196,10 +243,25 @@ export default function NewRecipe() {
                 step="1"
                 className={styles.input}
                 value={coreTemp}
-                onChange={e => setCoreTemp(e.target.value)}
+                onChange={e => handleCoreTempChange(e.target.value)}
+                readOnly={Boolean(FIXED_DONENESS[category])}
                 placeholder="55"
               />
-              <span className={styles.temperatureTip}>🌡️ Aanbevolen kerntemperatuur - pas aan naar wens</span>
+              <label htmlFor="doneness" className={styles.label}>Gaarheid</label>
+              {DONENESS_OPTIONS[category] ? (
+                <select
+                  id="doneness"
+                  className={styles.select}
+                  value={doneness}
+                  onChange={e => handleDonenessChange(e.target.value)}
+                >
+                  {DONENESS_OPTIONS[category].map(option => (
+                    <option key={option.value} value={option.value}>{option.value}</option>
+                  ))}
+                </select>
+              ) : (
+                <span className={styles.temperatureTip}>Gaar</span>
+              )}
             </div>
           )}
 

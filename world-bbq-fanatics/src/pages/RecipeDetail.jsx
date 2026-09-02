@@ -40,7 +40,7 @@ export default function RecipeDetail() {
         .from('recipes')
         .select(`
           id, title, description, ingredients, instructions,
-          image_url, visibility, core_temp, created_at, user_id,
+          image_url, visibility, core_temp, doneness, created_at, user_id,
           profiles(username, avatar_url, skill_level, bio),
           flames(id, user_id)
         `)
@@ -137,7 +137,7 @@ export default function RecipeDetail() {
           <div className={styles.titleStack}>
             <h1 className={styles.title}>{recipe.title}</h1>
             {recipe.core_temp != null && (
-              <span className={styles.coreTempBadge}>🌡️ Kerntemperatuur: {recipe.core_temp}°C</span>
+              <span className={styles.coreTempBadge}>🌡️ {recipe.core_temp}°C{recipe.doneness && ` — ${recipe.doneness}`}</span>
             )}
           </div>
           <button
