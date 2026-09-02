@@ -75,7 +75,12 @@ function RecipeCard({ recipe, currentUserId, onFlameToggle }) {
           </div>
         </div>
 
-        <Link to={`/recipes/${recipe.id}`} className={styles.cardTitle}>{recipe.title}</Link>
+        <div className={styles.cardTitleRow}>
+          <Link to={`/recipes/${recipe.id}`} className={styles.cardTitle}>{recipe.title}</Link>
+          {recipe.core_temp != null && (
+            <span className={styles.tempBadge}>🌡️ {recipe.core_temp}°C</span>
+          )}
+        </div>
 
         {recipe.description && (
           <p className={styles.cardDesc}>{recipe.description}</p>
@@ -158,7 +163,7 @@ const CATEGORY_CLASS = {
 }
 
 const RECIPE_SELECT = `
-  id, title, description, image_url, visibility, category, created_at, user_id,
+  id, title, description, image_url, visibility, category, core_temp, created_at, user_id,
   profiles(username, avatar_url),
   flames(id, user_id)
 `

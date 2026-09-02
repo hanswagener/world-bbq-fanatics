@@ -306,6 +306,25 @@
   gap: 8px;
 }
 
+.recipeChipRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tempChip {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 102, 0, 0.12);
+  color: #ffb37d;
+  border: 1px solid rgba(255, 102, 0, 0.35);
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
 .recipeTitle {
   font-size: 15px;
   font-weight: 700;

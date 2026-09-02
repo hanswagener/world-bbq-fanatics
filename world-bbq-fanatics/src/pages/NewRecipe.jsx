@@ -8,6 +8,16 @@ import styles from './NewRecipe.module.css'
 const MAX_FILE_SIZE = 5 * 1024 * 1024
 const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
 const CATEGORIES = ['Rund', 'Lam', 'Varken', 'Kip', 'Vis', 'Groenten', 'Rub', 'Sauzen']
+const CORE_TEMP_BY_CATEGORY = {
+  Rund: 55,
+  Lam: 60,
+  Varken: 70,
+  Kip: 75,
+  Vis: 55,
+  Groenten: null,
+  Rub: null,
+  Sauzen: null,
+}
 
 const VISIBILITY_OPTIONS = [
   { value: 'public',       label: '🌍 Public',       desc: 'Visible to everyone' },
@@ -30,9 +40,18 @@ export default function NewRecipe() {
   const [imageError, setImageError] = useState(null)
   const [uploading, setUploading] = useState(false)
   const [category, setCategory] = useState('')
+  const [coreTemp, setCoreTemp] = useState('')
   const [visibility, setVisibility] = useState('public')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
+
+  const shouldShowCoreTemp = ['Rund', 'Lam', 'Varken', 'Kip', 'Vis'].includes(category)
+
+  function handleCategoryChange(nextCategory) {
+    setCategory(nextCategory)
+    const suggestion = CORE_TEMP_BY_CATEGORY[nextCategory]
+    setCoreTemp(suggestion === null || suggestion === undefined ? '' : String(suggestion))
+  }
 
   function handleImageSelect(e) {
     const file = e.target.files?.[0]
@@ -97,6 +116,7 @@ export default function NewRecipe() {
       instructions: instructions.trim() || null,
       image_url:    imageUrl,
       category:     category || null,
+      core_temp:    (coreTemp === '' || coreTemp === null) ? null : Number(coreTemp),
       visibility,
     })
 
@@ -158,13 +178,30 @@ export default function NewRecipe() {
               id="category"
               className={styles.select}
               value={category}
-              onChange={e => setCategory(e.target.value)}
+              onChange={e => handleCategoryChange(e.target.value)}
               required
             >
               <option value="">{t('recipe.selectCategory')}</option>
               {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
+
+          {shouldShowCoreTemp && (
+            <div className={styles.field}>
+              <label htmlFor="coreTemp" className={styles.label}>Kerntemperatuur (°C)</label>
+              <input
+                id="coreTemp"
+                type="number"
+                min="0"
+                step="1"
+                className={styles.input}
+                value={coreTemp}
+                onChange={e => setCoreTemp(e.target.value)}
+                placeholder="55"
+              />
+              <span className={styles.temperatureTip}>🌡️ Aanbevolen kerntemperatuur - pas aan naar wens</span>
+            </div>
+          )}
 
           {/* Image Upload */}
           <div className={styles.field}>

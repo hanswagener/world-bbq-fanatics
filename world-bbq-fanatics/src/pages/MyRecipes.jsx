@@ -29,7 +29,7 @@ export default function MyRecipes() {
     if (!user) return
     const { data } = await supabase
       .from('recipes')
-      .select('id, title, description, image_url, visibility, created_at, flames(id)')
+      .select('id, title, description, image_url, visibility, core_temp, created_at, flames(id)')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
     setRecipes(data ?? [])
@@ -88,9 +88,14 @@ export default function MyRecipes() {
                     <span className={`${styles.badge} ${styles[v.cls]}`}>{t(v.labelKey)}</span>
                     <span className={styles.date}>{formatDate(recipe.created_at)}</span>
                   </div>
-                  <Link to={`/recipes/${recipe.id}`} className={styles.cardTitle}>
-                    {recipe.title}
-                  </Link>
+                  <div className={styles.cardTitleRow}>
+                    <Link to={`/recipes/${recipe.id}`} className={styles.cardTitle}>
+                      {recipe.title}
+                    </Link>
+                    {recipe.core_temp != null && (
+                      <span className={styles.tempBadge}>🌡️ {recipe.core_temp}°C</span>
+                    )}
+                  </div>
                   {recipe.description && (
                     <p className={styles.cardDesc}>{recipe.description}</p>
                   )}

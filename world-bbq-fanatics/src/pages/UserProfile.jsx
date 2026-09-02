@@ -54,10 +54,15 @@ function RecipeCard({ recipe, showVisibility }) {
             <span className={`${styles.badge} ${vis.cls}`}>{t(vis.labelKey)}</span>
           )}
         </div>
+        <div className={styles.recipeChipRow}>
+          {recipe.core_temp != null && (
+            <span className={styles.tempChip}>🌡️ {recipe.core_temp}°C</span>
+          )}
+          <span className={styles.recipeFlames}>🔥 {formatFlames(flameCount)}</span>
+        </div>
         {recipe.description && (
           <p className={styles.recipeDesc}>{recipe.description}</p>
         )}
-        <span className={styles.recipeFlames}>🔥 {formatFlames(flameCount)}</span>
       </div>
     </Link>
   )
@@ -122,7 +127,7 @@ export default function UserProfile() {
       // Fetch recipes
       let query = supabase
         .from('recipes')
-        .select('id, title, description, image_url, visibility, created_at, flames(id)')
+        .select('id, title, description, image_url, visibility, core_temp, created_at, flames(id)')
         .eq('user_id', profileData.id)
         .order('created_at', { ascending: false })
       if (!isMe) query = query.eq('visibility', 'public')

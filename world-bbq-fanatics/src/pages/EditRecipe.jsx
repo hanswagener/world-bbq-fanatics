@@ -7,6 +7,16 @@ import styles from './NewRecipe.module.css'
 const MAX_FILE_SIZE = 5 * 1024 * 1024
 const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
 const CATEGORIES = ['Rund', 'Lam', 'Varken', 'Kip', 'Vis', 'Groenten', 'Rub', 'Sauzen']
+const CORE_TEMP_BY_CATEGORY = {
+  Rund: 55,
+  Lam: 60,
+  Varken: 70,
+  Kip: 75,
+  Vis: 55,
+  Groenten: null,
+  Rub: null,
+  Sauzen: null,
+}
 
 const VISIBILITY_OPTIONS = [
   { value: 'public',       label: '🌍 Public',       desc: 'Visible to everyone' },
@@ -28,6 +38,7 @@ export default function EditRecipe() {
   const [ingredients, setIngredients] = useState('')
   const [instructions, setInstructions] = useState('')
   const [category, setCategory] = useState('')
+  const [coreTemp, setCoreTemp] = useState('')
   const [visibility, setVisibility] = useState('public')
 
   // existing URL from DB; null if user removes it
@@ -42,11 +53,19 @@ export default function EditRecipe() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
 
+  const shouldShowCoreTemp = ['Rund', 'Lam', 'Varken', 'Kip', 'Vis'].includes(category)
+
+  function handleCategoryChange(nextCategory) {
+    setCategory(nextCategory)
+    const suggestion = CORE_TEMP_BY_CATEGORY[nextCategory]
+    setCoreTemp(suggestion === null || suggestion === undefined ? '' : String(suggestion))
+  }
+
   useEffect(() => {
     async function loadRecipe() {
       const { data, error: fetchError } = await supabase
         .from('recipes')
-        .select('id, user_id, title, description, ingredients, instructions, image_url, visibility, category')
+        .select('id, user_id, title, description, ingredients, instructions, image_url, visibility, category, core_temp')
         .eq('id', id)
         .single()
 
@@ -58,6 +77,7 @@ export default function EditRecipe() {
       setIngredients(data.ingredients ?? '')
       setInstructions(data.instructions ?? '')
       setCategory(data.category ?? '')
+      setCoreTemp(data.core_temp != null ? String(data.core_temp) : '')
       setVisibility(data.visibility ?? 'public')
       setCurrentImageUrl(data.image_url ?? null)
       setImagePreview(data.image_url ?? null)
@@ -133,6 +153,7 @@ export default function EditRecipe() {
         instructions: instructions.trim() || null,
         image_url:    imageUrl,
         category:     category || null,
+        core_temp:    (coreTemp === '' || coreTemp === null) ? null : Number(coreTemp),
         visibility,
       })
       .eq('id', id)
@@ -221,13 +242,30 @@ export default function EditRecipe() {
               id="category"
               className={styles.select}
               value={category}
-              onChange={e => setCategory(e.target.value)}
+              onChange={e => handleCategoryChange(e.target.value)}
               required
             >
               <option value="">Select category…</option>
               {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
+
+          {shouldShowCoreTemp && (
+            <div className={styles.field}>
+              <label htmlFor="coreTemp" className={styles.label}>Kerntemperatuur (°C)</label>
+              <input
+                id="coreTemp"
+                type="number"
+                min="0"
+                step="1"
+                className={styles.input}
+                value={coreTemp}
+                onChange={e => setCoreTemp(e.target.value)}
+                placeholder="55"
+              />
+              <span className={styles.temperatureTip}>🌡️ Aanbevolen kerntemperatuur - pas aan naar wens</span>
+            </div>
+          )}
 
           {/* Image Upload */}
           <div className={styles.field}>

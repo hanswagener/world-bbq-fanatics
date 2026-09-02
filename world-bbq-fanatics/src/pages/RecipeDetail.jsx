@@ -40,7 +40,7 @@ export default function RecipeDetail() {
         .from('recipes')
         .select(`
           id, title, description, ingredients, instructions,
-          image_url, visibility, created_at, user_id,
+          image_url, visibility, core_temp, created_at, user_id,
           profiles(username, avatar_url, skill_level, bio),
           flames(id, user_id)
         `)
@@ -134,7 +134,12 @@ export default function RecipeDetail() {
 
         {/* Title row */}
         <div className={styles.titleRow}>
-          <h1 className={styles.title}>{recipe.title}</h1>
+          <div className={styles.titleStack}>
+            <h1 className={styles.title}>{recipe.title}</h1>
+            {recipe.core_temp != null && (
+              <span className={styles.coreTempBadge}>🌡️ Kerntemperatuur: {recipe.core_temp}°C</span>
+            )}
+          </div>
           <button
             className={`${styles.flameBtn} ${hasFlamed ? styles.flameBtnActive : ''}`}
             onClick={toggleFlame}
