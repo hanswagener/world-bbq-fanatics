@@ -65,7 +65,7 @@ function AdminPage() {
 
     const [channelsRes, profilesRes, recipesRes, usersCountRes, recipesCountRes, flamesCountRes, messagesCountRes, chatsCountRes] = await Promise.all([
       supabase.from('channels').select('id, name, description, created_at').order('created_at', { ascending: false }),
-      supabase.from('profiles').select('id, username, email, skill_level, created_at, is_admin').order('created_at', { ascending: false }),
+      supabase.from('profiles').select('id, username, skill_level, created_at, is_admin, language').order('created_at', { ascending: false }),
       supabase
         .from('recipes')
         .select('id, title, category, visibility, user_id, created_at, flames(id), profiles(username)')
@@ -77,6 +77,15 @@ function AdminPage() {
       supabase.from('channel_messages').select('*', { count: 'exact', head: true }),
       supabase.from('private_rooms').select('*', { count: 'exact', head: true }),
     ])
+
+    console.log('[Admin] profiles query result:', {
+      data: profilesRes.data,
+      error: profilesRes.error,
+      count: profilesRes.data?.length ?? 0,
+      currentUserId: user?.id,
+    })
+    console.log('[Admin] channel query result:', { data: channelsRes.data, error: channelsRes.error })
+    console.log('[Admin] recipes query result:', { data: recipesRes.data, error: recipesRes.error })
 
     setChannels(channelsRes.data ?? [])
     setUsers(profilesRes.data ?? [])
@@ -281,8 +290,8 @@ function AdminPage() {
                 <thead>
                   <tr>
                     <th>Gebruiker</th>
-                    <th>E-mail</th>
                     <th>Skill</th>
+                    <th>Taal</th>
                     <th>Lid sinds</th>
                     <th>Admin</th>
                   </tr>
@@ -291,8 +300,8 @@ function AdminPage() {
                   {filteredUsers.map(profile => (
                     <tr key={profile.id}>
                       <td>{profile.username}</td>
-                      <td>{profile.email || '—'}</td>
                       <td>{profile.skill_level || '—'}</td>
+                      <td>{profile.language || '—'}</td>
                       <td>{profile.created_at ? new Date(profile.created_at).toLocaleDateString('nl-NL') : '—'}</td>
                       <td>
                         <button
