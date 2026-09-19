@@ -14,6 +14,10 @@ function formatDate(dateStr) {
   })
 }
 
+function withoutFeatured(items, featured) {
+  return featured ? items.filter(recipe => recipe.id !== featured.id) : items
+}
+
 function AuthorAvatar({ profile }) {
   if (profile?.avatar_url) {
     return <img src={profile.avatar_url} className={styles.authorImg} alt="" />
@@ -168,6 +172,28 @@ const RECIPE_SELECT = `
   flames(id, user_id)
 `
 
+function CategoryFilters({ categoryFilter, onCategoryChange, translate }) {
+  return (
+    <div className={styles.filterBar}>
+      <button
+        className={`${styles.filterBtn} ${categoryFilter === null ? styles.filterBtnActive : ''}`}
+        onClick={() => onCategoryChange(null)}
+      >
+        {translate('dashboard.all')}
+      </button>
+      {CATEGORIES.map(cat => (
+        <button
+          key={cat}
+          className={`${styles.filterBtn} ${categoryFilter === cat ? styles.filterBtnActive : ''}`}
+          onClick={() => onCategoryChange(cat)}
+        >
+          {cat}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 export default function Dashboard() {
   const { user } = useAuth()
   const { t } = useTranslation()
@@ -309,6 +335,21 @@ export default function Dashboard() {
     )
   }
 
+  const filteredRecipes = categoryFilter
+    ? recipes.filter(r => r.category === categoryFilter)
+    : recipes
+  const filteredMyRecipes = categoryFilter
+    ? myRecipes.filter(r => r.category === categoryFilter)
+    : myRecipes
+  const filteredFollowingRecipes = categoryFilter
+    ? followingRecipes.filter(r => r.category === categoryFilter)
+    : followingRecipes
+
+  function handleTabChange(tab) {
+    setActiveTab(tab)
+    setCategoryFilter(null)
+  }
+
   return (
     <div className={styles.page}>
       {!loading && featured && <FeaturedRecipe recipe={featured} />}
@@ -322,7 +363,7 @@ export default function Dashboard() {
       <div className={styles.tabs}>
         <button
           className={`${styles.tab} ${activeTab === 'all' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('all')}
+          onClick={() => handleTabChange('all')}
         >
           <span className={styles.tabIcon} aria-hidden="true">🔥</span>
           <span className={styles.tabDesktopLabel}>{t('dashboard.allRecipes')}</span>
@@ -330,7 +371,7 @@ export default function Dashboard() {
         </button>
         <button
           className={`${styles.tab} ${activeTab === 'mine' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('mine')}
+          onClick={() => handleTabChange('mine')}
         >
           <span className={styles.tabIcon} aria-hidden="true">📖</span>
           <span className={styles.tabDesktopLabel}>{t('dashboard.myRecipes')}</span>
@@ -338,7 +379,7 @@ export default function Dashboard() {
         </button>
         <button
           className={`${styles.tab} ${activeTab === 'following' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('following')}
+          onClick={() => handleTabChange('following')}
         >
           <span className={styles.tabIcon} aria-hidden="true">👥</span>
           <span className={styles.tabDesktopLabel}>{t('dashboard.following')}</span>
@@ -346,29 +387,17 @@ export default function Dashboard() {
         </button>
       </div>
 
+      <CategoryFilters
+        categoryFilter={categoryFilter}
+        onCategoryChange={setCategoryFilter}
+        translate={t}
+      />
+
       {/* ── All Recipes tab ── */}
       {activeTab === 'all' && (() => {
-        const withoutFeatured = featured ? recipes.filter(r => r.id !== featured.id) : recipes
-        const filtered = categoryFilter ? withoutFeatured.filter(r => r.category === categoryFilter) : withoutFeatured
+        const filtered = withoutFeatured(filteredRecipes, featured)
         return (
           <>
-            <div className={styles.filterBar}>
-              <button
-                className={`${styles.filterBtn} ${categoryFilter === null ? styles.filterBtnActive : ''}`}
-                onClick={() => setCategoryFilter(null)}
-              >
-                {t('dashboard.all')}
-              </button>
-              {CATEGORIES.map(cat => (
-                <button
-                  key={cat}
-                  className={`${styles.filterBtn} ${categoryFilter === cat ? styles.filterBtnActive : ''}`}
-                  onClick={() => setCategoryFilter(cat)}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
             {loading ? (
               <div className={styles.emptyState}>
                 <span className={styles.emptyIcon}>🔥</span>
@@ -389,7 +418,7 @@ export default function Dashboard() {
 
       {/* ── My Recipes tab ── */}
       {activeTab === 'mine' && (() => {
-        const items = featured ? myRecipes.filter(r => r.id !== featured.id) : myRecipes
+        const items = withoutFeatured(filteredMyRecipes, featured)
         return loadingMyRecipes ? (
           <div className={styles.emptyState}>
             <span className={styles.emptyIcon}>🔥</span>
@@ -401,6 +430,12 @@ export default function Dashboard() {
             <h2 className={styles.emptyTitle}>{t('dashboard.noRecipesYet')}</h2>
             <p className={styles.emptyText}>{t('dashboard.shareSecrets')}</p>
             <Link to="/recipes/new" className={styles.addRecipeBtn}>{t('dashboard.addFirstRecipe')}</Link>
+          </div>
+        ) : items.length === 0 && categoryFilter ? (
+          <div className={styles.emptyState}>
+            <span className={styles.emptyIcon}>🍖</span>
+            <h2 className={styles.emptyTitle}>{t('dashboard.emptyTitleCategory', { category: categoryFilter })}</h2>
+            <p className={styles.emptyText}>{t('dashboard.emptyDescCategory')}</p>
           </div>
         ) : items.length === 0 ? (
           <div className={styles.emptyState}>
@@ -414,7 +449,7 @@ export default function Dashboard() {
 
       {/* ── Following tab ── */}
       {activeTab === 'following' && (() => {
-        const items = featured ? followingRecipes.filter(r => r.id !== featured.id) : followingRecipes
+        const items = withoutFeatured(filteredFollowingRecipes, featured)
         return loadingFollowing ? (
           <div className={styles.emptyState}>
             <span className={styles.emptyIcon}>🔥</span>
@@ -432,6 +467,12 @@ export default function Dashboard() {
             <span className={styles.emptyIcon}>🍖</span>
             <h2 className={styles.emptyTitle}>{t('dashboard.emptyTitleNothing')}</h2>
             <p className={styles.emptyText}>{t('dashboard.emptyDescNothing')}</p>
+          </div>
+        ) : items.length === 0 && categoryFilter ? (
+          <div className={styles.emptyState}>
+            <span className={styles.emptyIcon}>🍖</span>
+            <h2 className={styles.emptyTitle}>{t('dashboard.emptyTitleCategory', { category: categoryFilter })}</h2>
+            <p className={styles.emptyText}>{t('dashboard.emptyDescCategory')}</p>
           </div>
         ) : items.length === 0 ? (
           <div className={styles.emptyState}>
