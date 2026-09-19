@@ -324,19 +324,25 @@ export default function Dashboard() {
           className={`${styles.tab} ${activeTab === 'all' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('all')}
         >
-          {t('dashboard.allRecipes')}
+          <span className={styles.tabIcon} aria-hidden="true">🔥</span>
+          <span className={styles.tabDesktopLabel}>{t('dashboard.allRecipes')}</span>
+          <span className={styles.tabMobileLabel}>Feed</span>
         </button>
         <button
           className={`${styles.tab} ${activeTab === 'mine' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('mine')}
         >
-          {t('dashboard.myRecipes')}
+          <span className={styles.tabIcon} aria-hidden="true">📖</span>
+          <span className={styles.tabDesktopLabel}>{t('dashboard.myRecipes')}</span>
+          <span className={styles.tabMobileLabel}>Mijn</span>
         </button>
         <button
           className={`${styles.tab} ${activeTab === 'following' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('following')}
         >
-          {t('dashboard.following')}
+          <span className={styles.tabIcon} aria-hidden="true">👥</span>
+          <span className={styles.tabDesktopLabel}>{t('dashboard.following')}</span>
+          <span className={styles.tabMobileLabel}>Volgend</span>
         </button>
       </div>
 
