@@ -422,7 +422,7 @@ export default function Dashboard() {
 
       {/* ── My Recipes tab ── */}
       {activeTab === 'mine' && (() => {
-        const items = withoutFeatured(filteredMyRecipes, featured)
+        const items = filteredMyRecipes
         return loadingMyRecipes ? (
           <div className={styles.emptyState}>
             <span className={styles.emptyIcon}>🔥</span>
@@ -453,7 +453,7 @@ export default function Dashboard() {
 
       {/* ── Following tab ── */}
       {activeTab === 'following' && (() => {
-        const items = withoutFeatured(filteredFollowingRecipes, featured)
+        const items = filteredFollowingRecipes
         return loadingFollowing ? (
           <div className={styles.emptyState}>
             <span className={styles.emptyIcon}>🔥</span>
