@@ -172,7 +172,9 @@ const RECIPE_SELECT = `
   flames(id, user_id)
 `
 
-function CategoryFilters({ categoryFilter, onCategoryChange, translate }) {
+function CategoryFilters({ activeTab, categoryFilter, onCategoryChange, translate }) {
+  console.log('CategoryFilters rendered, activeTab:', activeTab)
+
   return (
     <div className={styles.filterBar}>
       <button
@@ -388,6 +390,8 @@ export default function Dashboard() {
       </div>
 
       <CategoryFilters
+        key={activeTab}
+        activeTab={activeTab}
         categoryFilter={categoryFilter}
         onCategoryChange={setCategoryFilter}
         translate={t}
