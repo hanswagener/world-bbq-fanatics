@@ -19,6 +19,7 @@ import PrivateChat from './pages/PrivateChat'
 import Search from './pages/Search'
 import Notifications from './pages/Notifications'
 import Admin from './pages/Admin'
+import Settings from './pages/Settings'
 
 export default function App() {
   return (
@@ -46,6 +47,7 @@ export default function App() {
           <Route path="/chat/:id"        element={<PrivateChat />} />
           <Route path="/search"          element={<Search />} />
           <Route path="/notifications"   element={<Notifications />} />
+          <Route path="/settings"        element={<Settings />} />
           <Route path="/admin"           element={<Admin />} />
         </Route>
 

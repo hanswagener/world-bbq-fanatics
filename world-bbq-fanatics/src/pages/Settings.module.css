@@ -1,0 +1,164 @@
+.page {
+  min-height: 100%;
+  padding: 48px 24px 72px;
+  background: #0d0d0d;
+}
+
+.content {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.header {
+  padding-bottom: 28px;
+  border-bottom: 1px solid #292929;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: #ff6600;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.title {
+  margin: 0;
+  color: #f5f5f5;
+  font-size: 32px;
+  line-height: 1.1;
+}
+
+.subtitle {
+  margin: 10px 0 0;
+  color: #858585;
+  font-size: 15px;
+}
+
+.section {
+  margin-top: 24px;
+  padding: 26px 28px;
+  background: #171717;
+  border: 1px solid #292929;
+  border-radius: 10px;
+}
+
+.sectionHeader {
+  margin-bottom: 22px;
+}
+
+.sectionHeader h2 {
+  margin: 0 0 6px;
+  color: #f0f0f0;
+  font-size: 18px;
+}
+
+.sectionHeader p {
+  margin: 0;
+  color: #777;
+  font-size: 14px;
+}
+
+.form + .form {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #292929;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field label {
+  color: #c7c7c7;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.field input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 13px;
+  color: #f5f5f5;
+  background: #0d0d0d;
+  border: 1px solid #3a3a3a;
+  border-radius: 7px;
+  outline: none;
+  font: inherit;
+}
+
+.field input:focus {
+  border-color: #ff6600;
+  box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.13);
+}
+
+.field input::placeholder {
+  color: #555;
+}
+
+.button {
+  margin-top: 14px;
+  padding: 10px 15px;
+  color: #fff;
+  background: #e95700;
+  border: 0;
+  border-radius: 7px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.button:hover:not(:disabled) {
+  background: #ff6600;
+}
+
+.button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.success,
+.error {
+  margin: 12px 0 0;
+  font-size: 13px;
+}
+
+.success {
+  color: #8fd694;
+}
+
+.error {
+  color: #ff8b80;
+}
+
+.profileLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #ff761f;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.profileLink:hover {
+  color: #ff9a59;
+}
+
+@media (max-width: 560px) {
+  .page {
+    padding: 32px 16px 52px;
+  }
+
+  .section {
+    padding: 22px 18px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+}
