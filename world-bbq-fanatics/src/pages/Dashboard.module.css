@@ -360,6 +360,7 @@
   }
 
   .tab {
+    position: relative;
     display: flex;
     flex: 1;
     flex-direction: column;
@@ -370,8 +371,10 @@
     padding: 4px 8px;
     margin: 0;
     border: 0;
-    color: #777;
+    color: #666;
     font-size: 11px;
+    background: transparent;
+    transition: color 0.15s, background 0.15s;
   }
 
   .tabIcon {
@@ -390,7 +393,18 @@
 
   .tabActive {
     color: #ff6600;
-    border-bottom-color: transparent;
+    background: rgba(255, 102, 0, 0.1);
+  }
+
+  .tabActive::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 20%;
+    right: 20%;
+    height: 3px;
+    border-radius: 0 0 3px 3px;
+    background: #ff6600;
   }
 
   .filterBar {
