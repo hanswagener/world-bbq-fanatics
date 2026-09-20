@@ -11,6 +11,15 @@ function formatDate(dateStr) {
   })
 }
 
+function formatCookTime(minutes) {
+  if (minutes == null) return null
+  const hours = Math.floor(minutes / 60)
+  const remainingMinutes = minutes % 60
+  if (hours === 0) return `${minutes} minuten`
+  if (remainingMinutes === 0) return `${hours} uur`
+  return `${hours} uur ${remainingMinutes} minuten`
+}
+
 function Section({ title, content }) {
   if (!content) return null
   return (
@@ -39,7 +48,7 @@ export default function RecipeDetail() {
       const { data, error } = await supabase
         .from('recipes')
         .select(`
-          id, title, description, ingredients, instructions,
+          id, title, description, ingredients, instructions, cook_time_minutes,
           image_url, visibility, core_temp, doneness, created_at, user_id,
           profiles(username, avatar_url, skill_level, bio),
           flames(id, user_id)
@@ -170,6 +179,10 @@ export default function RecipeDetail() {
         {/* Content sections */}
         {recipe.description && (
           <p className={styles.description}>{recipe.description}</p>
+        )}
+
+        {formatCookTime(recipe.cook_time_minutes) && (
+          <Section title="Rooktijd/Griltijd" content={formatCookTime(recipe.cook_time_minutes)} />
         )}
 
         <Section title={t('recipe.ingredients')} content={recipe.ingredients} />

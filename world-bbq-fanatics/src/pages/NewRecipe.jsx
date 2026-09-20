@@ -70,8 +70,7 @@ export default function NewRecipe() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [prepTime, setPrepTime] = useState('')
-  const [smokeHours, setSmokeHours] = useState('')
-  const [smokeMinutes, setSmokeMinutes] = useState('')
+  const [cookTimeMinutes, setCookTimeMinutes] = useState('')
   const [servings, setServings] = useState('')
   const [difficulty, setDifficulty] = useState('')
   const [ingredients, setIngredients] = useState([emptyIngredient(), emptyIngredient(), emptyIngredient()])
@@ -198,8 +197,7 @@ export default function NewRecipe() {
         .join('\n') || null,
       instructions: instructions.filter(step => step.trim()).map((step, index) => `${index + 1}. ${step.trim()}`).join('\n') || null,
       prep_time: prepTime === '' ? null : Number(prepTime),
-      smoke_time_hours: smokeHours === '' ? null : Number(smokeHours),
-      smoke_time_minutes: smokeMinutes === '' ? null : Number(smokeMinutes),
+      cook_time_minutes: cookTimeMinutes === '' ? null : Number(cookTimeMinutes),
       servings: servings === '' ? null : Number(servings),
       difficulty: difficulty || null,
       tips: tips.filter(tip => tip.trim()).map(tip => tip.trim()).join('\n') || null,
@@ -366,12 +364,8 @@ export default function NewRecipe() {
                 <input id="prepTime" type="number" min="0" className={styles.input} value={prepTime} onChange={e => setPrepTime(e.target.value)} />
               </div>
               <div className={styles.field}>
-                <label htmlFor="smokeHours" className={styles.label}>Rooktijd/Griltijd (uur)</label>
-                <input id="smokeHours" type="number" min="0" className={styles.input} value={smokeHours} onChange={e => setSmokeHours(e.target.value)} />
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="smokeMinutes" className={styles.label}>Rooktijd/Griltijd (minuten)</label>
-                <input id="smokeMinutes" type="number" min="0" max="59" className={styles.input} value={smokeMinutes} onChange={e => setSmokeMinutes(e.target.value)} />
+                <label htmlFor="cookTimeMinutes" className={styles.label}>Rooktijd/Griltijd (minuten)</label>
+                <input id="cookTimeMinutes" type="number" min="0" className={styles.input} value={cookTimeMinutes} onChange={e => setCookTimeMinutes(e.target.value)} />
               </div>
               <div className={styles.field}>
                 <label htmlFor="servings" className={styles.label}>Aantal personen</label>
