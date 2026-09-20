@@ -48,7 +48,7 @@ export default function RecipeDetail() {
       const { data, error } = await supabase
         .from('recipes')
         .select(`
-          id, title, description, ingredients, instructions, cook_time_minutes,
+          id, title, description, ingredients, instructions, prep_time, cook_time_minutes,
           image_url, visibility, core_temp, doneness, created_at, user_id,
           profiles(username, avatar_url, skill_level, bio),
           flames(id, user_id)
@@ -179,6 +179,10 @@ export default function RecipeDetail() {
         {/* Content sections */}
         {recipe.description && (
           <p className={styles.description}>{recipe.description}</p>
+        )}
+
+        {formatCookTime(recipe.prep_time) && (
+          <Section title="Bereidingstijd" content={formatCookTime(recipe.prep_time)} />
         )}
 
         {formatCookTime(recipe.cook_time_minutes) && (

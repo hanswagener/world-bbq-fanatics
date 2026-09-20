@@ -69,8 +69,10 @@ export default function NewRecipe() {
 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [prepTime, setPrepTime] = useState('')
-  const [cookTimeMinutes, setCookTimeMinutes] = useState('')
+  const [prepHours, setPrepHours] = useState('')
+  const [prepMinutes, setPrepMinutes] = useState('')
+  const [cookHours, setCookHours] = useState('')
+  const [cookMinutes, setCookMinutes] = useState('')
   const [servings, setServings] = useState('')
   const [difficulty, setDifficulty] = useState('')
   const [ingredients, setIngredients] = useState([emptyIngredient(), emptyIngredient(), emptyIngredient()])
@@ -196,8 +198,8 @@ export default function NewRecipe() {
         .map(item => `${item.amount.trim()} ${item.name.trim()}`.trim())
         .join('\n') || null,
       instructions: instructions.filter(step => step.trim()).map((step, index) => `${index + 1}. ${step.trim()}`).join('\n') || null,
-      prep_time: prepTime === '' ? null : Number(prepTime),
-      cook_time_minutes: cookTimeMinutes === '' ? null : Number(cookTimeMinutes),
+      prep_time: prepHours === '' && prepMinutes === '' ? null : (Number(prepHours || 0) * 60) + Number(prepMinutes || 0),
+      cook_time_minutes: cookHours === '' && cookMinutes === '' ? null : (Number(cookHours || 0) * 60) + Number(cookMinutes || 0),
       servings: servings === '' ? null : Number(servings),
       difficulty: difficulty || null,
       tips: tips.filter(tip => tip.trim()).map(tip => tip.trim()).join('\n') || null,
@@ -360,12 +362,22 @@ export default function NewRecipe() {
             <div className={styles.sectionTitle}>RECEPT INFORMATIE</div>
             <div className={styles.infoGrid}>
               <div className={styles.field}>
-                <label htmlFor="prepTime" className={styles.label}>Bereidingstijd (minuten)</label>
-                <input id="prepTime" type="number" min="0" className={styles.input} value={prepTime} onChange={e => setPrepTime(e.target.value)} />
+                <span className={styles.label}>Bereidingstijd</span>
+                <div className={styles.durationRow}>
+                  <input id="prepHours" type="number" min="0" max="24" className={styles.compactInput} value={prepHours} onChange={e => setPrepHours(e.target.value)} placeholder="0" aria-label="Bereidingstijd uren" />
+                  <span className={styles.durationUnit}>uur</span>
+                  <input id="prepMinutes" type="number" min="0" max="59" className={styles.compactInput} value={prepMinutes} onChange={e => setPrepMinutes(e.target.value)} placeholder="0" aria-label="Bereidingstijd minuten" />
+                  <span className={styles.durationUnit}>minuten</span>
+                </div>
               </div>
               <div className={styles.field}>
-                <label htmlFor="cookTimeMinutes" className={styles.label}>Rooktijd/Griltijd (minuten)</label>
-                <input id="cookTimeMinutes" type="number" min="0" className={styles.input} value={cookTimeMinutes} onChange={e => setCookTimeMinutes(e.target.value)} />
+                <span className={styles.label}>Rooktijd/Griltijd</span>
+                <div className={styles.durationRow}>
+                  <input id="cookHours" type="number" min="0" max="24" className={styles.compactInput} value={cookHours} onChange={e => setCookHours(e.target.value)} placeholder="0" aria-label="Rooktijd uren" />
+                  <span className={styles.durationUnit}>uur</span>
+                  <input id="cookMinutes" type="number" min="0" max="59" className={styles.compactInput} value={cookMinutes} onChange={e => setCookMinutes(e.target.value)} placeholder="0" aria-label="Rooktijd minuten" />
+                  <span className={styles.durationUnit}>minuten</span>
+                </div>
               </div>
               <div className={styles.field}>
                 <label htmlFor="servings" className={styles.label}>Aantal personen</label>
