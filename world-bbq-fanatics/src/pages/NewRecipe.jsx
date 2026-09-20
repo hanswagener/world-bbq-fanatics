@@ -47,6 +47,19 @@ const VISIBILITY_OPTIONS = [
   { value: 'friends_only', label: '👥 Friends Only',  desc: 'Only your friends' },
   { value: 'private',      label: '🔒 Private',       desc: 'Only you' },
 ]
+const WOOD_OPTIONS = ['Eiken', 'Appel', 'Kers', 'Hickory', 'Mesquite', 'Els', 'Peer']
+
+function emptyIngredient() {
+  return { amount: '', name: '' }
+}
+
+function emptyStep() {
+  return ''
+}
+
+function emptyTip() {
+  return ''
+}
 
 export default function NewRecipe() {
   const { user } = useAuth()
@@ -56,8 +69,15 @@ export default function NewRecipe() {
 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [ingredients, setIngredients] = useState('')
-  const [instructions, setInstructions] = useState('')
+  const [prepTime, setPrepTime] = useState('')
+  const [smokeHours, setSmokeHours] = useState('')
+  const [smokeMinutes, setSmokeMinutes] = useState('')
+  const [servings, setServings] = useState('')
+  const [difficulty, setDifficulty] = useState('')
+  const [ingredients, setIngredients] = useState([emptyIngredient(), emptyIngredient(), emptyIngredient()])
+  const [instructions, setInstructions] = useState([emptyStep(), emptyStep(), emptyStep()])
+  const [tips, setTips] = useState([emptyTip(), emptyTip()])
+  const [woodType, setWoodType] = useState('')
   const [imageFile, setImageFile] = useState(null)
   const [imagePreview, setImagePreview] = useState(null)
   const [imageError, setImageError] = useState(null)
@@ -97,6 +117,20 @@ export default function NewRecipe() {
     setDoneness(nextDoneness)
     const option = DONENESS_OPTIONS[category]?.find(item => item.value === nextDoneness)
     if (option) setCoreTemp(String(option.temp))
+  }
+
+  function updateIngredient(index, field, value) {
+    setIngredients(current => current.map((ingredient, itemIndex) =>
+      itemIndex === index ? { ...ingredient, [field]: value } : ingredient
+    ))
+  }
+
+  function updateListItem(setList, index, value) {
+    setList(current => current.map((item, itemIndex) => itemIndex === index ? value : item))
+  }
+
+  function removeListItem(setList, index) {
+    setList(current => current.filter((_, itemIndex) => itemIndex !== index))
   }
 
   function handleImageSelect(e) {
@@ -158,8 +192,18 @@ export default function NewRecipe() {
       user_id:      user.id,
       title:        title.trim(),
       description:  description.trim() || null,
-      ingredients:  ingredients.trim() || null,
-      instructions: instructions.trim() || null,
+      ingredients:  ingredients
+        .filter(item => item.amount.trim() || item.name.trim())
+        .map(item => `${item.amount.trim()} ${item.name.trim()}`.trim())
+        .join('\n') || null,
+      instructions: instructions.filter(step => step.trim()).map((step, index) => `${index + 1}. ${step.trim()}`).join('\n') || null,
+      prep_time: prepTime === '' ? null : Number(prepTime),
+      smoke_time_hours: smokeHours === '' ? null : Number(smokeHours),
+      smoke_time_minutes: smokeMinutes === '' ? null : Number(smokeMinutes),
+      servings: servings === '' ? null : Number(servings),
+      difficulty: difficulty || null,
+      tips: tips.filter(tip => tip.trim()).map(tip => tip.trim()).join('\n') || null,
+      wood_type: woodType.trim() || null,
       image_url:    imageUrl,
       category:     category || null,
       core_temp:    (coreTemp === '' || coreTemp === null) ? null : Number(coreTemp),
@@ -315,27 +359,103 @@ export default function NewRecipe() {
           {/* Ingredients */}
           <div className={styles.field}>
             <label htmlFor="ingredients" className={styles.label}>{t('recipe.ingredients')}</label>
-            <textarea
-              id="ingredients"
-              className={styles.textarea}
-              value={ingredients}
-              onChange={e => setIngredients(e.target.value)}
-              placeholder={"2 kg beef brisket\n1 tbsp coarse salt\n1 tbsp black pepper\n…"}
-              rows={6}
-            />
+            <div className={styles.sectionTitle}>RECEPT INFORMATIE</div>
+            <div className={styles.infoGrid}>
+              <div className={styles.field}>
+                <label htmlFor="prepTime" className={styles.label}>Bereidingstijd (minuten)</label>
+                <input id="prepTime" type="number" min="0" className={styles.input} value={prepTime} onChange={e => setPrepTime(e.target.value)} />
+              </div>
+              <div className={styles.field}>
+                <label htmlFor="smokeHours" className={styles.label}>Rooktijd/Griltijd (uur)</label>
+                <input id="smokeHours" type="number" min="0" className={styles.input} value={smokeHours} onChange={e => setSmokeHours(e.target.value)} />
+              </div>
+              <div className={styles.field}>
+                <label htmlFor="smokeMinutes" className={styles.label}>Rooktijd/Griltijd (minuten)</label>
+                <input id="smokeMinutes" type="number" min="0" max="59" className={styles.input} value={smokeMinutes} onChange={e => setSmokeMinutes(e.target.value)} />
+              </div>
+              <div className={styles.field}>
+                <label htmlFor="servings" className={styles.label}>Aantal personen</label>
+                <input id="servings" type="number" min="1" className={styles.input} value={servings} onChange={e => setServings(e.target.value)} />
+              </div>
+              <div className={styles.field}>
+                <label htmlFor="difficulty" className={styles.label}>Moeilijkheidsgraad</label>
+                <select id="difficulty" className={styles.select} value={difficulty} onChange={e => setDifficulty(e.target.value)}>
+                  <option value="">Selecteer moeilijkheid</option>
+                  <option value="Makkelijk">Makkelijk</option>
+                  <option value="Gemiddeld">Gemiddeld</option>
+                  <option value="Moeilijk">Moeilijk</option>
+                </select>
+              </div>
+            </div>
+
+            <div className={styles.sectionTitle}>INGREDIËNTEN</div>
+            {ingredients.map((ingredient, index) => (
+              <div className={styles.dynamicRow} key={`ingredient-${index}`}>
+                <input
+                  className={styles.input}
+                  value={ingredient.amount}
+                  onChange={e => updateIngredient(index, 'amount', e.target.value)}
+                  placeholder="Hoeveelheid"
+                  aria-label={`Hoeveelheid ingrediënt ${index + 1}`}
+                />
+                <input
+                  className={styles.input}
+                  value={ingredient.name}
+                  onChange={e => updateIngredient(index, 'name', e.target.value)}
+                  placeholder="Ingrediënt"
+                  aria-label={`Ingrediënt ${index + 1}`}
+                />
+                <button type="button" className={styles.removeBtn} onClick={() => removeListItem(setIngredients, index)} aria-label={`Ingrediënt ${index + 1} verwijderen`}>×</button>
+              </div>
+            ))}
+            <button type="button" className={styles.addBtn} onClick={() => setIngredients(current => [...current, emptyIngredient()])}>+ Ingrediënt toevoegen</button>
           </div>
 
           {/* Instructions */}
           <div className={styles.field}>
             <label htmlFor="instructions" className={styles.label}>{t('recipe.instructions')}</label>
-            <textarea
-              id="instructions"
-              className={styles.textarea}
-              value={instructions}
-              onChange={e => setInstructions(e.target.value)}
-              placeholder={"1. Trim excess fat from brisket\n2. Apply rub evenly\n3. Smoke at 107°C for 12 hours\n…"}
-              rows={8}
-            />
+            <div className={styles.sectionTitle}>BEREIDINGSWIJZE</div>
+            {instructions.map((step, index) => (
+              <div className={styles.dynamicRow} key={`step-${index}`}>
+                <span className={styles.stepNumber}>{index + 1}</span>
+                <textarea
+                  className={styles.textarea}
+                  value={step}
+                  onChange={e => updateListItem(setInstructions, index, e.target.value)}
+                  placeholder={`Stap ${index + 1}`}
+                  rows={2}
+                  aria-label={`Bereidingsstap ${index + 1}`}
+                />
+                <button type="button" className={styles.removeBtn} onClick={() => removeListItem(setInstructions, index)} aria-label={`Stap ${index + 1} verwijderen`}>×</button>
+              </div>
+            ))}
+            <button type="button" className={styles.addBtn} onClick={() => setInstructions(current => [...current, emptyStep()])}>+ Stap toevoegen</button>
+          </div>
+
+          {/* Tips and wood recommendation */}
+          <div className={styles.field}>
+            <div className={styles.sectionTitle}>TIPS &amp; TRICKS</div>
+            {tips.map((tip, index) => (
+              <div className={styles.dynamicRow} key={`tip-${index}`}>
+                <input
+                  className={styles.input}
+                  value={tip}
+                  onChange={e => updateListItem(setTips, index, e.target.value)}
+                  placeholder={`Tip ${index + 1}`}
+                  aria-label={`Tip ${index + 1}`}
+                />
+                <button type="button" className={styles.removeBtn} onClick={() => removeListItem(setTips, index)} aria-label={`Tip ${index + 1} verwijderen`}>×</button>
+              </div>
+            ))}
+            <button type="button" className={styles.addBtn} onClick={() => setTips(current => [...current, emptyTip()])}>+ Tip toevoegen</button>
+          </div>
+
+          <div className={styles.field}>
+            <label htmlFor="woodType" className={styles.label}>HOUT/BRANDSTOF AANBEVELING</label>
+            <input id="woodType" list="wood-options" className={styles.input} value={woodType} onChange={e => setWoodType(e.target.value)} placeholder="Aanbevolen houtsoort" />
+            <datalist id="wood-options">
+              {WOOD_OPTIONS.map(wood => <option key={wood} value={wood} />)}
+            </datalist>
           </div>
 
           {/* Visibility */}
