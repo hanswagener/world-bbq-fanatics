@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../supabase'
@@ -21,6 +21,110 @@ const CHANNEL_KEYS = {
   'BBQ Events & Meetups':   'events',
 }
 
+function CreateRoomModal({ currentUserId, onClose, onCreated }) {
+  const [name, setName] = useState('')
+  const [query, setQuery] = useState('')
+  const [results, setResults] = useState([])
+  const [invited, setInvited] = useState([])
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState(null)
+  const timer = useRef(null)
+
+  useEffect(() => {
+    if (!query.trim()) return undefined
+    clearTimeout(timer.current)
+    timer.current = setTimeout(async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('id, username, avatar_url')
+        .ilike('username', `%${query.trim()}%`)
+        .neq('id', currentUserId)
+        .limit(8)
+      setResults(data ?? [])
+    }, 280)
+    return () => clearTimeout(timer.current)
+  }, [query, currentUserId])
+
+  function toggleInvite(profile) {
+    setInvited(current => current.some(item => item.id === profile.id)
+      ? current.filter(item => item.id !== profile.id)
+      : [...current, profile])
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault()
+    setSaving(true)
+    setError(null)
+
+    const { data: room, error: roomError } = await supabase
+      .from('private_rooms')
+      .insert({ name: name.trim() })
+      .select('id')
+      .single()
+
+    if (roomError) { setError(roomError.message); setSaving(false); return }
+
+    const { error: memberError } = await supabase
+      .from('private_room_members')
+      .insert([{ room_id: room.id, user_id: currentUserId }])
+
+    if (memberError) { setError(memberError.message); setSaving(false); return }
+
+    if (invited.length > 0) {
+      await supabase.from('chat_invites').insert(invited.map(profile => ({
+        room_id: room.id,
+        from_user_id: currentUserId,
+        to_user_id: profile.id,
+        status: 'pending',
+      })))
+    }
+
+    onCreated(room.id)
+  }
+
+  return (
+    <div className={styles.modalOverlay} onClick={event => event.target === event.currentTarget && onClose()}>
+      <form className={styles.modal} onSubmit={handleSubmit}>
+        <div className={styles.modalHeader}>
+          <h2 className={styles.modalTitle}>Nieuwe privé chat</h2>
+          <button type="button" className={styles.modalClose} onClick={onClose}>×</button>
+        </div>
+        <div className={styles.modalBody}>
+          <label className={styles.modalLabel} htmlFor="roomName">Naam</label>
+          <input id="roomName" className={styles.modalInput} value={name} onChange={event => setName(event.target.value)} placeholder="Bijv. Brisket crew" required autoFocus />
+          <label className={styles.modalLabel} htmlFor="inviteSearch">Leden uitnodigen</label>
+          <input
+            id="inviteSearch"
+            className={styles.modalInput}
+            value={query}
+            onChange={event => {
+              setQuery(event.target.value)
+              if (!event.target.value.trim()) setResults([])
+            }}
+            placeholder="Zoek gebruikers..."
+          />
+          {results.length > 0 && (
+            <div className={styles.userResults}>
+              {results.map(profile => (
+                <button type="button" key={profile.id} className={styles.userResult} onClick={() => toggleInvite(profile)}>
+                  <span>{profile.username}</span>
+                  <span>{invited.some(item => item.id === profile.id) ? '✓' : '+'}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          {invited.length > 0 && <p className={styles.selectedUsers}>{invited.map(profile => profile.username).join(', ')}</p>}
+          {error && <p className={styles.modalError}>{error}</p>}
+        </div>
+        <div className={styles.modalActions}>
+          <button type="button" className={styles.cancelBtn} onClick={onClose}>Annuleren</button>
+          <button type="submit" className={styles.createBtn} disabled={saving}>{saving ? 'Aanmaken...' : 'Chat aanmaken'}</button>
+        </div>
+      </form>
+    </div>
+  )
+}
+
 export default function Community() {
   const { user, profile: myProfile } = useAuth()
   const { t } = useTranslation()
@@ -30,6 +134,10 @@ export default function Community() {
   const [memberOf, setMemberOf] = useState(new Set())
   const [loading,  setLoading]  = useState(true)
   const [joinHint, setJoinHint] = useState(null) // channel id showing "join first" hint
+  const [activeTab, setActiveTab] = useState('channels')
+  const [rooms, setRooms] = useState([])
+  const [roomsLoading, setRoomsLoading] = useState(false)
+  const [showCreateRoom, setShowCreateRoom] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -57,6 +165,44 @@ export default function Community() {
     }
     load()
   }, [user])
+
+  const loadRooms = useCallback(async () => {
+    if (!user) return
+    setRoomsLoading(true)
+    const { data: memberships } = await supabase
+      .from('private_room_members')
+      .select('room_id')
+      .eq('user_id', user.id)
+
+    if (!memberships?.length) {
+      setRooms([])
+      setRoomsLoading(false)
+      return
+    }
+
+    const roomIds = memberships.map(member => member.room_id)
+    const { data: roomData } = await supabase
+      .from('private_rooms')
+      .select('id, name, created_at, private_room_members(user_id, profiles(id, username, avatar_url))')
+      .in('id', roomIds)
+      .order('created_at', { ascending: false })
+
+    const roomsWithMessages = await Promise.all((roomData ?? []).map(async room => {
+      const { data: messages } = await supabase
+        .from('private_messages')
+        .select('content, created_at')
+        .eq('room_id', room.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+      return { ...room, lastMessage: messages?.[0] ?? null }
+    }))
+    setRooms(roomsWithMessages)
+    setRoomsLoading(false)
+  }, [user])
+
+  useEffect(() => {
+    if (activeTab === 'private') loadRooms()
+  }, [activeTab, loadRooms])
 
   async function handleJoin(e, ch) {
     e.stopPropagation()
@@ -108,6 +254,11 @@ export default function Community() {
     return ch.description || ''
   }
 
+  function handleRoomCreated(roomId) {
+    setShowCreateRoom(false)
+    navigate(`/chat/${roomId}`)
+  }
+
   return (
     <div className={styles.page}>
       <div className={styles.pageHeader}>
@@ -115,7 +266,12 @@ export default function Community() {
         <p className={styles.pageSubtitle}>{t('community.subtitle')}</p>
       </div>
 
-      {loading ? (
+      <div className={styles.tabs}>
+        <button className={`${styles.tab} ${activeTab === 'channels' ? styles.tabActive : ''}`} onClick={() => setActiveTab('channels')}>Kanalen</button>
+        <button className={`${styles.tab} ${activeTab === 'private' ? styles.tabActive : ''}`} onClick={() => setActiveTab('private')}>Privé Chats</button>
+      </div>
+
+      {activeTab === 'channels' && (loading ? (
         <div className={styles.emptyState}>
           <span className={styles.emptyIcon}>🔥</span>
           <p className={styles.emptyText}>{t('community.loading')}</p>
@@ -175,7 +331,40 @@ export default function Community() {
             )
           })}
         </div>
+      ))}
+
+      {activeTab === 'private' && (
+        roomsLoading ? (
+          <div className={styles.emptyState}><span className={styles.emptyIcon}>🔥</span><p className={styles.emptyText}>Privé chats laden...</p></div>
+        ) : rooms.length === 0 ? (
+          <div className={styles.emptyState}>
+            <span className={styles.emptyIcon}>💬</span>
+            <p className={styles.emptyText}>Nog geen privé chats. Maak een nieuwe aan!</p>
+            <button className={styles.createBtn} onClick={() => setShowCreateRoom(true)}>Nieuwe privé chat</button>
+          </div>
+        ) : (
+          <>
+            <div className={styles.privateHeader}>
+              <button className={styles.createBtn} onClick={() => setShowCreateRoom(true)}>+ Nieuwe privé chat</button>
+            </div>
+            <div className={styles.roomList}>
+              {rooms.map(room => (
+                <button key={room.id} className={styles.roomCard} onClick={() => navigate(`/chat/${room.id}`)}>
+                  <span className={styles.roomIcon}>🔒</span>
+                  <span className={styles.roomBody}>
+                    <strong className={styles.roomName}>{room.name || 'Privé chat'}</strong>
+                    <span className={styles.roomMembers}>{room.private_room_members?.length ?? 0} leden</span>
+                    <span className={styles.roomPreview}>{room.lastMessage?.content ?? 'Nog geen berichten'}</span>
+                  </span>
+                  <span className={styles.roomArrow}>→</span>
+                </button>
+              ))}
+            </div>
+          </>
+        )
       )}
+
+      {showCreateRoom && <CreateRoomModal currentUserId={user.id} onClose={() => setShowCreateRoom(false)} onCreated={handleRoomCreated} />}
     </div>
   )
 }

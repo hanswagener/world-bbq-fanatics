@@ -22,6 +22,108 @@
   margin: 0;
 }
 
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid #222;
+}
+
+.tab {
+  padding: 10px 20px;
+  color: #666;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tab:hover { color: #ccc; }
+
+.tabActive {
+  color: #ff6600;
+  border-bottom-color: #ff6600;
+}
+
+.privateHeader {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.roomList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.roomCard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 18px;
+  color: inherit;
+  text-align: left;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  cursor: pointer;
+  font: inherit;
+  transition: border-color 0.15s, background 0.15s, transform 0.15s;
+}
+
+.roomCard:hover {
+  background: #1e1e1e;
+  border-color: #ff6600;
+  transform: translateX(3px);
+}
+
+.roomIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  background: #222;
+  border-radius: 9px;
+  font-size: 22px;
+}
+
+.roomBody {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.roomName {
+  overflow: hidden;
+  color: #f0f0f0;
+  font-size: 15px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.roomMembers,
+.roomPreview {
+  overflow: hidden;
+  color: #666;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.roomPreview { color: #888; }
+
+.roomArrow { color: #555; font-size: 18px; }
+
 /* ── Channel grid ── */
 .grid {
   display: flex;
@@ -174,6 +276,104 @@
   font-size: 15px;
   color: #666;
   margin: 0;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.modal {
+  width: 100%;
+  max-width: 460px;
+  padding: 22px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+}
+
+.modalHeader,
+.modalActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.modalTitle { margin: 0; color: #f0f0f0; font-size: 18px; }
+
+.modalClose {
+  color: #888;
+  background: transparent;
+  border: 0;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 22px 0;
+}
+
+.modalLabel { color: #ccc; font-size: 13px; font-weight: 700; }
+
+.modalInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  color: #f0f0f0;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 7px;
+  font: inherit;
+  outline: none;
+}
+
+.modalInput:focus { border-color: #ff6600; }
+
+.userResults {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px;
+  background: #111;
+  border: 1px solid #2e2e2e;
+  border-radius: 7px;
+}
+
+.userResult {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 10px;
+  color: #ccc;
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.userResult:hover { background: #222; }
+.selectedUsers { margin: 0; color: #ff6600; font-size: 13px; }
+.modalError { margin: 0; color: #f87171; font-size: 13px; }
+
+.cancelBtn {
+  padding: 9px 16px;
+  color: #999;
+  background: transparent;
+  border: 1px solid #333;
+  border-radius: 7px;
+  cursor: pointer;
+  font: inherit;
 }
 
 @media (max-width: 600px) {
