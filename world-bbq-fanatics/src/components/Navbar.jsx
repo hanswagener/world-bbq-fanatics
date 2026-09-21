@@ -218,6 +218,41 @@ export default function Navbar() {
         <NavLink to="/settings" className={styles.mobileLink} onClick={closeMobile}>{t('nav.settings')}</NavLink>
         <button className={styles.mobileSignOut} onClick={handleSignOut}>{t('nav.signOut')}</button>
       </div>
+
+      <nav className={styles.bottomNav} aria-label="Mobile navigation">
+        <NavLink
+          to="/dashboard"
+          className={({ isActive }) => `${styles.bottomNavItem} ${isActive ? styles.bottomNavItemActive : ''}`}
+        >
+          <span className={styles.bottomNavIcon} aria-hidden="true">🔥</span>
+          <span>Feed</span>
+        </NavLink>
+        <NavLink
+          to="/search"
+          className={({ isActive }) => `${styles.bottomNavItem} ${isActive ? styles.bottomNavItemActive : ''}`}
+        >
+          <span className={styles.bottomNavIcon} aria-hidden="true">🔍</span>
+          <span>Zoeken</span>
+        </NavLink>
+        <Link to="/recipes/new" className={styles.bottomNavCreate} aria-label="Nieuw recept">
+          <span aria-hidden="true">+</span>
+          <span>Recept</span>
+        </Link>
+        <NavLink
+          to="/community"
+          className={({ isActive }) => `${styles.bottomNavItem} ${isActive ? styles.bottomNavItemActive : ''}`}
+        >
+          <span className={styles.bottomNavIcon} aria-hidden="true">💬</span>
+          <span>Community</span>
+        </NavLink>
+        <NavLink
+          to="/profile/me"
+          className={({ isActive }) => `${styles.bottomNavItem} ${isActive ? styles.bottomNavItemActive : ''}`}
+        >
+          <span className={styles.bottomNavIcon} aria-hidden="true">👤</span>
+          <span>Profiel</span>
+        </NavLink>
+      </nav>
     </nav>
   )
 }

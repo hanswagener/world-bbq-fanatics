@@ -340,41 +340,31 @@
 
 @media (max-width: 767px) {
   .page {
-    padding-bottom: calc(88px + env(safe-area-inset-bottom, 8px));
+    padding-bottom: 48px;
   }
 
   .tabs {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 999;
-    box-sizing: border-box;
-    justify-content: space-around;
-    gap: 0;
-    margin: 0;
-    padding: 8px 0;
-    padding-bottom: env(safe-area-inset-bottom, 8px);
-    background: #0d0d0d;
-    border-top: 1px solid #2a2a2a;
+    position: static;
+    margin-bottom: 28px;
+    padding: 0;
+    background: transparent;
+    border-bottom: 1px solid #222;
   }
 
   .tab {
-    position: relative;
     display: flex;
     flex: 1;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 3px;
-    min-height: 48px;
-    padding: 4px 8px;
-    margin: 0;
-    border: 0;
+    min-height: 44px;
+    padding: 8px;
+    margin-bottom: -1px;
+    border-bottom: 2px solid transparent;
     color: #666;
     font-size: 11px;
-    background: transparent;
-    transition: color 0.15s, background 0.15s;
+    transition: color 0.15s, border-color 0.15s;
   }
 
   .tabIcon {
@@ -393,18 +383,7 @@
 
   .tabActive {
     color: #ff6600;
-    background: rgba(255, 102, 0, 0.1);
-  }
-
-  .tabActive::before {
-    content: '';
-    position: absolute;
-    top: -8px;
-    left: 20%;
-    right: 20%;
-    height: 3px;
-    border-radius: 0 0 3px 3px;
-    background: #ff6600;
+    border-bottom-color: #ff6600;
   }
 
   .filterBar {

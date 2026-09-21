@@ -375,6 +375,10 @@
   background: rgba(248, 113, 113, 0.08);
 }
 
+.bottomNav {
+  display: none;
+}
+
 /* ── Responsive ── */
 @media (max-width: 767px) {
   .links {
@@ -382,6 +386,13 @@
   }
 
   .searchLink {
+    display: none;
+  }
+
+  .userMenu,
+  .right,
+  .hamburger,
+  .mobileMenu {
     display: none;
   }
 
@@ -403,17 +414,74 @@
     background: transparent;
   }
 
-  .hamburger {
-    display: flex;
-  }
-
-  .mobileMenu {
-    display: flex;
-  }
-
   .inner {
     padding: 0 16px;
     gap: 12px;
+    justify-content: space-between;
+  }
+
+  .bottomNav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-around;
+    height: 65px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: #0d0d0d;
+    border-top: 1px solid #2a2a2a;
+  }
+
+  .bottomNavItem {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    height: 65px;
+    color: #666;
+    font-size: 11px;
+    text-decoration: none;
+  }
+
+  .bottomNavItemActive {
+    color: #ff6600;
+  }
+
+  .bottomNavIcon {
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .bottomNavCreate {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    height: 65px;
+    color: #fff;
+    font-size: 11px;
+    text-decoration: none;
+  }
+
+  .bottomNavCreate > span:first-child {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    margin-top: -15px;
+    color: #fff;
+    background: #ff6600;
+    border-radius: 50%;
+    font-size: 32px;
+    line-height: 1;
   }
 }
 
